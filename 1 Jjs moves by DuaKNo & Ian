@@ -5159,12 +5159,31 @@ ANIMS.ManjiCounter = {
 	},
 }
 
--- PAREDE: pulo duplo encostado na parede (3o paste = parede da direita, 4o paste = esquerda)
+-- PAREDE: pulo duplo encostado na parede (2o paste = parede da direita, 3o paste = esquerda, com som)
 ANIMS.WallRight = {
 	length = 0.4,
 	loop = false,
 	blendIn = 0.05,
 	blendOut = 0.25,
+	fx = {
+			{ t = 0, kind = "sfx", name = "Parkour", dur = 0.620078, pos = true,
+				props = {
+					{"SoundId", "rbxassetid://3929467888"},
+					{"Volume", 1},
+					{"PlaybackSpeed", 0.99},
+					{"Looped", false},
+					{"TimePosition", 0},
+					{"RollOffMode", Enum.RollOffMode.Linear},
+					{"RollOffMinDistance", 10},
+					{"RollOffMaxDistance", 100},
+				} },
+			{ t = 0, kind = "vfx", class = "Sparkles", name = "Sparkles", enabled = true, dur = 1.5,
+				mount = { part = "Handle", cf = CFrame.new(0,0,0,1,0,0,0,1,0,0,0,1) },
+				props = {
+					{"SparkleColor", Color3.new(0.666667,0,1)},
+					{"TimeScale", 1},
+				} },
+	},
 	frames = {
 	{ dt = 0, j = {
 		["Right Shoulder"] = CFrame.new(0.4101,-0.3364,0.3925,0.641,0,-0.7675,0.7674,-0.0158,0.6409,-0.0121,-0.9999,-0.0101), -- Right Arm rot -91, -50, 0
@@ -5254,6 +5273,25 @@ ANIMS.WallLeft = {
 	loop = false,
 	blendIn = 0.05,
 	blendOut = 0.25,
+	fx = {
+			{ t = 0, kind = "sfx", name = "Parkour", dur = 0.639456, pos = true,
+				props = {
+					{"SoundId", "rbxassetid://3929467888"},
+					{"Volume", 1},
+					{"PlaybackSpeed", 0.96},
+					{"Looped", false},
+					{"TimePosition", 0},
+					{"RollOffMode", Enum.RollOffMode.Linear},
+					{"RollOffMinDistance", 10},
+					{"RollOffMaxDistance", 100},
+				} },
+			{ t = 0, kind = "vfx", class = "Sparkles", name = "Sparkles", enabled = true, dur = 1.5,
+				mount = { part = "Handle", cf = CFrame.new(0,0,0,1,0,0,0,1,0,0,0,1) },
+				props = {
+					{"SparkleColor", Color3.new(0.666667,0,1)},
+					{"TimeScale", 1},
+				} },
+	},
 	frames = {
 	{ dt = 0, j = {
 		["Right Shoulder"] = CFrame.new(0.9822,-0.1895,0.4802,-0.8687,-0.4666,-0.1663,-0.1352,-0.0997,0.9858,-0.4765,0.8789,0.0235), -- Right Arm rot -89, -10, 152
@@ -5334,6 +5372,2554 @@ ANIMS.WallLeft = {
 		["Left Hip"] = CFrame.new(0,0,0,1,0,0,0,1,0,0,0,1), -- Left Leg rot 0, 0, 0
 		["Neck"] = CFrame.new(0,0,0,0.9407,-0.2644,0.2128,0.2128,0.9479,0.237,-0.2644,-0.1777,0.9479), -- Head rot -14, 12, 16
 		["RootJoint"] = CFrame.new(0,0,0,0.8192,0.3863,-0.4238,-0.5474,0.7469,-0.3774,0.1708,0.5412,0.8233), -- Torso rot 25, -25, -25
+	} },
+	},
+}
+
+-- ROLL (cair de lugar alto), CLIMB (escalar), CRUSHING BLOW (tool)
+ANIMS.Roll = {
+	length = 0.4,
+	loop = false,
+	blendIn = 0.05,
+	blendOut = 0.25,
+	fx = {
+			{ t = 0, kind = "sfx", name = "Water", dur = 3,
+				props = {
+					{"SoundId", "rbxassetid://5639243489"},
+					{"Volume", 0.5},
+					{"PlaybackSpeed", 0.9},
+					{"Looped", false},
+					{"TimePosition", 0},
+					{"RollOffMode", Enum.RollOffMode.Linear},
+					{"RollOffMinDistance", 10},
+					{"RollOffMaxDistance", 300},
+				} },
+			{ t = 0, kind = "sfx", name = "Roll", dur = 2.53754, pos = true,
+				props = {
+					{"SoundId", "rbxassetid://9113470969"},
+					{"Volume", 1},
+					{"PlaybackSpeed", 0.95},
+					{"Looped", false},
+					{"TimePosition", 0.8},
+					{"RollOffMode", Enum.RollOffMode.Linear},
+					{"RollOffMinDistance", 10},
+					{"RollOffMaxDistance", 100},
+				} },
+			{ t = 0, kind = "vfx", class = "Sparkles", name = "Sparkles", enabled = true, dur = 1.5,
+				mount = { part = "Handle", cf = CFrame.new(0,0,0,1,0,0,0,1,0,0,0,1) },
+				props = {
+					{"SparkleColor", Color3.new(0.666667,0,1)},
+					{"TimeScale", 1},
+				} },
+			{ t = 0.409149, kind = "vfx", class = "ParticleEmitter", name = "Smoke", enabled = false, emit = 15, dur = 1.1,
+				mount = { part = nil, cf = CFrame.new(0,0,0,0.9848,-0.1736,0,0.1736,0.9848,0,0,0,1) },
+				props = {
+					{"Texture", "rbxassetid://16144047329"},
+					{"Rate", 50},
+					{"Lifetime", NumberRange.new(0.3,0.6)},
+					{"Speed", NumberRange.new(5,30)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,1,0),NumberSequenceKeypoint.new(1,2.6875,0.8125)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(1,1,1)),ColorSequenceKeypoint.new(1,Color3.new(1,1,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,1,0),NumberSequenceKeypoint.new(0.253117,0.83125,0),NumberSequenceKeypoint.new(0.4601,0.9,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"Rotation", NumberRange.new(-40,40)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(25,25)},
+					{"Acceleration", Vector3.new(0,15,0)},
+					{"Drag", 6},
+					{"EmissionDirection", Enum.NormalId.Right},
+					{"LightEmission", 0},
+					{"LightInfluence", 1},
+					{"LockedToPart", false},
+					{"ZOffset", 0.5},
+					{"Orientation", Enum.ParticleOrientation.VelocityParallel},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,-0.4,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.Grid4x4},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.OneShot},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 1},
+				} },
+			{ t = 0.410178, kind = "vfx", class = "ParticleEmitter", name = "Smoke", enabled = false, emit = 15, dur = 1.1,
+				mount = { part = nil, cf = CFrame.new(0,0,0,1,0,0,0,1,0,0,0,1) },
+				props = {
+					{"Texture", "rbxassetid://7029770407"},
+					{"Rate", 100},
+					{"Lifetime", NumberRange.new(0.3,0.6)},
+					{"Speed", NumberRange.new(5,15)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,0.4,0),NumberSequenceKeypoint.new(0.3,0.2,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(0,0,0)),ColorSequenceKeypoint.new(1,Color3.new(0,0,0))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Rotation", NumberRange.new(0,0)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(40,40)},
+					{"Acceleration", Vector3.new(0,-25,0)},
+					{"Drag", 2},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", 0},
+					{"LightInfluence", 1},
+					{"LockedToPart", false},
+					{"ZOffset", 0},
+					{"Orientation", Enum.ParticleOrientation.FacingCamera},
+					{"VelocityInheritance", 0.1},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.None},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.Loop},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 1},
+				} },
+			{ t = 0.439183, kind = "vfx", class = "ParticleEmitter", name = "Smoke", enabled = false, emit = 15, dur = 1.1,
+				mount = { part = nil, cf = CFrame.new(0,0,0,0.9848,-0.1736,0,0.1736,0.9848,0,0,0,1) },
+				props = {
+					{"Texture", "rbxassetid://16144047329"},
+					{"Rate", 50},
+					{"Lifetime", NumberRange.new(0.3,0.6)},
+					{"Speed", NumberRange.new(5,30)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,1,0),NumberSequenceKeypoint.new(1,2.6875,0.8125)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(1,1,1)),ColorSequenceKeypoint.new(1,Color3.new(1,1,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,1,0),NumberSequenceKeypoint.new(0.253117,0.83125,0),NumberSequenceKeypoint.new(0.4601,0.9,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"Rotation", NumberRange.new(-40,40)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(25,25)},
+					{"Acceleration", Vector3.new(0,15,0)},
+					{"Drag", 6},
+					{"EmissionDirection", Enum.NormalId.Right},
+					{"LightEmission", 0},
+					{"LightInfluence", 1},
+					{"LockedToPart", false},
+					{"ZOffset", 0.5},
+					{"Orientation", Enum.ParticleOrientation.VelocityParallel},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,-0.4,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.Grid4x4},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.OneShot},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 1},
+				} },
+			{ t = 0.442068, kind = "vfx", class = "ParticleEmitter", name = "Smoke", enabled = false, emit = 15, dur = 1.1,
+				mount = { part = nil, cf = CFrame.new(0,0,0,1,0,0,0,1,0,0,0,1) },
+				props = {
+					{"Texture", "rbxassetid://7029770407"},
+					{"Rate", 100},
+					{"Lifetime", NumberRange.new(0.3,0.6)},
+					{"Speed", NumberRange.new(5,15)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,0.4,0),NumberSequenceKeypoint.new(0.3,0.2,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(0,0,0)),ColorSequenceKeypoint.new(1,Color3.new(0,0,0))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Rotation", NumberRange.new(0,0)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(40,40)},
+					{"Acceleration", Vector3.new(0,-25,0)},
+					{"Drag", 2},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", 0},
+					{"LightInfluence", 1},
+					{"LockedToPart", false},
+					{"ZOffset", 0},
+					{"Orientation", Enum.ParticleOrientation.FacingCamera},
+					{"VelocityInheritance", 0.1},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.None},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.Loop},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 1},
+				} },
+			{ t = 0.447062, kind = "vfx", class = "ParticleEmitter", name = "Smoke", enabled = true, emit = 15, dur = 0.392793,
+				mount = { part = nil, cf = CFrame.new(-0.0005,-2.9474,0.0039,1,0,0,0,1,0,0,0,1) },
+				props = {
+					{"Texture", "rbxassetid://7029770407"},
+					{"Rate", 100},
+					{"Lifetime", NumberRange.new(0.3,0.6)},
+					{"Speed", NumberRange.new(5,15)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,0.4,0),NumberSequenceKeypoint.new(0.3,0.2,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(0.509804,0.501961,0.517647)),ColorSequenceKeypoint.new(1,Color3.new(0.509804,0.501961,0.517647))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Rotation", NumberRange.new(0,0)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(40,40)},
+					{"Acceleration", Vector3.new(0,-25,0)},
+					{"Drag", 2},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", 0},
+					{"LightInfluence", 1},
+					{"LockedToPart", false},
+					{"ZOffset", 0},
+					{"Orientation", Enum.ParticleOrientation.FacingCamera},
+					{"VelocityInheritance", 0.1},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.None},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.Loop},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 1},
+				} },
+			{ t = 2.89046, kind = "vfx", class = "ParticleEmitter", name = "Smoke", enabled = false, emit = 15, dur = 1.1,
+				mount = { part = nil, cf = CFrame.new(0,0,0,0.9848,-0.1736,0,0.1736,0.9848,0,0,0,1) },
+				props = {
+					{"Texture", "rbxassetid://16144047329"},
+					{"Rate", 50},
+					{"Lifetime", NumberRange.new(0.3,0.6)},
+					{"Speed", NumberRange.new(5,30)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,1,0),NumberSequenceKeypoint.new(1,2.6875,0.8125)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(1,1,1)),ColorSequenceKeypoint.new(1,Color3.new(1,1,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,1,0),NumberSequenceKeypoint.new(0.253117,0.83125,0),NumberSequenceKeypoint.new(0.4601,0.9,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"Rotation", NumberRange.new(-40,40)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(25,25)},
+					{"Acceleration", Vector3.new(0,15,0)},
+					{"Drag", 6},
+					{"EmissionDirection", Enum.NormalId.Right},
+					{"LightEmission", 0},
+					{"LightInfluence", 1},
+					{"LockedToPart", false},
+					{"ZOffset", 0.5},
+					{"Orientation", Enum.ParticleOrientation.VelocityParallel},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,-0.4,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.Grid4x4},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.OneShot},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 1},
+				} },
+			{ t = 2.89149, kind = "vfx", class = "ParticleEmitter", name = "Smoke", enabled = false, emit = 15, dur = 1.1,
+				mount = { part = nil, cf = CFrame.new(0,0,0,1,0,0,0,1,0,0,0,1) },
+				props = {
+					{"Texture", "rbxassetid://7029770407"},
+					{"Rate", 100},
+					{"Lifetime", NumberRange.new(0.3,0.6)},
+					{"Speed", NumberRange.new(5,15)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,0.4,0),NumberSequenceKeypoint.new(0.3,0.2,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(0,0,0)),ColorSequenceKeypoint.new(1,Color3.new(0,0,0))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Rotation", NumberRange.new(0,0)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(40,40)},
+					{"Acceleration", Vector3.new(0,-25,0)},
+					{"Drag", 2},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", 0},
+					{"LightInfluence", 1},
+					{"LockedToPart", false},
+					{"ZOffset", 0},
+					{"Orientation", Enum.ParticleOrientation.FacingCamera},
+					{"VelocityInheritance", 0.1},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.None},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.Loop},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 1},
+				} },
+			{ t = 2.89378, kind = "vfx", class = "ParticleEmitter", name = "Smoke", enabled = true, emit = 15, dur = 0.1,
+				mount = { part = nil, cf = CFrame.new(-0.0877,-3.1832,-0.1089,1,0,0,0,1,0,0,0,1) },
+				props = {
+					{"Texture", "rbxassetid://7029770407"},
+					{"Rate", 100},
+					{"Lifetime", NumberRange.new(0.3,0.6)},
+					{"Speed", NumberRange.new(5,15)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,0.4,0),NumberSequenceKeypoint.new(0.3,0.2,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(0.164706,0.164706,0.168627)),ColorSequenceKeypoint.new(1,Color3.new(0.164706,0.164706,0.168627))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Rotation", NumberRange.new(0,0)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(40,40)},
+					{"Acceleration", Vector3.new(0,-25,0)},
+					{"Drag", 2},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", 0},
+					{"LightInfluence", 1},
+					{"LockedToPart", false},
+					{"ZOffset", 0},
+					{"Orientation", Enum.ParticleOrientation.FacingCamera},
+					{"VelocityInheritance", 0.1},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.None},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.Loop},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 1},
+				} },
+	},
+	frames = {
+	{ dt = 0, j = {
+		["Right Shoulder"] = CFrame.new(0.8222,-0.4422,-0.027,0.3952,-0.7898,0.469,0,0.5106,0.8598,-0.9186,-0.3398,0.2018), -- Right Arm rot -77, 28, 63
+		["Left Shoulder"] = CFrame.new(-0.7128,-0.3777,-0.7962,0.2978,0.8046,-0.5137,-0.9378,0.3471,0,0.1783,0.4818,0.858), -- Left Arm rot 0, -31, -70
+		["Right Hip"] = CFrame.new(0.5658,0.6371,0.152,0.9997,-0.0236,0,0.0236,0.9997,0,0,0,1), -- Right Leg rot 0, 0, 1
+		["Left Hip"] = CFrame.new(-0.5658,0.6371,-0.152,0.9997,0.0236,0,-0.0236,0.9997,0,0,0,1), -- Left Leg rot 0, 0, -1
+		["Neck"] = CFrame.new(0,0,0,0.972,0.2322,-0.036,-0.214,0.938,0.2728,0.0971,-0.2575,0.9614), -- Head rot -16, -2, -13
+		["RootJoint"] = CFrame.new(0,0,-1.0774,0.9658,-0.2594,0,0.1756,0.6537,-0.7361,0.191,0.7109,0.6769), -- Torso rot 47, 0, 15
+	} },
+	{ dt = 0.0615, j = {
+		["Right Shoulder"] = CFrame.new(-0.3561,-0.5029,0.0844,0.4247,-0.9053,-0.012,0.0011,-0.0127,0.9999,-0.9053,-0.4247,-0.0043), -- Right Arm rot -90, -1, 65
+		["Left Shoulder"] = CFrame.new(-0.1161,-0.7342,-0.1958,-0.2912,0.9172,-0.2719,-0.9388,-0.3286,-0.1032,-0.184,0.2253,0.9568), -- Left Arm rot 6, -16, -108
+		["Right Hip"] = CFrame.new(0.5658,0.6371,0.152,0.9975,0.0704,0,-0.0704,0.9975,0,0,0,1), -- Right Leg rot 0, 0, -4
+		["Left Hip"] = CFrame.new(-0.3337,0.3757,-0.0896,1,0.0068,0,-0.0068,1,0,0,0,1), -- Left Leg rot 0, 0, 0
+		["Neck"] = CFrame.new(0,0,0,0.9894,0.1336,-0.0561,-0.1425,0.9672,-0.2102,0.0262,0.216,0.976), -- Head rot 12, -3, -8
+		["RootJoint"] = CFrame.new(0,0,-1.9951,0.9601,-0.2337,0.1536,0.1573,-0.0026,-0.9875,0.2312,0.9723,0.0343), -- Torso rot 88, 9, 14
+	} },
+	{ dt = 0.0308, j = {
+		["Right Shoulder"] = CFrame.new(-0.0616,-0.4877,0.0565,0.3558,-0.9297,-0.0953,-0.0405,-0.1172,0.9923,-0.9337,-0.3492,-0.0793), -- Right Arm rot -95, -5, 69
+		["Left Shoulder"] = CFrame.new(-0.2653,-0.6451,-0.3459,-0.4469,0.8545,-0.2649,-0.8555,-0.4948,-0.1527,-0.2616,0.1584,0.9521), -- Left Arm rot 9, -15, -118
+		["Right Hip"] = CFrame.new(0.5658,0.6371,0.152,0.9337,-0.3579,0,0.3579,0.9337,0,0,0,1), -- Right Leg rot 0, 0, 21
+		["Left Hip"] = CFrame.new(-0.2176,0.245,-0.0585,0.8861,0.4636,0,-0.4636,0.8861,0,0,0,1), -- Left Leg rot 0, 0, -28
+		["Neck"] = CFrame.new(0,0,0,0.9954,0.0832,-0.0475,-0.0956,0.8927,-0.4404,0.0058,0.4429,0.8965), -- Head rot 26, -3, -5
+		["RootJoint"] = CFrame.new(0,0,-1.861,0.9597,-0.1822,0.2138,0.1388,-0.354,-0.9249,0.2442,0.9173,-0.3144), -- Torso rot 109, 12, 11
+	} },
+	{ dt = 0.0308, j = {
+		["Right Shoulder"] = CFrame.new(0.4098,-0.4634,0.012,0.2699,-0.9511,-0.1504,-0.0971,-0.1823,0.9784,-0.958,-0.2495,-0.1415), -- Right Arm rot -98, -9, 74
+		["Left Shoulder"] = CFrame.new(-0.5039,-0.5025,-0.5861,-0.5623,0.7772,-0.2824,-0.7613,-0.6199,-0.1901,-0.3228,0.1081,0.9403), -- Left Arm rot 11, -16, -126
+		["Right Hip"] = CFrame.new(0.5658,0.6371,0.152,0.6221,-0.7829,0,0.7829,0.6221,0,0,0,1), -- Right Leg rot 0, 0, 52
+		["Left Hip"] = CFrame.new(-0.1016,0.1143,-0.0273,0.4942,0.8694,0,-0.8694,0.4942,0,0,0,1), -- Left Leg rot 0, 0, -60
+		["Neck"] = CFrame.new(0,0,0,0.999,0.0361,-0.0269,-0.045,0.7636,-0.6442,-0.0027,0.6447,0.7644), -- Head rot 40, -2, -2
+		["RootJoint"] = CFrame.new(0,0,-1.6083,0.9612,-0.1128,0.2519,0.117,-0.6602,-0.7419,0.25,0.7426,-0.6214), -- Torso rot 130, 15, 7
+	} },
+	{ dt = 0.0308, j = {
+		["Right Shoulder"] = CFrame.new(0.8222,-0.4422,-0.027,0.1745,-0.9644,-0.1989,-0.1489,-0.2255,0.9628,-0.9733,-0.1384,-0.1829), -- Right Arm rot -101, -11, 80
+		["Left Shoulder"] = CFrame.new(-0.7032,-0.3628,-0.7854,-0.6259,0.7125,-0.3171,-0.6885,-0.6958,-0.2045,-0.3664,0.0903,0.9261), -- Left Arm rot 12, -18, -131
+		["Right Hip"] = CFrame.new(0.5736,0.6409,0.152,0.2375,-0.9714,0,0.9714,0.2375,0,0,0,1), -- Right Leg rot 0, 0, 76
+		["Left Hip"] = CFrame.new(-0.0222,0.007,0,0.0645,0.9979,0,-0.9979,0.0645,0,0,0,1), -- Left Leg rot 0, 0, -86
+		["Neck"] = CFrame.new(0,0,0,1,-0.0029,-0.0029,-0.0006,0.6017,-0.7988,0.0041,0.7988,0.6016), -- Head rot 53, 0, 0
+		["RootJoint"] = CFrame.new(0,0,-1.4262,0.9534,-0.0826,0.2901,0.0654,-0.8823,-0.4662,0.2945,0.4634,-0.8358), -- Torso rot 151, 17, 5
+	} },
+	{ dt = 0.0923, j = {
+		["Right Shoulder"] = CFrame.new(0.8222,-0.4422,-0.027,-0.3294,-0.942,-0.064,-0.0488,-0.0507,0.9975,-0.9429,0.3317,-0.0293), -- Right Arm rot -92, -4, 109
+		["Left Shoulder"] = CFrame.new(-0.4741,-0.005,-0.5256,0.054,0.6949,-0.7171,-0.9983,0.0526,-0.0242,0.0209,0.7172,0.6966), -- Left Arm rot 2, -46, -86
+		["Right Hip"] = CFrame.new(0.7595,0.7329,0.152,0.8802,-0.4745,0,0.4745,0.8802,0,0,0,1), -- Right Leg rot 0, 0, 28
+		["Left Hip"] = CFrame.new(-0.5541,0.1738,0,0.9387,0.3449,0,-0.3449,0.9387,0,0,0,1), -- Left Leg rot 0, 0, -20
+		["Neck"] = CFrame.new(0,0,0,0.9947,-0.0827,-0.0606,-0.03,0.3303,-0.9434,0.098,0.9402,0.3261), -- Head rot 71, -3, 5
+		["RootJoint"] = CFrame.new(0,0,-2.3649,0.1879,-0.2529,0.9491,-0.8656,-0.4992,0.0384,0.464,-0.8288,-0.3128), -- Torso rot -173, 72, 53
+	} },
+	{ dt = 0.0308, j = {
+		["Right Shoulder"] = CFrame.new(0.8222,-0.4422,-0.027,-0.3491,-0.9261,0.1431,-0.0428,0.1683,0.9848,-0.9361,0.3377,-0.0983), -- Right Arm rot -96, 8, 111
+		["Left Shoulder"] = CFrame.new(0.0553,-0.2253,-0.4547,0.5645,0.3817,-0.7319,-0.5827,0.8123,-0.0258,0.5847,0.441,0.6809), -- Left Arm rot 2, -47, -34
+		["Right Hip"] = CFrame.new(0.8249,0.4392,0.0906,0.9627,-0.2706,0,0.2706,0.9627,0,0,0,1), -- Right Leg rot 0, 0, 16
+		["Left Hip"] = CFrame.new(-0.412,0.7043,-0.0992,0.9541,0.2915,0.0682,-0.2993,0.9291,0.2173,0,-0.2277,0.9737), -- Left Leg rot -13, 4, -17
+		["Neck"] = CFrame.new(0,0,0,0.9855,-0.1551,-0.0682,-0.0066,0.3671,-0.9302,0.1693,0.9172,0.3607), -- Head rot 69, -4, 9
+		["RootJoint"] = CFrame.new(0,0,-2.1106,-0.1895,0.1949,0.9623,-0.9809,-0.0812,-0.1767,0.0437,-0.9774,0.2066), -- Torso rot 41, 74, -134
+	} },
+	{ dt = 0.0308, j = {
+		["Right Shoulder"] = CFrame.new(0.8222,-0.4422,-0.027,-0.3491,-0.8639,0.363,-0.0428,0.4017,0.9148,-0.9361,0.3038,-0.1772), -- Right Arm rot -101, 21, 112
+		["Left Shoulder"] = CFrame.new(0.6494,-0.4941,-0.3862,0.6308,-0.2579,-0.7319,0.3526,0.9354,-0.0258,0.6913,-0.2418,0.6809), -- Left Arm rot 2, -47, 22
+		["Right Hip"] = CFrame.new(0.8908,0.0992,0.0205,0.9981,-0.0618,0,0.0618,0.9981,0,0,0,1), -- Right Leg rot 0, 0, 4
+		["Left Hip"] = CFrame.new(-0.2243,1.3026,-0.2127,0.9541,0.2638,0.1415,-0.2993,0.8409,0.451,0,-0.4726,0.8813), -- Left Leg rot -27, 8, -15
+		["Neck"] = CFrame.new(0,0,0,0.9471,-0.306,-0.097,0.1247,0.6292,-0.7672,0.2957,0.7145,0.634), -- Head rot 50, -6, 18
+		["RootJoint"] = CFrame.new(0,0,-1.7752,-0.2867,0.7107,0.6425,-0.8079,0.1811,-0.5609,-0.5149,-0.6798,0.5222), -- Torso rot 47, 40, -112
+	} },
+	{ dt = 0.0308, j = {
+		["Right Shoulder"] = CFrame.new(0.8222,-0.4422,-0.027,-0.5113,-0.7733,0.3749,0.0832,0.3897,0.9172,-0.8554,0.5002,-0.1349), -- Right Arm rot -98, 22, 123
+		["Left Shoulder"] = CFrame.new(0.8227,-0.5725,-0.3662,0.5321,-0.4257,-0.7319,0.6026,0.7976,-0.0258,0.5947,-0.4273,0.6809), -- Left Arm rot 2, -47, 39
+		["Right Hip"] = CFrame.new(0.672,0,0,0.9997,-0.0258,0,0.0258,0.9997,0,0,0,1), -- Right Leg rot 0, 0, 1
+		["Left Hip"] = CFrame.new(-0.252,1.3458,-0.23,0.9463,0.1642,0.2784,-0.2841,0.8333,0.4742,-0.1542,-0.5278,0.8353), -- Left Leg rot -30, 16, -10
+		["Neck"] = CFrame.new(0,0,0,0.8858,-0.4309,-0.1725,0.2863,0.7997,-0.5278,0.3653,0.4181,0.8317), -- Head rot 32, -10, 26
+		["RootJoint"] = CFrame.new(0,0,-1.4377,0.0395,0.888,0.4582,-0.7064,0.3491,-0.6157,-0.7067,-0.2994,0.641), -- Torso rot 44, 27, -87
+	} },
+	{ dt = 0.0615, j = {
+		["Right Shoulder"] = CFrame.new(0.8222,-0.4422,-0.027,-0.8561,-0.4151,0.308,0.3191,0.0443,0.9467,-0.4066,0.9087,0.0945), -- Right Arm rot -84, 18, 154
+		["Left Shoulder"] = CFrame.new(0.8227,-0.5725,-0.3662,0.5321,-0.4257,-0.7319,0.6026,0.7976,-0.0258,0.5947,-0.4273,0.6809), -- Left Arm rot 2, -47, 39
+		["Right Hip"] = CFrame.new(0,0,0,0.9951,-0.0987,0,0.0987,0.9951,0,0,0,1), -- Right Leg rot 0, 0, 6
+		["Left Hip"] = CFrame.new(-0.4849,0.975,-0.1857,0.8051,-0.0652,0.5895,-0.2027,0.9039,0.3767,-0.5574,-0.4228,0.7145), -- Left Leg rot -28, 36, 5
+		["Neck"] = CFrame.new(0,0,0,0.7295,-0.5414,-0.4179,0.612,0.7895,0.0454,0.3054,-0.289,0.9073), -- Head rot -3, -25, 37
+		["RootJoint"] = CFrame.new(0,0,-0.7609,0.7545,0.6325,0.1749,-0.4644,0.703,-0.5386,-0.4637,0.3252,0.8242), -- Torso rot 33, 10, -40
+	} },
+	},
+}
+
+ANIMS.Climb = {
+	length = 0.4583,
+	loop = true,
+	blendIn = 0.1,
+	blendOut = 0.15,
+	fx = {
+			{ t = 0, kind = "vfx", class = "Sparkles", name = "Sparkles", enabled = true, dur = 1.5,
+				mount = { part = "Handle", cf = CFrame.new(0,0,0,1,0,0,0,1,0,0,0,1) },
+				props = {
+					{"SparkleColor", Color3.new(0.666667,0,1)},
+					{"TimeScale", 1},
+				} },
+	},
+	frames = {
+	{ dt = 0, j = {
+		["Right Shoulder"] = CFrame.new(0.0168,0.1786,-0.0843,-0.9338,-0.3544,0.0487,0.3576,-0.928,0.1043,0.0082,0.1148,0.9934), -- Right Arm rot -6, 3, 159
+		["Left Shoulder"] = CFrame.new(-0.053,-0.1489,0.0246,0.6342,0.773,0.0164,-0.773,0.6344,-0.0098,-0.018,-0.0064,0.9998), -- Left Arm rot 1, 1, -51
+		["Right Hip"] = CFrame.new(0.2804,0.0824,0.0707,0.81,0.5861,-0.0177,-0.5851,0.8099,0.0412,0.0385,-0.023,0.999), -- Right Leg rot -2, -1, -36
+		["Left Hip"] = CFrame.new(-0.9819,0.9622,0.107,0.9953,0.0956,0.0117,-0.0955,0.9953,-0.0135,-0.0129,0.0124,0.9998), -- Left Leg rot 1, 1, -5
+		["Neck"] = CFrame.new(0,0,0,0.9969,-0.006,0.078,-0.032,0.8783,0.477,-0.0714,-0.478,0.8754), -- Head rot -29, 4, 0
+		["RootJoint"] = CFrame.new(0,0.4332,0,0.9992,0,-0.0391,0,1,0,0.0391,0,0.9992), -- Torso rot 0, -2, 0
+	} },
+	{ dt = 0.0327, j = {
+		["Right Shoulder"] = CFrame.new(0.1133,0.1899,-0.0688,-0.8858,-0.4583,0.0722,0.4639,-0.8781,0.1171,0.0098,0.1372,0.9905), -- Right Arm rot -7, 4, 153
+		["Left Shoulder"] = CFrame.new(-0.0588,-0.1074,0.0297,0.5152,0.8541,0.0708,-0.8555,0.5175,-0.017,-0.0512,-0.0519,0.9973), -- Left Arm rot 1, 4, -59
+		["Right Hip"] = CFrame.new(0.6056,0.2561,0.0775,0.8471,0.5307,-0.0282,-0.5298,0.8474,0.0349,0.0424,-0.0146,0.999), -- Right Leg rot -2, -2, -32
+		["Left Hip"] = CFrame.new(-0.9917,0.6746,0.0938,0.9949,0.1001,0.0122,-0.1,0.995,-0.0055,-0.0126,0.0042,0.9999), -- Left Leg rot 0, 1, -6
+		["Neck"] = CFrame.new(0,0,0,0.9979,-0.006,0.0646,-0.0256,0.8785,0.4771,-0.0596,-0.4778,0.8765), -- Head rot -29, 4, 0
+		["RootJoint"] = CFrame.new(0,0.4332,0,0.9994,0,-0.034,0,1,0,0.034,0,0.9994), -- Torso rot 0, -2, 0
+	} },
+	{ dt = 0.0327, j = {
+		["Right Shoulder"] = CFrame.new(0.1707,0.1823,-0.0526,-0.8142,-0.5743,0.0853,0.5806,-0.8051,0.1212,-0.001,0.1482,0.989), -- Right Arm rot -7, 5, 145
+		["Left Shoulder"] = CFrame.new(-0.0537,-0.066,0.0319,0.3473,0.9324,0.1004,-0.936,0.3512,-0.0233,-0.057,-0.0858,0.9947), -- Left Arm rot 1, 6, -70
+		["Right Hip"] = CFrame.new(0.8176,0.4453,0.0815,0.8925,0.4494,-0.0373,-0.4486,0.8933,0.0288,0.0463,-0.009,0.9989), -- Right Leg rot -2, -2, -27
+		["Left Hip"] = CFrame.new(-0.9708,0.4647,0.0841,0.9931,0.1162,0.0125,-0.1162,0.9932,-0.0009,-0.0125,-0.0005,0.9999), -- Left Leg rot 0, 1, -7
+		["Neck"] = CFrame.new(0,0,0,0.9987,-0.006,0.0513,-0.0193,0.8786,0.4772,-0.048,-0.4776,0.8773), -- Head rot -29, 3, 0
+		["RootJoint"] = CFrame.new(0,0.4332,0,0.9996,0,-0.029,0,1,0,0.029,0,0.9996), -- Torso rot 0, -2, 0
+	} },
+	{ dt = 0.0327, j = {
+		["Right Shoulder"] = CFrame.new(0.1848,0.1537,-0.0358,-0.7112,-0.6978,0.0852,0.7026,-0.7017,0.1183,-0.0227,0.144,0.9893), -- Right Arm rot -7, 5, 136
+		["Left Shoulder"] = CFrame.new(-0.0364,-0.025,0.0306,0.1234,0.9869,0.1036,-0.9917,0.1264,-0.0228,-0.0356,-0.0999,0.9944), -- Left Arm rot 1, 6, -83
+		["Right Hip"] = CFrame.new(0.9034,0.6518,0.0825,0.9405,0.3367,-0.0447,-0.336,0.9416,0.023,0.0498,-0.0067,0.9987), -- Right Leg rot -1, -3, -20
+		["Left Hip"] = CFrame.new(-0.9159,0.3415,0.0782,0.9893,0.1454,0.0126,-0.1454,0.9894,-0.0003,-0.0125,-0.0016,0.9999), -- Left Leg rot 0, 1, -8
+		["Neck"] = CFrame.new(0,0,0,0.9993,-0.006,0.0381,-0.0129,0.8787,0.4773,-0.0363,-0.4774,0.8779), -- Head rot -29, 2, 0
+		["RootJoint"] = CFrame.new(0,0.4332,0,0.9997,0,-0.0241,0,1,0,0.0241,0,0.9997), -- Torso rot 0, -1, 0
+	} },
+	{ dt = 0.0327, j = {
+		["Right Shoulder"] = CFrame.new(0.1861,0.0417,-0.0309,-0.4225,-0.9027,0.0815,0.9053,-0.4159,0.0862,-0.0439,0.1102,0.9929), -- Right Arm rot -5, 5, 115
+		["Left Shoulder"] = CFrame.new(0.165,0.0786,-0.0068,-0.5594,0.8289,-0.0005,-0.8289,-0.5594,0.0022,0.0016,0.0016,1), -- Left Arm rot 0, 0, -124
+		["Right Hip"] = CFrame.new(0.9652,0.9433,0.0828,0.9916,0.1267,-0.0269,-0.1264,0.9919,0.0118,0.0282,-0.0083,0.9996), -- Right Leg rot -1, -2, -7
+		["Left Hip"] = CFrame.new(-0.4627,0.1455,0.0733,0.9662,0.2574,0.0119,-0.2575,0.9663,0.0029,-0.0108,-0.0058,0.9999), -- Left Leg rot 0, 1, -15
+		["Neck"] = CFrame.new(0,0,0,0.9999,-0.006,0.011,0,0.8786,0.4776,-0.0125,-0.4775,0.8785), -- Head rot -29, 1, 0
+		["RootJoint"] = CFrame.new(0,0.4332,0,0.9999,0,-0.0139,0,1,0,0.0139,0,0.9999), -- Torso rot 0, -1, 0
+	} },
+	{ dt = 0.0327, j = {
+		["Right Shoulder"] = CFrame.new(0.1865,-0.0513,-0.0272,-0.1506,-0.986,0.0714,0.9874,-0.1465,0.0597,-0.0484,0.0795,0.9957), -- Right Arm rot -3, 4, 99
+		["Left Shoulder"] = CFrame.new(0.197,0.1365,-0.0419,-0.8525,0.5201,-0.053,-0.5227,-0.8498,0.0685,-0.0094,0.0861,0.9962), -- Left Arm rot -4, -3, -149
+		["Right Hip"] = CFrame.new(1.0022,1.1113,0.0825,0.9999,-0.0105,-0.0093,0.0106,0.9999,0.0047,0.0092,-0.0047,0.9999), -- Right Leg rot 0, -1, 1
+		["Left Hip"] = CFrame.new(-0.1934,0.0356,0.0711,0.9654,0.2605,0.0106,-0.2606,0.9654,0.0049,-0.009,-0.0075,0.9999), -- Left Leg rot 0, 1, -15
+		["Neck"] = CFrame.new(0,0,0,0.9999,-0.006,-0.0094,0.0098,0.8785,0.4776,0.0054,-0.4777,0.8785), -- Head rot -29, -1, 0
+		["RootJoint"] = CFrame.new(0,0.4332,0,1,0,-0.0061,0,1,0,0.0061,0,1), -- Torso rot 0, 0, 0
+	} },
+	{ dt = 0.0327, j = {
+		["Right Shoulder"] = CFrame.new(0.1866,-0.1114,-0.0245,0.0205,-0.9978,0.0636,0.9989,0.0231,0.0411,-0.0424,0.0627,0.9971), -- Right Arm rot -2, 4, 89
+		["Left Shoulder"] = CFrame.new(-0.0213,0.1259,-0.0706,-0.8439,0.5322,-0.0684,-0.5366,-0.8365,0.1115,0.0022,0.1308,0.9914), -- Left Arm rot -6, -4, -148
+		["Right Hip"] = CFrame.new(1.0067,1.1008,0.0816,0.9995,-0.0308,0.004,0.0308,0.9995,-0.0011,-0.004,0.0012,1), -- Right Leg rot 0, 0, 2
+		["Left Hip"] = CFrame.new(-0.212,0.0512,0.0726,0.9945,0.1049,0.008,-0.1049,0.9945,0.0049,-0.0074,-0.0058,1), -- Left Leg rot 0, 0, -6
+		["Neck"] = CFrame.new(0,0,0,0.9998,-0.006,-0.0195,0.0146,0.8784,0.4777,0.0142,-0.4779,0.8783), -- Head rot -29, -1, 0
+		["RootJoint"] = CFrame.new(0,0.4332,0,1,0,-0.0022,0,1,0,0.0022,0,1), -- Torso rot 0, 0, 0
+	} },
+	{ dt = 0.0327, j = {
+		["Right Shoulder"] = CFrame.new(0.1864,-0.194,-0.0172,0.2419,-0.9693,0.044,0.97,0.2426,0.0127,-0.023,0.0396,0.999), -- Right Arm rot -1, 3, 76
+		["Left Shoulder"] = CFrame.new(-0.0863,0.1007,-0.0808,-0.754,0.6434,-0.1323,-0.6569,-0.7405,0.1419,-0.0067,0.1939,0.981), -- Left Arm rot -8, -8, -140
+		["Right Hip"] = CFrame.new(1.0049,0.7897,0.0788,0.999,-0.0416,0.019,0.0415,0.9991,0.005,-0.0192,-0.0042,0.9998), -- Right Leg rot 0, 1, 2
+		["Left Hip"] = CFrame.new(-0.4547,0.1295,0.0838,0.9503,-0.3115,-0.0002,0.3115,0.9502,-0.0069,0.0024,0.0065,1), -- Left Leg rot 0, 0, 18
+		["Neck"] = CFrame.new(0,0,0,0.9997,-0.006,-0.0222,0.0159,0.8784,0.4777,0.0166,-0.4779,0.8782), -- Head rot -29, -1, 0
+		["RootJoint"] = CFrame.new(0,0.4332,0,1,0,-0.0016,0,1,0,0.0016,0,1), -- Torso rot 0, 0, 0
+	} },
+	{ dt = 0.0327, j = {
+		["Right Shoulder"] = CFrame.new(0.1862,-0.2519,-0.0094,0.3897,-0.9207,0.0202,0.921,0.3896,-0.005,-0.0032,0.0205,0.9998), -- Right Arm rot 0, 1, 67
+		["Left Shoulder"] = CFrame.new(-0.1076,0.0693,-0.0808,-0.6379,0.7506,-0.1724,-0.7702,-0.6212,0.145,0.0017,0.2253,0.9743), -- Left Arm rot -8, -10, -130
+		["Right Hip"] = CFrame.new(0.9765,0.5171,0.0773,0.9977,-0.062,0.0279,0.0617,0.998,0.0127,-0.0287,-0.0109,0.9995), -- Right Leg rot -1, 2, 4
+		["Left Hip"] = CFrame.new(-0.687,0.294,0.0938,0.8255,-0.5644,-0.0038,0.5642,0.8254,-0.0197,0.0143,0.0141,0.9998), -- Left Leg rot 1, 0, 34
+		["Neck"] = CFrame.new(0,0,0,0.9998,-0.006,-0.0197,0.0147,0.8784,0.4777,0.0144,-0.4779,0.8783), -- Head rot -29, -1, 0
+		["RootJoint"] = CFrame.new(0,0.4332,0,1,0,-0.0027,0,1,0,0.0027,0,1), -- Torso rot 0, 0, 0
+	} },
+	{ dt = 0.0327, j = {
+		["Right Shoulder"] = CFrame.new(0.1861,-0.2619,-0.0018,0.4139,-0.9103,-0.0005,0.9103,0.4138,-0.0087,0.0081,0.0032,1), -- Right Arm rot 0, 0, 66
+		["Left Shoulder"] = CFrame.new(-0.0853,0.0301,-0.0669,-0.5113,0.8457,-0.153,-0.859,-0.4974,0.1214,0.0266,0.1935,0.9807), -- Left Arm rot -7, -9, -121
+		["Right Hip"] = CFrame.new(0.9028,0.3763,0.0783,0.9946,-0.1009,0.0259,0.1004,0.9947,0.0207,-0.0279,-0.018,0.9994), -- Right Leg rot -1, 1, 6
+		["Left Hip"] = CFrame.new(-0.8529,0.5958,0.0996,0.8348,-0.5505,-0.0071,0.5502,0.8346,-0.0277,0.0211,0.0192,0.9996), -- Left Leg rot 2, 0, 33
+		["Neck"] = CFrame.new(0,0,0,0.9999,-0.006,-0.0097,0.0099,0.8785,0.4776,0.0057,-0.4777,0.8785), -- Head rot -29, -1, 0
+		["RootJoint"] = CFrame.new(0,0.4332,0,1,0,-0.0062,0,1,0,0.0062,0,1), -- Torso rot 0, 0, 0
+	} },
+	{ dt = 0.0327, j = {
+		["Right Shoulder"] = CFrame.new(0.1859,-0.1872,0.0303,0.1794,-0.9789,-0.0976,0.9837,0.1801,0.0014,0.0162,-0.0962,0.9952), -- Right Arm rot 0, -6, 80
+		["Left Shoulder"] = CFrame.new(-0.0364,-0.0478,-0.0378,-0.1762,0.9783,-0.1093,-0.9834,-0.1701,0.0623,0.0424,0.1185,0.992), -- Left Arm rot -4, -6, -100
+		["Right Hip"] = CFrame.new(0.6142,0.1758,0.0836,0.9791,-0.2028,0.0167,0.2023,0.9789,0.0287,-0.0222,-0.0247,0.9994), -- Right Leg rot -2, 1, 12
+		["Left Hip"] = CFrame.new(-0.9432,0.9188,0.1143,0.9563,-0.2924,-0.006,0.2919,0.9554,-0.0444,0.0187,0.0407,0.999), -- Left Leg rot 3, 0, 17
+		["Neck"] = CFrame.new(0,0,0,0.9999,-0.006,0.015,-0.0019,0.8786,0.4775,-0.0161,-0.4775,0.8785), -- Head rot -29, 1, 0
+		["RootJoint"] = CFrame.new(0,0.4332,0,0.9999,0,-0.0154,0,1,0,0.0154,0,0.9999), -- Torso rot 0, -1, 0
+	} },
+	{ dt = 0.0327, j = {
+		["Right Shoulder"] = CFrame.new(0.1813,-0.1021,0.054,-0.1061,-0.9793,-0.1724,0.9943,-0.1069,-0.0052,-0.0134,-0.1719,0.985), -- Right Arm rot 0, -10, 96
+		["Left Shoulder"] = CFrame.new(0.0051,-0.1141,-0.0111,0.1554,0.9863,-0.056,-0.9874,0.1568,0.0217,0.0302,0.0519,0.9982), -- Left Arm rot -1, -3, -81
+		["Right Hip"] = CFrame.new(0.3378,0.0268,0.0877,0.9621,-0.2726,0.0064,0.2722,0.9616,0.0344,-0.0155,-0.0314,0.9994), -- Right Leg rot -2, 0, 16
+		["Left Hip"] = CFrame.new(-0.9841,1.1337,0.1258,0.9995,-0.0317,-0.0062,0.0313,0.9979,-0.0567,0.008,0.0565,0.9984), -- Left Leg rot 3, 0, 2
+		["Neck"] = CFrame.new(0,0,0,0.9992,-0.006,0.0383,-0.013,0.8786,0.4773,-0.0365,-0.4774,0.8779), -- Head rot -29, 2, 0
+		["RootJoint"] = CFrame.new(0,0.4332,0,0.9997,0,-0.0242,0,1,0,0.0242,0,0.9997), -- Torso rot 0, -1, 0
+	} },
+	{ dt = 0.0327, j = {
+		["Right Shoulder"] = CFrame.new(0.1669,-0.0309,0.0485,-0.3569,-0.919,-0.1672,0.9319,-0.3626,0.0036,-0.064,-0.1546,0.9859), -- Right Arm rot 0, -10, 111
+		["Left Shoulder"] = CFrame.new(0.0181,-0.1374,0.0035,0.3339,0.9421,-0.0293,-0.9425,0.3342,0.0032,0.0128,0.0266,0.9996), -- Left Arm rot 0, -2, -70
+		["Right Hip"] = CFrame.new(0.1826,0.019,0.0874,0.9689,-0.2473,-0.0018,0.2472,0.9683,0.0372,-0.0075,-0.0364,0.9993), -- Right Leg rot -2, 0, 14
+		["Left Hip"] = CFrame.new(-0.9473,1.0979,0.1263,0.9977,0.0679,-0.0005,-0.0678,0.9961,-0.0563,-0.0034,0.0562,0.9984), -- Left Leg rot 3, 0, -4
+		["Neck"] = CFrame.new(0,0,0,0.9986,-0.006,0.0518,-0.0195,0.8786,0.4772,-0.0484,-0.4776,0.8773), -- Head rot -29, 3, 0
+		["RootJoint"] = CFrame.new(0,0.4332,0,0.9996,0,-0.0292,0,1,0,0.0292,0,0.9996), -- Torso rot 0, -2, 0
+	} },
+	{ dt = 0.0327, j = {
+		["Right Shoulder"] = CFrame.new(0.0894,0.0833,-0.0029,-0.7313,-0.6785,-0.0693,0.6791,-0.7338,0.018,-0.0631,-0.0339,0.9974), -- Right Arm rot -1, -4, 137
+		["Left Shoulder"] = CFrame.new(-0.0161,-0.1458,0.0159,0.5113,0.8594,-0.0034,-0.8594,0.5112,-0.0066,-0.004,0.0063,1), -- Left Arm rot 0, 0, -59
+		["Right Hip"] = CFrame.new(0.1667,0.0253,0.0797,0.9746,0.2237,-0.0112,-0.2231,0.9741,0.0379,0.0194,-0.0344,0.9992), -- Right Leg rot -2, -1, -13
+		["Left Hip"] = CFrame.new(-0.9431,1.0923,0.1263,0.9937,0.1115,0.0058,-0.1112,0.9929,-0.0411,-0.0104,0.0402,0.9991), -- Left Leg rot 2, 0, -6
+		["Neck"] = CFrame.new(0,0,0,0.9978,-0.006,0.0666,-0.0266,0.8784,0.4771,-0.0613,-0.4778,0.8763), -- Head rot -29, 4, 0
+		["RootJoint"] = CFrame.new(0,0.4332,0,0.9994,0,-0.0348,0,1,0,0.0348,0,0.9994), -- Torso rot 0, -2, 0
+	} },
+	{ dt = 0.0327, j = {
+		["Right Shoulder"] = CFrame.new(0.0184,0.1774,-0.0509,-0.9319,-0.3626,0.0128,0.3627,-0.9297,0.064,-0.0113,0.0642,0.9979), -- Right Arm rot -4, 1, 159
+		["Left Shoulder"] = CFrame.new(-0.0513,-0.1489,0.0246,0.6327,0.7742,0.0162,-0.7742,0.6329,-0.0098,-0.0178,-0.0063,0.9998), -- Left Arm rot 1, 1, -51
+		["Right Hip"] = CFrame.new(0.1838,0.0329,0.0725,0.7814,0.6237,-0.0177,-0.6227,0.7814,0.0412,0.0395,-0.0211,0.999), -- Right Leg rot -2, -1, -39
+		["Left Hip"] = CFrame.new(-0.9467,1.0945,0.1263,0.9911,0.1324,0.011,-0.132,0.9909,-0.0268,-0.0144,0.0251,0.9996), -- Left Leg rot 2, 1, -8
+		["Neck"] = CFrame.new(0,0,0,0.9969,-0.006,0.0779,-0.032,0.8783,0.477,-0.0712,-0.478,0.8754), -- Head rot -29, 4, 0
+		["RootJoint"] = CFrame.new(0,0.4332,0,0.9992,0,-0.039,0,1,0,0.039,0,0.9992), -- Torso rot 0, -2, 0
+	} },
+	},
+}
+
+ANIMS.CrushingBlow = {
+	length = 1.2681,
+	loop = false,
+	blendIn = 0.06,
+	blendOut = 0.3,
+	fx = {
+			{ t = 0, kind = "vfx", class = "PointLight", name = "PointLight", enabled = true, dur = 1.5,
+				mount = { part = nil, cf = CFrame.new(1.5046,0.0106,-0.0054,0.9998,-0.0186,-0.0016,0.0187,0.9994,0.0301,0.0011,-0.0301,0.9995) },
+				props = {
+					{"Brightness", 0.56914},
+					{"Color", Color3.new(0,1,1)},
+					{"Range", 5},
+					{"Shadows", true},
+				} },
+			{ t = 0, kind = "vfx", class = "Trail", name = "Trail", enabled = true, dur = 1.5,
+				mount = { part = nil, cf = CFrame.new(1.5046,0.0106,-0.0054,0.9998,-0.0186,-0.0016,0.0187,0.9994,0.0301,0.0011,-0.0301,0.9995) },
+				att0 = { part = nil, cf = CFrame.new(1.5207,-0.9436,1.524,0.9998,-0.0186,-0.0016,0.0187,0.9994,0.0301,0.0011,-0.0301,0.9995) },
+				att1 = { part = nil, cf = CFrame.new(1.5257,-1.0339,-1.4746,0.9998,-0.0186,-0.0016,0.0187,0.9994,0.0301,0.0011,-0.0301,0.9995) },
+				props = {
+					{"Texture", "rbxassetid://14218638249"},
+					{"TextureLength", 10},
+					{"TextureMode", Enum.TextureMode.Static},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(0.333333,0.666667,1)),ColorSequenceKeypoint.new(1,Color3.new(0.333333,0.666667,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"LightEmission", 0},
+					{"LightInfluence", 0},
+					{"Lifetime", 0.2},
+					{"MinLength", 0.1},
+					{"MaxLength", 0},
+					{"WidthScale", NumberSequence.new({NumberSequenceKeypoint.new(0,0.5,0),NumberSequenceKeypoint.new(0.0981595,0.724719,0),NumberSequenceKeypoint.new(0.233,0.8,0),NumberSequenceKeypoint.new(0.458589,0.735955,0),NumberSequenceKeypoint.new(0.707055,0.5,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"FaceCamera", true},
+				} },
+			{ t = 0, kind = "vfx", class = "ParticleEmitter", name = "Aura", enabled = true, emit = 15, dur = 1.5,
+				mount = { part = nil, cf = CFrame.new(1.5233,-0.9888,0.0248,0.9998,-0.0186,-0.0016,0.0187,0.9994,0.0301,0.0011,-0.0301,0.9995) },
+				props = {
+					{"Texture", "rbxassetid://9285330517"},
+					{"Rate", 15},
+					{"Lifetime", NumberRange.new(0.4,0.6)},
+					{"Speed", NumberRange.new(0,2)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,1.3486,0.7),NumberSequenceKeypoint.new(0.360429,1.24682,0.504601),NumberSequenceKeypoint.new(0.705521,1.01781,0.353704),NumberSequenceKeypoint.new(0.868098,0.636132,0.217807),NumberSequenceKeypoint.new(1,0.38168,0)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(0.333333,0.666667,1)),ColorSequenceKeypoint.new(1,Color3.new(0.333333,0.666667,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Rotation", NumberRange.new(-360,360)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(360,360)},
+					{"Acceleration", Vector3.new(0,15,0)},
+					{"Drag", 0},
+					{"EmissionDirection", Enum.NormalId.Front},
+					{"LightEmission", -5},
+					{"LightInfluence", 0},
+					{"LockedToPart", true},
+					{"ZOffset", 1.5},
+					{"Orientation", Enum.ParticleOrientation.FacingCamera},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.Grid4x4},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.OneShot},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 5},
+				} },
+			{ t = 0, kind = "vfx", class = "Sparkles", name = "Sparkles", enabled = true, dur = 1.5,
+				mount = { part = "Handle", cf = CFrame.new(0,0,0,1,0,0,0,1,0,0,0,1) },
+				props = {
+					{"SparkleColor", Color3.new(0.666667,0,1)},
+					{"TimeScale", 1},
+				} },
+			{ t = 0, kind = "vfx", class = "ParticleEmitter", name = "Sparks", enabled = true, emit = 15, dur = 1.5,
+				mount = { part = nil, cf = CFrame.new(1.5233,-0.9888,0.0248,0.9998,-0.0186,-0.0016,0.0187,0.9994,0.0301,0.0011,-0.0301,0.9995) },
+				props = {
+					{"Texture", "rbxassetid://15269497616"},
+					{"Rate", 50},
+					{"Lifetime", NumberRange.new(0.4,0.6)},
+					{"Speed", NumberRange.new(0,2)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,1,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(0.333333,0.666667,1)),ColorSequenceKeypoint.new(1,Color3.new(0.333333,0.666667,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Rotation", NumberRange.new(-360,360)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(360,360)},
+					{"Acceleration", Vector3.new(0,10,0)},
+					{"Drag", 0},
+					{"EmissionDirection", Enum.NormalId.Front},
+					{"LightEmission", -5},
+					{"LightInfluence", 0},
+					{"LockedToPart", false},
+					{"ZOffset", 0},
+					{"Orientation", Enum.ParticleOrientation.FacingCamera},
+					{"VelocityInheritance", 0.2},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.Grid4x4},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.OneShot},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", true},
+					{"Brightness", 5},
+				} },
+			{ t = 0.020376, kind = "vfx", class = "ParticleEmitter", name = "Final", enabled = false, emit = 10, dur = 0.6,
+				mount = { part = nil, cf = CFrame.new(1.5043,-0.0041,-0.0045,0.9999,-0.0151,-0.0005,0.0151,0.9997,0.0203,0.0002,-0.0203,0.9998) },
+				props = {
+					{"Texture", "rbxassetid://6660412891"},
+					{"Rate", 200},
+					{"Lifetime", NumberRange.new(0.1,0.1)},
+					{"Speed", NumberRange.new(10,20)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,2.88793,0),NumberSequenceKeypoint.new(0.142145,6.98276,0),NumberSequenceKeypoint.new(0.302993,1.25,0),NumberSequenceKeypoint.new(0.4601,3.62069,0),NumberSequenceKeypoint.new(0.622195,2.32759,0),NumberSequenceKeypoint.new(0.776808,1.46552,0),NumberSequenceKeypoint.new(0.891521,2.5431,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(0.333333,0.666667,1)),ColorSequenceKeypoint.new(1,Color3.new(0.333333,0.666667,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(0.557745,0.18209,0),NumberSequenceKeypoint.new(0.894022,0.871642,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"Rotation", NumberRange.new(90,90)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(180,-180)},
+					{"Acceleration", Vector3.new(0,0,0)},
+					{"Drag", 5},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", -10},
+					{"LightInfluence", 0},
+					{"LockedToPart", true},
+					{"ZOffset", -1},
+					{"Orientation", Enum.ParticleOrientation.VelocityParallel},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,-2.25882,0),NumberSequenceKeypoint.new(0.194401,-0.741177,0),NumberSequenceKeypoint.new(1,1.27059,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.None},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.Loop},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 5},
+				} },
+			{ t = 0.0243502, kind = "vfx", class = "ParticleEmitter", name = "Wind2", enabled = false, emit = 30, dur = 0.6,
+				mount = { part = nil, cf = CFrame.new(1.5043,-0.0041,-0.0045,0.9999,-0.0151,-0.0005,0.0151,0.9997,0.0203,0.0002,-0.0203,0.9998) },
+				props = {
+					{"Texture", "rbxassetid://1053548563"},
+					{"Rate", 100},
+					{"Lifetime", NumberRange.new(0.1,0.1)},
+					{"Speed", NumberRange.new(0.01,0.01)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,40,0),NumberSequenceKeypoint.new(1,40,0)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(0.333333,0.666667,1)),ColorSequenceKeypoint.new(1,Color3.new(0.333333,0.666667,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"Rotation", NumberRange.new(-360,360)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(360,360)},
+					{"Acceleration", Vector3.new(0,0,0)},
+					{"Drag", 0},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", 1},
+					{"LightInfluence", 0},
+					{"LockedToPart", false},
+					{"ZOffset", 0},
+					{"Orientation", Enum.ParticleOrientation.VelocityPerpendicular},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,-3,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.None},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.Loop},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 2},
+				} },
+			{ t = 0.0249486, kind = "vfx", class = "ParticleEmitter", name = "Flare", enabled = false, emit = 15, dur = 1.5,
+				mount = { part = nil, cf = CFrame.new(1.5043,-0.0041,-0.0045,0.9999,-0.0151,-0.0005,0.0151,0.9997,0.0203,0.0002,-0.0203,0.9998) },
+				props = {
+					{"Texture", "http://www.roblox.com/asset/?id=5192965045"},
+					{"Rate", 20},
+					{"Lifetime", NumberRange.new(1,1)},
+					{"Speed", NumberRange.new(0,0)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,10,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(0.333333,0.666667,1)),ColorSequenceKeypoint.new(1,Color3.new(0.333333,0.666667,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(0.7,0,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"Rotation", NumberRange.new(0,0)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(0,0)},
+					{"Acceleration", Vector3.new(0,0,0)},
+					{"Drag", 0},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", 0},
+					{"LightInfluence", 0},
+					{"LockedToPart", true},
+					{"ZOffset", 3},
+					{"Orientation", Enum.ParticleOrientation.FacingCamera},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,2.95437,0),NumberSequenceKeypoint.new(0.290814,-5.63388,0),NumberSequenceKeypoint.new(0.554814,-9.35948,0),NumberSequenceKeypoint.new(1,-11.561,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.None},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.Loop},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 5},
+				} },
+			{ t = 0.0425505, kind = "vfx", class = "ParticleEmitter", name = "Final", enabled = false, emit = 10, dur = 0.6,
+				mount = { part = nil, cf = CFrame.new(1.5043,-0.0041,-0.0045,0.9999,-0.0151,-0.0005,0.0151,0.9997,0.0203,0.0002,-0.0203,0.9998) },
+				props = {
+					{"Texture", "rbxassetid://6660412891"},
+					{"Rate", 200},
+					{"Lifetime", NumberRange.new(0.1,0.1)},
+					{"Speed", NumberRange.new(10,20)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,2.88793,0),NumberSequenceKeypoint.new(0.142145,6.98276,0),NumberSequenceKeypoint.new(0.302993,1.25,0),NumberSequenceKeypoint.new(0.4601,3.62069,0),NumberSequenceKeypoint.new(0.622195,2.32759,0),NumberSequenceKeypoint.new(0.776808,1.46552,0),NumberSequenceKeypoint.new(0.891521,2.5431,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(0.333333,0.666667,1)),ColorSequenceKeypoint.new(1,Color3.new(0.333333,0.666667,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(0.557745,0.18209,0),NumberSequenceKeypoint.new(0.894022,0.871642,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"Rotation", NumberRange.new(90,90)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(180,-180)},
+					{"Acceleration", Vector3.new(0,0,0)},
+					{"Drag", 5},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", -10},
+					{"LightInfluence", 0},
+					{"LockedToPart", true},
+					{"ZOffset", -1},
+					{"Orientation", Enum.ParticleOrientation.VelocityParallel},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,-2.25882,0),NumberSequenceKeypoint.new(0.194401,-0.741177,0),NumberSequenceKeypoint.new(1,1.27059,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.None},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.Loop},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 5},
+				} },
+			{ t = 0.0513803, kind = "vfx", class = "ParticleEmitter", name = "Flare", enabled = false, emit = 15, dur = 1.5,
+				mount = { part = nil, cf = CFrame.new(1.5043,-0.0041,-0.0045,0.9999,-0.0151,-0.0005,0.0151,0.9997,0.0203,0.0002,-0.0203,0.9998) },
+				props = {
+					{"Texture", "http://www.roblox.com/asset/?id=5192965045"},
+					{"Rate", 20},
+					{"Lifetime", NumberRange.new(1,1)},
+					{"Speed", NumberRange.new(0,0)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,10,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(0.333333,0.666667,1)),ColorSequenceKeypoint.new(1,Color3.new(0.333333,0.666667,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(0.7,0,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"Rotation", NumberRange.new(0,0)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(0,0)},
+					{"Acceleration", Vector3.new(0,0,0)},
+					{"Drag", 0},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", 0},
+					{"LightInfluence", 0},
+					{"LockedToPart", true},
+					{"ZOffset", 3},
+					{"Orientation", Enum.ParticleOrientation.FacingCamera},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,2.95437,0),NumberSequenceKeypoint.new(0.290814,-5.63388,0),NumberSequenceKeypoint.new(0.554814,-9.35948,0),NumberSequenceKeypoint.new(1,-11.561,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.None},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.Loop},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 5},
+				} },
+			{ t = 0.0590296, kind = "vfx", class = "ParticleEmitter", name = "Wind2", enabled = false, emit = 30, dur = 0.6,
+				mount = { part = nil, cf = CFrame.new(1.5043,-0.0041,-0.0045,0.9999,-0.0151,-0.0005,0.0151,0.9997,0.0203,0.0002,-0.0203,0.9998) },
+				props = {
+					{"Texture", "rbxassetid://1053548563"},
+					{"Rate", 100},
+					{"Lifetime", NumberRange.new(0.1,0.1)},
+					{"Speed", NumberRange.new(0.01,0.01)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,40,0),NumberSequenceKeypoint.new(1,40,0)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(0.333333,0.666667,1)),ColorSequenceKeypoint.new(1,Color3.new(0.333333,0.666667,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"Rotation", NumberRange.new(-360,360)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(360,360)},
+					{"Acceleration", Vector3.new(0,0,0)},
+					{"Drag", 0},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", 1},
+					{"LightInfluence", 0},
+					{"LockedToPart", false},
+					{"ZOffset", 0},
+					{"Orientation", Enum.ParticleOrientation.VelocityPerpendicular},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,-3,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.None},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.Loop},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 2},
+				} },
+			{ t = 0.0661542, kind = "vfx", class = "ParticleEmitter", name = "Hit", enabled = false, emit = 5, dur = 0.7,
+				mount = { part = nil, cf = CFrame.new(1.5043,-0.0041,-0.0045,0.9999,-0.0151,-0.0005,0.0151,0.9997,0.0203,0.0002,-0.0203,0.9998) },
+				props = {
+					{"Texture", "http://www.roblox.com/asset/?id=16803107330"},
+					{"Rate", 5},
+					{"Lifetime", NumberRange.new(0.05,0.2)},
+					{"Speed", NumberRange.new(0.0260193,0.0260193)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,0,1.08686),NumberSequenceKeypoint.new(0.1,7.89032,1.08686),NumberSequenceKeypoint.new(0.2,10.1273,1.08686),NumberSequenceKeypoint.new(0.3,11.4449,1.08686),NumberSequenceKeypoint.new(0.4,12.2941,1.08686),NumberSequenceKeypoint.new(0.5,12.851,1.08686),NumberSequenceKeypoint.new(0.6,13.2082,1.08686),NumberSequenceKeypoint.new(0.7,13.4227,1.08686),NumberSequenceKeypoint.new(0.8,13.5353,1.08686),NumberSequenceKeypoint.new(0.9,13.5791,1.08686),NumberSequenceKeypoint.new(1,13.5858,1.08686)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(1,0,0)),ColorSequenceKeypoint.new(1,Color3.new(1,0,0))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Rotation", NumberRange.new(-360,360)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(360,-360)},
+					{"Acceleration", Vector3.new(0,0,0)},
+					{"Drag", 0},
+					{"EmissionDirection", Enum.NormalId.Front},
+					{"LightEmission", -15},
+					{"LightInfluence", 0},
+					{"LockedToPart", false},
+					{"ZOffset", 0},
+					{"Orientation", Enum.ParticleOrientation.VelocityParallel},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.Grid4x4},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.OneShot},
+					{"FlipbookFramerate", NumberRange.new(41,66)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 15},
+				} },
+			{ t = 0.100061, kind = "sfx", name = "Crack", dur = 3, pos = true,
+				props = {
+					{"SoundId", "rbxassetid://4403634269"},
+					{"Volume", 1},
+					{"PlaybackSpeed", 1},
+					{"Looped", false},
+					{"TimePosition", 0},
+					{"RollOffMode", Enum.RollOffMode.Linear},
+					{"RollOffMinDistance", 10},
+					{"RollOffMaxDistance", 300},
+				} },
+			{ t = 0.366421, kind = "vfx", class = "ParticleEmitter", name = "Flames", enabled = false, emit = 20, dur = 1.2,
+				mount = { part = nil, cf = CFrame.new(-0.0036,-2.5511,-3.421,-0.3752,0.0002,0.9269,-0.0006,1,-0.0005,-0.9269,-0.0007,-0.3752) },
+				props = {
+					{"Texture", "rbxassetid://15269497616"},
+					{"Rate", 100},
+					{"Lifetime", NumberRange.new(0.3,0.7)},
+					{"Speed", NumberRange.new(0,30)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(0.131902,2.03562,1),NumberSequenceKeypoint.new(0.331288,4.07125,1.17059),NumberSequenceKeypoint.new(0.720859,5.29262,1.08727),NumberSequenceKeypoint.new(1,5.69975,0.992366)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(0.333333,1,1)),ColorSequenceKeypoint.new(1,Color3.new(0.333333,1,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Rotation", NumberRange.new(-360,360)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(60,60)},
+					{"Acceleration", Vector3.new(0,0,0)},
+					{"Drag", 15},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", -3},
+					{"LightInfluence", 0},
+					{"LockedToPart", false},
+					{"ZOffset", 0},
+					{"Orientation", Enum.ParticleOrientation.FacingCamera},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 0.8},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.Grid4x4},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.OneShot},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", true},
+					{"Brightness", 15},
+				} },
+			{ t = 0.366556, kind = "vfx", class = "ParticleEmitter", name = "Glow", enabled = false, emit = 1, dur = 0.65,
+				mount = { part = nil, cf = CFrame.new(-0.0036,-2.5511,-3.421,-0.3752,0.0002,0.9269,-0.0006,1,-0.0005,-0.9269,-0.0007,-0.3752) },
+				props = {
+					{"Texture", "rbxassetid://14511831163"},
+					{"Rate", 1},
+					{"Lifetime", NumberRange.new(0.15,0.15)},
+					{"Speed", NumberRange.new(0,0)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(0.125767,3.96947,0),NumberSequenceKeypoint.new(0.340491,7.3028,0),NumberSequenceKeypoint.new(0.67638,8.85496,0),NumberSequenceKeypoint.new(1,9.59288,0)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(0.333333,1,1)),ColorSequenceKeypoint.new(1,Color3.new(0.333333,1,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"Rotation", NumberRange.new(0,0)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(0,0)},
+					{"Acceleration", Vector3.new(0,0,0)},
+					{"Drag", 0},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", 1},
+					{"LightInfluence", 0},
+					{"LockedToPart", false},
+					{"ZOffset", 0},
+					{"Orientation", Enum.ParticleOrientation.FacingCamera},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.None},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.Loop},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 5},
+				} },
+			{ t = 0.366661, kind = "vfx", class = "ParticleEmitter", name = "Ring", enabled = false, emit = 10, dur = 1,
+				mount = { part = nil, cf = CFrame.new(-0.0036,-2.5511,-3.421,-0.3752,0.0002,0.9269,-0.0006,1,-0.0005,-0.9269,-0.0007,-0.3752) },
+				props = {
+					{"Texture", "rbxassetid://9293225960"},
+					{"Rate", 50},
+					{"Lifetime", NumberRange.new(0.2,0.5)},
+					{"Speed", NumberRange.new(0.1,0.1)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(0.032212,6.36031,3.47677),NumberSequenceKeypoint.new(0.130212,12.0437,3.7846),NumberSequenceKeypoint.new(0.374212,15.3005,3.48412),NumberSequenceKeypoint.new(0.648212,17.2163,2.77942),NumberSequenceKeypoint.new(1,17.779,2.75702)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(1,1,1)),ColorSequenceKeypoint.new(1,Color3.new(1,1,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0.9,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"Rotation", NumberRange.new(-360,360)},
+					{"RotSpeed", NumberRange.new(200,800)},
+					{"SpreadAngle", Vector2.new(10,10)},
+					{"Acceleration", Vector3.new(0,0,0)},
+					{"Drag", 0},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", 1},
+					{"LightInfluence", 1},
+					{"LockedToPart", false},
+					{"ZOffset", 2},
+					{"Orientation", Enum.ParticleOrientation.VelocityPerpendicular},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.Grid2x2},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.OneShot},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 1},
+				} },
+			{ t = 0.366761, kind = "vfx", class = "ParticleEmitter", name = "Sparks", enabled = false, emit = 10, dur = 0.9,
+				mount = { part = nil, cf = CFrame.new(-0.0036,-2.5511,-3.421,-0.3752,0.0002,0.9269,-0.0006,1,-0.0005,-0.9269,-0.0007,-0.3752) },
+				props = {
+					{"Texture", "rbxassetid://6660412891"},
+					{"Rate", 100},
+					{"Lifetime", NumberRange.new(0.2,0.4)},
+					{"Speed", NumberRange.new(20,80)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(0.165,3,0.239),NumberSequenceKeypoint.new(0.483,1,0.239),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(0.333333,1,1)),ColorSequenceKeypoint.new(1,Color3.new(0.333333,1,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(0.557745,0.18209,0),NumberSequenceKeypoint.new(0.894022,0.871642,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"Rotation", NumberRange.new(90,90)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(40,40)},
+					{"Acceleration", Vector3.new(0,0,0)},
+					{"Drag", 5},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", -10},
+					{"LightInfluence", 0},
+					{"LockedToPart", false},
+					{"ZOffset", 1},
+					{"Orientation", Enum.ParticleOrientation.VelocityParallel},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.None},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.Loop},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 5},
+				} },
+			{ t = 0.36686, kind = "vfx", class = "ParticleEmitter", name = "Wind2", enabled = false, emit = 8, dur = 0.6,
+				mount = { part = nil, cf = CFrame.new(-0.0036,-2.5511,-3.421,-0.3752,0.0002,0.9269,-0.0006,1,-0.0005,-0.9269,-0.0007,-0.3752) },
+				props = {
+					{"Texture", "rbxassetid://1053548563"},
+					{"Rate", 100},
+					{"Lifetime", NumberRange.new(0.1,0.1)},
+					{"Speed", NumberRange.new(0.01,0.01)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,40,0),NumberSequenceKeypoint.new(1,40,0)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(0.333333,1,1)),ColorSequenceKeypoint.new(1,Color3.new(0.333333,1,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"Rotation", NumberRange.new(-360,360)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(10,10)},
+					{"Acceleration", Vector3.new(0,0,0)},
+					{"Drag", 0},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", 1},
+					{"LightInfluence", 0},
+					{"LockedToPart", false},
+					{"ZOffset", 0},
+					{"Orientation", Enum.ParticleOrientation.VelocityPerpendicular},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,-3,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.None},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.Loop},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 5},
+				} },
+			{ t = 0.388595, kind = "vfx", class = "ParticleEmitter", name = "Flames", enabled = false, emit = 20, dur = 1.2,
+				mount = { part = nil, cf = CFrame.new(-0.0036,-2.5511,-3.421,-0.3752,0.0002,0.9269,-0.0006,1,-0.0005,-0.9269,-0.0007,-0.3752) },
+				props = {
+					{"Texture", "rbxassetid://15269497616"},
+					{"Rate", 100},
+					{"Lifetime", NumberRange.new(0.3,0.7)},
+					{"Speed", NumberRange.new(0,30)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(0.131902,2.03562,1),NumberSequenceKeypoint.new(0.331288,4.07125,1.17059),NumberSequenceKeypoint.new(0.720859,5.29262,1.08727),NumberSequenceKeypoint.new(1,5.69975,0.992366)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(0.333333,1,1)),ColorSequenceKeypoint.new(1,Color3.new(0.333333,1,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Rotation", NumberRange.new(-360,360)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(60,60)},
+					{"Acceleration", Vector3.new(0,0,0)},
+					{"Drag", 15},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", -3},
+					{"LightInfluence", 0},
+					{"LockedToPart", false},
+					{"ZOffset", 0},
+					{"Orientation", Enum.ParticleOrientation.FacingCamera},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 0.8},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.Grid4x4},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.OneShot},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", true},
+					{"Brightness", 15},
+				} },
+			{ t = 0.38873, kind = "vfx", class = "ParticleEmitter", name = "Glow", enabled = false, emit = 1, dur = 0.65,
+				mount = { part = nil, cf = CFrame.new(-0.0036,-2.5511,-3.421,-0.3752,0.0002,0.9269,-0.0006,1,-0.0005,-0.9269,-0.0007,-0.3752) },
+				props = {
+					{"Texture", "rbxassetid://14511831163"},
+					{"Rate", 1},
+					{"Lifetime", NumberRange.new(0.15,0.15)},
+					{"Speed", NumberRange.new(0,0)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(0.125767,3.96947,0),NumberSequenceKeypoint.new(0.340491,7.3028,0),NumberSequenceKeypoint.new(0.67638,8.85496,0),NumberSequenceKeypoint.new(1,9.59288,0)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(0.333333,1,1)),ColorSequenceKeypoint.new(1,Color3.new(0.333333,1,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"Rotation", NumberRange.new(0,0)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(0,0)},
+					{"Acceleration", Vector3.new(0,0,0)},
+					{"Drag", 0},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", 1},
+					{"LightInfluence", 0},
+					{"LockedToPart", false},
+					{"ZOffset", 0},
+					{"Orientation", Enum.ParticleOrientation.FacingCamera},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.None},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.Loop},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 5},
+				} },
+			{ t = 0.388836, kind = "vfx", class = "ParticleEmitter", name = "Ring", enabled = false, emit = 10, dur = 1,
+				mount = { part = nil, cf = CFrame.new(-0.0036,-2.5511,-3.421,-0.3752,0.0002,0.9269,-0.0006,1,-0.0005,-0.9269,-0.0007,-0.3752) },
+				props = {
+					{"Texture", "rbxassetid://9293225960"},
+					{"Rate", 50},
+					{"Lifetime", NumberRange.new(0.2,0.5)},
+					{"Speed", NumberRange.new(0.1,0.1)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(0.032212,6.36031,3.47677),NumberSequenceKeypoint.new(0.130212,12.0437,3.7846),NumberSequenceKeypoint.new(0.374212,15.3005,3.48412),NumberSequenceKeypoint.new(0.648212,17.2163,2.77942),NumberSequenceKeypoint.new(1,17.779,2.75702)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(1,1,1)),ColorSequenceKeypoint.new(1,Color3.new(1,1,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0.9,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"Rotation", NumberRange.new(-360,360)},
+					{"RotSpeed", NumberRange.new(200,800)},
+					{"SpreadAngle", Vector2.new(10,10)},
+					{"Acceleration", Vector3.new(0,0,0)},
+					{"Drag", 0},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", 1},
+					{"LightInfluence", 1},
+					{"LockedToPart", false},
+					{"ZOffset", 2},
+					{"Orientation", Enum.ParticleOrientation.VelocityPerpendicular},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.Grid2x2},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.OneShot},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 1},
+				} },
+			{ t = 0.388936, kind = "vfx", class = "ParticleEmitter", name = "Sparks", enabled = false, emit = 10, dur = 0.9,
+				mount = { part = nil, cf = CFrame.new(-0.0036,-2.5511,-3.421,-0.3752,0.0002,0.9269,-0.0006,1,-0.0005,-0.9269,-0.0007,-0.3752) },
+				props = {
+					{"Texture", "rbxassetid://6660412891"},
+					{"Rate", 100},
+					{"Lifetime", NumberRange.new(0.2,0.4)},
+					{"Speed", NumberRange.new(20,80)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(0.165,3,0.239),NumberSequenceKeypoint.new(0.483,1,0.239),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(0.333333,1,1)),ColorSequenceKeypoint.new(1,Color3.new(0.333333,1,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(0.557745,0.18209,0),NumberSequenceKeypoint.new(0.894022,0.871642,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"Rotation", NumberRange.new(90,90)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(40,40)},
+					{"Acceleration", Vector3.new(0,0,0)},
+					{"Drag", 5},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", -10},
+					{"LightInfluence", 0},
+					{"LockedToPart", false},
+					{"ZOffset", 1},
+					{"Orientation", Enum.ParticleOrientation.VelocityParallel},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.None},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.Loop},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 5},
+				} },
+			{ t = 0.389035, kind = "vfx", class = "ParticleEmitter", name = "Wind2", enabled = false, emit = 8, dur = 0.6,
+				mount = { part = nil, cf = CFrame.new(-0.0036,-2.5511,-3.421,-0.3752,0.0002,0.9269,-0.0006,1,-0.0005,-0.9269,-0.0007,-0.3752) },
+				props = {
+					{"Texture", "rbxassetid://1053548563"},
+					{"Rate", 100},
+					{"Lifetime", NumberRange.new(0.1,0.1)},
+					{"Speed", NumberRange.new(0.01,0.01)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,40,0),NumberSequenceKeypoint.new(1,40,0)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(0.333333,1,1)),ColorSequenceKeypoint.new(1,Color3.new(0.333333,1,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"Rotation", NumberRange.new(-360,360)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(10,10)},
+					{"Acceleration", Vector3.new(0,0,0)},
+					{"Drag", 0},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", 1},
+					{"LightInfluence", 0},
+					{"LockedToPart", false},
+					{"ZOffset", 0},
+					{"Orientation", Enum.ParticleOrientation.VelocityPerpendicular},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,-3,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.None},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.Loop},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 5},
+				} },
+			{ t = 0.390852, kind = "sfx", name = "GroundImpact", dur = 3, pos = true,
+				props = {
+					{"SoundId", "rbxassetid://7093763783"},
+					{"Volume", 1},
+					{"PlaybackSpeed", 1.25},
+					{"Looped", false},
+					{"TimePosition", 0},
+					{"RollOffMode", Enum.RollOffMode.Linear},
+					{"RollOffMinDistance", 10},
+					{"RollOffMaxDistance", 300},
+				} },
+			{ t = 0.394886, kind = "vfx", class = "Trail", name = "Trail", enabled = true, dur = 0.220405,
+				mount = { part = nil, cf = CFrame.new(1.3366,0.4998,-2.5494,-0.3752,0.0002,0.9269,-0.0006,1,-0.0005,-0.9269,-0.0007,-0.3752) },
+				att0 = { part = nil, cf = CFrame.new(1.3366,0.6096,-2.5496,-0.3752,0.0002,0.9269,-0.0006,1,-0.0005,-0.9269,-0.0007,-0.3752) },
+				att1 = { part = nil, cf = CFrame.new(1.3366,0.3901,-2.5493,-0.3752,0.0002,0.9269,-0.0006,1,-0.0005,-0.9269,-0.0007,-0.3752) },
+				props = {
+					{"Texture", ""},
+					{"TextureLength", 1},
+					{"TextureMode", Enum.TextureMode.Stretch},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(0.67451,0.0392157,0.0392157)),ColorSequenceKeypoint.new(1,Color3.new(0.313085,0.00845614,0.00845614))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(0.7,0.15,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"LightEmission", 0},
+					{"LightInfluence", 1},
+					{"Lifetime", 0.28855},
+					{"MinLength", 0.02},
+					{"MaxLength", 0},
+					{"WidthScale", NumberSequence.new({NumberSequenceKeypoint.new(0,1,0),NumberSequenceKeypoint.new(1,0.15,0)})},
+					{"FaceCamera", true},
+				} },
+			{ t = 0.411804, kind = "sfx", name = "Hit1", dur = 3, pos = true,
+				props = {
+					{"SoundId", "rbxassetid://7307838125"},
+					{"Volume", 1},
+					{"PlaybackSpeed", 1.25},
+					{"Looped", false},
+					{"TimePosition", 0.2},
+					{"RollOffMode", Enum.RollOffMode.Linear},
+					{"RollOffMinDistance", 10},
+					{"RollOffMaxDistance", 300},
+				} },
+			{ t = 0.414837, kind = "sfx", name = "Hit2", dur = 3, pos = true,
+				props = {
+					{"SoundId", "rbxassetid://9118614717"},
+					{"Volume", 1},
+					{"PlaybackSpeed", 1.25},
+					{"Looped", false},
+					{"TimePosition", 0},
+					{"RollOffMode", Enum.RollOffMode.Linear},
+					{"RollOffMinDistance", 10},
+					{"RollOffMaxDistance", 300},
+				} },
+			{ t = 0.437926, kind = "vfx", class = "ParticleEmitter", name = "Flames", enabled = false, emit = 0, dur = 1.2,
+				mount = { part = nil, cf = CFrame.new(-0.0036,-2.5511,-3.421,-0.3752,0.0002,0.9269,-0.0006,1,-0.0005,-0.9269,-0.0007,-0.3752) },
+				props = {
+					{"Texture", "rbxassetid://15269497616"},
+					{"Rate", 100},
+					{"Lifetime", NumberRange.new(0.3,0.7)},
+					{"Speed", NumberRange.new(0,30)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(0.131902,2.03562,1),NumberSequenceKeypoint.new(0.331288,4.07125,1.17059),NumberSequenceKeypoint.new(0.720859,5.29262,1.08727),NumberSequenceKeypoint.new(1,5.69975,0.992366)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(0.333333,1,1)),ColorSequenceKeypoint.new(1,Color3.new(0.333333,1,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Rotation", NumberRange.new(-360,360)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(60,60)},
+					{"Acceleration", Vector3.new(0,0,0)},
+					{"Drag", 15},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", -3},
+					{"LightInfluence", 0},
+					{"LockedToPart", false},
+					{"ZOffset", 0},
+					{"Orientation", Enum.ParticleOrientation.FacingCamera},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 0.8},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.Grid4x4},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.OneShot},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", true},
+					{"Brightness", 15},
+				} },
+			{ t = 0.444681, kind = "vfx", class = "ParticleEmitter", name = "Wind2", enabled = false, emit = 30, dur = 0.6,
+				mount = { part = nil, cf = CFrame.new(-0.0036,-2.5511,-3.421,-0.3752,0.0002,0.9269,-0.0006,1,-0.0005,-0.9269,-0.0007,-0.3752) },
+				props = {
+					{"Texture", "rbxassetid://1053548563"},
+					{"Rate", 100},
+					{"Lifetime", NumberRange.new(0.1,0.1)},
+					{"Speed", NumberRange.new(0.01,0.01)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,40,0),NumberSequenceKeypoint.new(1,40,0)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(0.333333,1,1)),ColorSequenceKeypoint.new(1,Color3.new(0.333333,1,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"Rotation", NumberRange.new(-360,360)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(10,10)},
+					{"Acceleration", Vector3.new(0,0,0)},
+					{"Drag", 0},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", 1},
+					{"LightInfluence", 0},
+					{"LockedToPart", false},
+					{"ZOffset", 0},
+					{"Orientation", Enum.ParticleOrientation.VelocityPerpendicular},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,-3,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.None},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.Loop},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 5},
+				} },
+			{ t = 0.450901, kind = "vfx", class = "ParticleEmitter", name = "Ring", enabled = false, emit = 0, dur = 1,
+				mount = { part = nil, cf = CFrame.new(-0.0036,-2.5511,-3.421,-0.3752,0.0002,0.9269,-0.0006,1,-0.0005,-0.9269,-0.0007,-0.3752) },
+				props = {
+					{"Texture", "rbxassetid://9293225960"},
+					{"Rate", 50},
+					{"Lifetime", NumberRange.new(0.2,0.5)},
+					{"Speed", NumberRange.new(0.1,0.1)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(0.032212,6.36031,3.47677),NumberSequenceKeypoint.new(0.130212,12.0437,3.7846),NumberSequenceKeypoint.new(0.374212,15.3005,3.48412),NumberSequenceKeypoint.new(0.648212,17.2163,2.77942),NumberSequenceKeypoint.new(1,17.779,2.75702)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(1,1,1)),ColorSequenceKeypoint.new(1,Color3.new(1,1,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0.9,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"Rotation", NumberRange.new(-360,360)},
+					{"RotSpeed", NumberRange.new(200,800)},
+					{"SpreadAngle", Vector2.new(10,10)},
+					{"Acceleration", Vector3.new(0,0,0)},
+					{"Drag", 0},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", 1},
+					{"LightInfluence", 1},
+					{"LockedToPart", false},
+					{"ZOffset", 2},
+					{"Orientation", Enum.ParticleOrientation.VelocityPerpendicular},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.Grid2x2},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.OneShot},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 1},
+				} },
+			{ t = 0.457532, kind = "vfx", class = "ParticleEmitter", name = "Glow", enabled = false, emit = 0, dur = 0.65,
+				mount = { part = nil, cf = CFrame.new(-0.0036,-2.5511,-3.421,-0.3752,0.0002,0.9269,-0.0006,1,-0.0005,-0.9269,-0.0007,-0.3752) },
+				props = {
+					{"Texture", "rbxassetid://14511831163"},
+					{"Rate", 1},
+					{"Lifetime", NumberRange.new(0.15,0.15)},
+					{"Speed", NumberRange.new(0,0)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(0.125767,3.96947,0),NumberSequenceKeypoint.new(0.340491,7.3028,0),NumberSequenceKeypoint.new(0.67638,8.85496,0),NumberSequenceKeypoint.new(1,9.59288,0)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(0.333333,1,1)),ColorSequenceKeypoint.new(1,Color3.new(0.333333,1,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"Rotation", NumberRange.new(0,0)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(0,0)},
+					{"Acceleration", Vector3.new(0,0,0)},
+					{"Drag", 0},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", 1},
+					{"LightInfluence", 0},
+					{"LockedToPart", false},
+					{"ZOffset", 0},
+					{"Orientation", Enum.ParticleOrientation.FacingCamera},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.None},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.Loop},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 5},
+				} },
+			{ t = 0.46415, kind = "vfx", class = "ParticleEmitter", name = "Sparks", enabled = false, emit = 10, dur = 0.9,
+				mount = { part = nil, cf = CFrame.new(-0.0036,-2.5511,-3.421,-0.3752,0.0002,0.9269,-0.0006,1,-0.0005,-0.9269,-0.0007,-0.3752) },
+				props = {
+					{"Texture", "rbxassetid://6660412891"},
+					{"Rate", 100},
+					{"Lifetime", NumberRange.new(0.2,0.4)},
+					{"Speed", NumberRange.new(20,80)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(0.165,3,0.239),NumberSequenceKeypoint.new(0.483,1,0.239),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(0.333333,1,1)),ColorSequenceKeypoint.new(1,Color3.new(0.333333,1,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(0.557745,0.18209,0),NumberSequenceKeypoint.new(0.894022,0.871642,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"Rotation", NumberRange.new(90,90)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(40,40)},
+					{"Acceleration", Vector3.new(0,0,0)},
+					{"Drag", 5},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", -10},
+					{"LightInfluence", 0},
+					{"LockedToPart", false},
+					{"ZOffset", 1},
+					{"Orientation", Enum.ParticleOrientation.VelocityParallel},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.None},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.Loop},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 5},
+				} },
+			{ t = 0.470693, kind = "vfx", class = "PointLight", name = "PointLight", enabled = true, dur = 1.42322,
+				mount = { part = nil, cf = CFrame.new(-0.0036,-2.5511,-3.421,-0.3752,0.0002,0.9269,-0.0006,1,-0.0005,-0.9269,-0.0007,-0.3752) },
+				props = {
+					{"Brightness", 20},
+					{"Color", Color3.new(0.666667,1,1)},
+					{"Range", 9},
+					{"Shadows", true},
+				} },
+			{ t = 0.51591, kind = "vfx", class = "ParticleEmitter", name = "Hit", enabled = false, emit = 15, dur = 0.65,
+				mount = { part = nil, cf = CFrame.new(1.2972,0.0639,-2.8956,0.999,-0.0051,-0.0452,-0.0001,0.9934,-0.1151,0.0455,0.1149,0.9923) },
+				props = {
+					{"Texture", "rbxassetid://8303971558"},
+					{"Rate", 20},
+					{"Lifetime", NumberRange.new(0.15,0.15)},
+					{"Speed", NumberRange.new(0,0)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,8,0)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(1,1,1)),ColorSequenceKeypoint.new(1,Color3.new(1,1,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"Rotation", NumberRange.new(0,360)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(0,0)},
+					{"Acceleration", Vector3.new(0,0,0)},
+					{"Drag", 0},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", 0},
+					{"LightInfluence", 0},
+					{"LockedToPart", false},
+					{"ZOffset", 0},
+					{"Orientation", Enum.ParticleOrientation.FacingCamera},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.None},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.Loop},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 5},
+				} },
+			{ t = 0.535651, kind = "sfx", name = "Fist", dur = 0.199093, pos = true,
+				props = {
+					{"SoundId", "rbxassetid://4571259077"},
+					{"Volume", 2},
+					{"PlaybackSpeed", 1.1},
+					{"Looped", false},
+					{"TimePosition", 0},
+					{"RollOffMode", Enum.RollOffMode.Linear},
+					{"RollOffMinDistance", 10},
+					{"RollOffMaxDistance", 300},
+				} },
+			{ t = 0.562036, kind = "sfx", name = "Impact3", dur = 3, pos = true,
+				props = {
+					{"SoundId", "rbxassetid://9118614058"},
+					{"Volume", 1},
+					{"PlaybackSpeed", 1},
+					{"Looped", false},
+					{"TimePosition", 0},
+					{"RollOffMode", Enum.RollOffMode.Linear},
+					{"RollOffMinDistance", 10},
+					{"RollOffMaxDistance", 300},
+				} },
+			{ t = 0.565386, kind = "sfx", name = "Impact2", dur = 3, pos = true,
+				props = {
+					{"SoundId", "rbxassetid://9118615862"},
+					{"Volume", 1},
+					{"PlaybackSpeed", 1},
+					{"Looped", false},
+					{"TimePosition", 0},
+					{"RollOffMode", Enum.RollOffMode.Linear},
+					{"RollOffMinDistance", 10},
+					{"RollOffMaxDistance", 300},
+				} },
+			{ t = 0.568217, kind = "sfx", name = "Impact4", dur = 3, pos = true,
+				props = {
+					{"SoundId", "rbxassetid://9118616096"},
+					{"Volume", 1},
+					{"PlaybackSpeed", 1},
+					{"Looped", false},
+					{"TimePosition", 0},
+					{"RollOffMode", Enum.RollOffMode.Linear},
+					{"RollOffMinDistance", 10},
+					{"RollOffMaxDistance", 300},
+				} },
+			{ t = 0.571219, kind = "sfx", name = "Impact1", dur = 3, pos = true,
+				props = {
+					{"SoundId", "rbxassetid://9118617342"},
+					{"Volume", 1},
+					{"PlaybackSpeed", 1},
+					{"Looped", false},
+					{"TimePosition", 0},
+					{"RollOffMode", Enum.RollOffMode.Linear},
+					{"RollOffMinDistance", 10},
+					{"RollOffMaxDistance", 300},
+				} },
+			{ t = 0.618894, kind = "vfx", class = "ParticleEmitter", name = "ParticleEmitter", enabled = false, emit = 15, dur = 1,
+				mount = { part = nil, cf = CFrame.new(2.0889,-4.1163,-2.8887,-0.0001,0.7922,0.6102,0.9976,-0.0419,0.0546,0.0688,0.6088,-0.7903) },
+				props = {
+					{"Texture", "rbxasset://textures/particles/smoke_main.dds"},
+					{"Rate", 20},
+					{"Lifetime", NumberRange.new(0.25,0.5)},
+					{"Speed", NumberRange.new(4,10)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,0.22,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(0.67451,0.0392157,0.0392157)),ColorSequenceKeypoint.new(1,Color3.new(0.67451,0.0392157,0.0392157))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0.1,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"Rotation", NumberRange.new(0,0)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(45,45)},
+					{"Acceleration", Vector3.new(0,-45,0)},
+					{"Drag", 0},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", 0},
+					{"LightInfluence", 1},
+					{"LockedToPart", false},
+					{"ZOffset", 0},
+					{"Orientation", Enum.ParticleOrientation.FacingCamera},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.None},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.Loop},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 1},
+				} },
+			{ t = 0.668941, kind = "vfx", class = "ParticleEmitter", name = "ParticleEmitter", enabled = false, emit = 15, dur = 1,
+				mount = { part = nil, cf = CFrame.new(0.8454,-3.5875,-1.5776,0,0.8554,0.518,1,0.0008,-0.0014,-0.0016,0.518,-0.8554) },
+				props = {
+					{"Texture", "rbxasset://textures/particles/smoke_main.dds"},
+					{"Rate", 20},
+					{"Lifetime", NumberRange.new(0.25,0.5)},
+					{"Speed", NumberRange.new(4,10)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,0.22,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(0.67451,0.0392157,0.0392157)),ColorSequenceKeypoint.new(1,Color3.new(0.67451,0.0392157,0.0392157))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0.1,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"Rotation", NumberRange.new(0,0)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(45,45)},
+					{"Acceleration", Vector3.new(0,-45,0)},
+					{"Drag", 0},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", 0},
+					{"LightInfluence", 1},
+					{"LockedToPart", false},
+					{"ZOffset", 0},
+					{"Orientation", Enum.ParticleOrientation.FacingCamera},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.None},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.Loop},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 1},
+				} },
+			{ t = 1, kind = "sfx", name = "Impact4", dur = 2.44267, pos = true,
+				props = {
+					{"SoundId", "rbxassetid://9118616096"},
+					{"Volume", 1},
+					{"PlaybackSpeed", 1},
+					{"Looped", false},
+					{"TimePosition", 0},
+					{"RollOffMode", Enum.RollOffMode.Linear},
+					{"RollOffMinDistance", 10},
+					{"RollOffMaxDistance", 300},
+				} },
+			{ t = 1, kind = "sfx", name = "Impact3", dur = 2.16533, pos = true,
+				props = {
+					{"SoundId", "rbxassetid://9118614058"},
+					{"Volume", 1},
+					{"PlaybackSpeed", 1},
+					{"Looped", false},
+					{"TimePosition", 0},
+					{"RollOffMode", Enum.RollOffMode.Linear},
+					{"RollOffMinDistance", 10},
+					{"RollOffMaxDistance", 300},
+				} },
+			{ t = 1.01617, kind = "vfx", class = "ParticleEmitter", name = "Flames", enabled = false, emit = 20, dur = 1.2,
+				mount = { part = nil, cf = CFrame.new(0.0034,-2.5627,-4.8606,-0.3752,0,0.9269,0,1,0,-0.9269,0,-0.3752) },
+				props = {
+					{"Texture", "rbxassetid://15269497616"},
+					{"Rate", 100},
+					{"Lifetime", NumberRange.new(0.3,0.7)},
+					{"Speed", NumberRange.new(0,30)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(0.131902,2.03562,1),NumberSequenceKeypoint.new(0.331288,4.07125,1.17059),NumberSequenceKeypoint.new(0.720859,5.29262,1.08727),NumberSequenceKeypoint.new(1,5.69975,0.992366)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(0.333333,1,1)),ColorSequenceKeypoint.new(1,Color3.new(0.333333,1,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Rotation", NumberRange.new(-360,360)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(60,60)},
+					{"Acceleration", Vector3.new(0,0,0)},
+					{"Drag", 15},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", -3},
+					{"LightInfluence", 0},
+					{"LockedToPart", false},
+					{"ZOffset", 0},
+					{"Orientation", Enum.ParticleOrientation.FacingCamera},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 0.8},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.Grid4x4},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.OneShot},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", true},
+					{"Brightness", 15},
+				} },
+			{ t = 1.01624, kind = "vfx", class = "ParticleEmitter", name = "Glow", enabled = false, emit = 1, dur = 0.65,
+				mount = { part = nil, cf = CFrame.new(0.0034,-2.5627,-4.8606,-0.3752,0,0.9269,0,1,0,-0.9269,0,-0.3752) },
+				props = {
+					{"Texture", "rbxassetid://14511831163"},
+					{"Rate", 1},
+					{"Lifetime", NumberRange.new(0.15,0.15)},
+					{"Speed", NumberRange.new(0,0)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(0.125767,3.96947,0),NumberSequenceKeypoint.new(0.340491,7.3028,0),NumberSequenceKeypoint.new(0.67638,8.85496,0),NumberSequenceKeypoint.new(1,9.59288,0)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(0.333333,1,1)),ColorSequenceKeypoint.new(1,Color3.new(0.333333,1,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"Rotation", NumberRange.new(0,0)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(0,0)},
+					{"Acceleration", Vector3.new(0,0,0)},
+					{"Drag", 0},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", 1},
+					{"LightInfluence", 0},
+					{"LockedToPart", false},
+					{"ZOffset", 0},
+					{"Orientation", Enum.ParticleOrientation.FacingCamera},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.None},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.Loop},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 5},
+				} },
+			{ t = 1.01629, kind = "vfx", class = "ParticleEmitter", name = "Ring", enabled = false, emit = 10, dur = 1,
+				mount = { part = nil, cf = CFrame.new(0.0034,-2.5627,-4.8606,-0.3752,0,0.9269,0,1,0,-0.9269,0,-0.3752) },
+				props = {
+					{"Texture", "rbxassetid://9293225960"},
+					{"Rate", 50},
+					{"Lifetime", NumberRange.new(0.2,0.5)},
+					{"Speed", NumberRange.new(0.1,0.1)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(0.032212,6.36031,3.47677),NumberSequenceKeypoint.new(0.130212,12.0437,3.7846),NumberSequenceKeypoint.new(0.374212,15.3005,3.48412),NumberSequenceKeypoint.new(0.648212,17.2163,2.77942),NumberSequenceKeypoint.new(1,17.779,2.75702)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(1,1,1)),ColorSequenceKeypoint.new(1,Color3.new(1,1,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0.9,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"Rotation", NumberRange.new(-360,360)},
+					{"RotSpeed", NumberRange.new(200,800)},
+					{"SpreadAngle", Vector2.new(10,10)},
+					{"Acceleration", Vector3.new(0,0,0)},
+					{"Drag", 0},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", 1},
+					{"LightInfluence", 1},
+					{"LockedToPart", false},
+					{"ZOffset", 2},
+					{"Orientation", Enum.ParticleOrientation.VelocityPerpendicular},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.Grid2x2},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.OneShot},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 1},
+				} },
+			{ t = 1.01634, kind = "vfx", class = "ParticleEmitter", name = "Sparks", enabled = false, emit = 10, dur = 0.9,
+				mount = { part = nil, cf = CFrame.new(0.0034,-2.5627,-4.8606,-0.3752,0,0.9269,0,1,0,-0.9269,0,-0.3752) },
+				props = {
+					{"Texture", "rbxassetid://6660412891"},
+					{"Rate", 100},
+					{"Lifetime", NumberRange.new(0.2,0.4)},
+					{"Speed", NumberRange.new(20,80)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(0.165,3,0.239),NumberSequenceKeypoint.new(0.483,1,0.239),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(0.333333,1,1)),ColorSequenceKeypoint.new(1,Color3.new(0.333333,1,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(0.557745,0.18209,0),NumberSequenceKeypoint.new(0.894022,0.871642,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"Rotation", NumberRange.new(90,90)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(40,40)},
+					{"Acceleration", Vector3.new(0,0,0)},
+					{"Drag", 5},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", -10},
+					{"LightInfluence", 0},
+					{"LockedToPart", false},
+					{"ZOffset", 1},
+					{"Orientation", Enum.ParticleOrientation.VelocityParallel},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.None},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.Loop},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 5},
+				} },
+			{ t = 1.01639, kind = "vfx", class = "ParticleEmitter", name = "Wind2", enabled = false, emit = 8, dur = 0.6,
+				mount = { part = nil, cf = CFrame.new(0.0034,-2.5627,-4.8606,-0.3752,0,0.9269,0,1,0,-0.9269,0,-0.3752) },
+				props = {
+					{"Texture", "rbxassetid://1053548563"},
+					{"Rate", 100},
+					{"Lifetime", NumberRange.new(0.1,0.1)},
+					{"Speed", NumberRange.new(0.01,0.01)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,40,0),NumberSequenceKeypoint.new(1,40,0)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(0.333333,1,1)),ColorSequenceKeypoint.new(1,Color3.new(0.333333,1,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"Rotation", NumberRange.new(-360,360)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(10,10)},
+					{"Acceleration", Vector3.new(0,0,0)},
+					{"Drag", 0},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", 1},
+					{"LightInfluence", 0},
+					{"LockedToPart", false},
+					{"ZOffset", 0},
+					{"Orientation", Enum.ParticleOrientation.VelocityPerpendicular},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,-3,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.None},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.Loop},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 5},
+				} },
+			{ t = 1.03841, kind = "vfx", class = "ParticleEmitter", name = "Glow", enabled = false, emit = 1, dur = 0.65,
+				mount = { part = nil, cf = CFrame.new(0.0034,-2.5627,-4.8606,-0.3752,0,0.9269,0,1,0,-0.9269,0,-0.3752) },
+				props = {
+					{"Texture", "rbxassetid://14511831163"},
+					{"Rate", 1},
+					{"Lifetime", NumberRange.new(0.15,0.15)},
+					{"Speed", NumberRange.new(0,0)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(0.125767,3.96947,0),NumberSequenceKeypoint.new(0.340491,7.3028,0),NumberSequenceKeypoint.new(0.67638,8.85496,0),NumberSequenceKeypoint.new(1,9.59288,0)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(0.333333,1,1)),ColorSequenceKeypoint.new(1,Color3.new(0.333333,1,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"Rotation", NumberRange.new(0,0)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(0,0)},
+					{"Acceleration", Vector3.new(0,0,0)},
+					{"Drag", 0},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", 1},
+					{"LightInfluence", 0},
+					{"LockedToPart", false},
+					{"ZOffset", 0},
+					{"Orientation", Enum.ParticleOrientation.FacingCamera},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.None},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.Loop},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 5},
+				} },
+			{ t = 1.03847, kind = "vfx", class = "ParticleEmitter", name = "Ring", enabled = false, emit = 10, dur = 1,
+				mount = { part = nil, cf = CFrame.new(0.0034,-2.5627,-4.8606,-0.3752,0,0.9269,0,1,0,-0.9269,0,-0.3752) },
+				props = {
+					{"Texture", "rbxassetid://9293225960"},
+					{"Rate", 50},
+					{"Lifetime", NumberRange.new(0.2,0.5)},
+					{"Speed", NumberRange.new(0.1,0.1)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(0.032212,6.36031,3.47677),NumberSequenceKeypoint.new(0.130212,12.0437,3.7846),NumberSequenceKeypoint.new(0.374212,15.3005,3.48412),NumberSequenceKeypoint.new(0.648212,17.2163,2.77942),NumberSequenceKeypoint.new(1,17.779,2.75702)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(1,1,1)),ColorSequenceKeypoint.new(1,Color3.new(1,1,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0.9,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"Rotation", NumberRange.new(-360,360)},
+					{"RotSpeed", NumberRange.new(200,800)},
+					{"SpreadAngle", Vector2.new(10,10)},
+					{"Acceleration", Vector3.new(0,0,0)},
+					{"Drag", 0},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", 1},
+					{"LightInfluence", 1},
+					{"LockedToPart", false},
+					{"ZOffset", 2},
+					{"Orientation", Enum.ParticleOrientation.VelocityPerpendicular},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.Grid2x2},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.OneShot},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 1},
+				} },
+			{ t = 1.03852, kind = "vfx", class = "ParticleEmitter", name = "Sparks", enabled = false, emit = 10, dur = 0.9,
+				mount = { part = nil, cf = CFrame.new(0.0034,-2.5627,-4.8606,-0.3752,0,0.9269,0,1,0,-0.9269,0,-0.3752) },
+				props = {
+					{"Texture", "rbxassetid://6660412891"},
+					{"Rate", 100},
+					{"Lifetime", NumberRange.new(0.2,0.4)},
+					{"Speed", NumberRange.new(20,80)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(0.165,3,0.239),NumberSequenceKeypoint.new(0.483,1,0.239),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(0.333333,1,1)),ColorSequenceKeypoint.new(1,Color3.new(0.333333,1,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(0.557745,0.18209,0),NumberSequenceKeypoint.new(0.894022,0.871642,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"Rotation", NumberRange.new(90,90)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(40,40)},
+					{"Acceleration", Vector3.new(0,0,0)},
+					{"Drag", 5},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", -10},
+					{"LightInfluence", 0},
+					{"LockedToPart", false},
+					{"ZOffset", 1},
+					{"Orientation", Enum.ParticleOrientation.VelocityParallel},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.None},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.Loop},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 5},
+				} },
+			{ t = 1.03857, kind = "vfx", class = "ParticleEmitter", name = "Wind2", enabled = false, emit = 8, dur = 0.6,
+				mount = { part = nil, cf = CFrame.new(0.0034,-2.5627,-4.8606,-0.3752,0,0.9269,0,1,0,-0.9269,0,-0.3752) },
+				props = {
+					{"Texture", "rbxassetid://1053548563"},
+					{"Rate", 100},
+					{"Lifetime", NumberRange.new(0.1,0.1)},
+					{"Speed", NumberRange.new(0.01,0.01)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,40,0),NumberSequenceKeypoint.new(1,40,0)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(0.333333,1,1)),ColorSequenceKeypoint.new(1,Color3.new(0.333333,1,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"Rotation", NumberRange.new(-360,360)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(10,10)},
+					{"Acceleration", Vector3.new(0,0,0)},
+					{"Drag", 0},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", 1},
+					{"LightInfluence", 0},
+					{"LockedToPart", false},
+					{"ZOffset", 0},
+					{"Orientation", Enum.ParticleOrientation.VelocityPerpendicular},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,-3,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.None},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.Loop},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 5},
+				} },
+			{ t = 1.0392, kind = "sfx", name = "GroundImpact", dur = 0.992, pos = true,
+				props = {
+					{"SoundId", "rbxassetid://7093763783"},
+					{"Volume", 1},
+					{"PlaybackSpeed", 1.25},
+					{"Looped", false},
+					{"TimePosition", 0},
+					{"RollOffMode", Enum.RollOffMode.Linear},
+					{"RollOffMinDistance", 10},
+					{"RollOffMaxDistance", 300},
+				} },
+			{ t = 1.04136, kind = "vfx", class = "Trail", name = "Trail", enabled = true, dur = 0.145575,
+				mount = { part = nil, cf = CFrame.new(0.0102,-0.3428,-4.9722,-0.3752,0,0.9269,0,1,0,-0.9269,0,-0.3752) },
+				att0 = { part = nil, cf = CFrame.new(0.0102,-0.1778,-4.9722,-0.3752,0,0.9269,0,1,0,-0.9269,0,-0.3752) },
+				att1 = { part = nil, cf = CFrame.new(0.0102,-0.5079,-4.9722,-0.3752,0,0.9269,0,1,0,-0.9269,0,-0.3752) },
+				props = {
+					{"Texture", ""},
+					{"TextureLength", 1},
+					{"TextureMode", Enum.TextureMode.Stretch},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(0.67451,0.0392157,0.0392157)),ColorSequenceKeypoint.new(1,Color3.new(0.366486,0.0130009,0.0130009))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(0.7,0.15,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"LightEmission", 0},
+					{"LightInfluence", 1},
+					{"Lifetime", 0.278202},
+					{"MinLength", 0.02},
+					{"MaxLength", 0},
+					{"WidthScale", NumberSequence.new({NumberSequenceKeypoint.new(0,1,0),NumberSequenceKeypoint.new(1,0.15,0)})},
+					{"FaceCamera", true},
+				} },
+			{ t = 1.05194, kind = "sfx", name = "Hit1", dur = 1.36657, pos = true,
+				props = {
+					{"SoundId", "rbxassetid://7307838125"},
+					{"Volume", 1},
+					{"PlaybackSpeed", 1.25},
+					{"Looped", false},
+					{"TimePosition", 0.2},
+					{"RollOffMode", Enum.RollOffMode.Linear},
+					{"RollOffMinDistance", 10},
+					{"RollOffMaxDistance", 300},
+				} },
+			{ t = 1.05358, kind = "sfx", name = "Hit2", dur = 2.37227, pos = true,
+				props = {
+					{"SoundId", "rbxassetid://9118614717"},
+					{"Volume", 1},
+					{"PlaybackSpeed", 1.25},
+					{"Looped", false},
+					{"TimePosition", 0},
+					{"RollOffMode", Enum.RollOffMode.Linear},
+					{"RollOffMinDistance", 10},
+					{"RollOffMaxDistance", 300},
+				} },
+			{ t = 1.06068, kind = "sfx", name = "Impact1", dur = 0.864021, pos = true,
+				props = {
+					{"SoundId", "rbxassetid://9118617342"},
+					{"Volume", 1},
+					{"PlaybackSpeed", 1},
+					{"Looped", false},
+					{"TimePosition", 0},
+					{"RollOffMode", Enum.RollOffMode.Linear},
+					{"RollOffMinDistance", 10},
+					{"RollOffMaxDistance", 300},
+				} },
+			{ t = 1.07129, kind = "vfx", class = "ParticleEmitter", name = "Flames", enabled = false, emit = 0, dur = 1.2,
+				mount = { part = nil, cf = CFrame.new(0.0034,-2.5627,-4.8606,-0.3752,0,0.9269,0,1,0,-0.9269,0,-0.3752) },
+				props = {
+					{"Texture", "rbxassetid://15269497616"},
+					{"Rate", 100},
+					{"Lifetime", NumberRange.new(0.3,0.7)},
+					{"Speed", NumberRange.new(0,30)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(0.131902,2.03562,1),NumberSequenceKeypoint.new(0.331288,4.07125,1.17059),NumberSequenceKeypoint.new(0.720859,5.29262,1.08727),NumberSequenceKeypoint.new(1,5.69975,0.992366)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(0.333333,1,1)),ColorSequenceKeypoint.new(1,Color3.new(0.333333,1,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Rotation", NumberRange.new(-360,360)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(60,60)},
+					{"Acceleration", Vector3.new(0,0,0)},
+					{"Drag", 15},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", -3},
+					{"LightInfluence", 0},
+					{"LockedToPart", false},
+					{"ZOffset", 0},
+					{"Orientation", Enum.ParticleOrientation.FacingCamera},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 0.8},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.Grid4x4},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.OneShot},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", true},
+					{"Brightness", 15},
+				} },
+			{ t = 1.07621, kind = "vfx", class = "ParticleEmitter", name = "Wind2", enabled = false, emit = 30, dur = 0.6,
+				mount = { part = nil, cf = CFrame.new(0.0034,-2.5627,-4.8606,-0.3752,0,0.9269,0,1,0,-0.9269,0,-0.3752) },
+				props = {
+					{"Texture", "rbxassetid://1053548563"},
+					{"Rate", 100},
+					{"Lifetime", NumberRange.new(0.1,0.1)},
+					{"Speed", NumberRange.new(0.01,0.01)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,40,0),NumberSequenceKeypoint.new(1,40,0)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(0.333333,1,1)),ColorSequenceKeypoint.new(1,Color3.new(0.333333,1,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"Rotation", NumberRange.new(-360,360)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(10,10)},
+					{"Acceleration", Vector3.new(0,0,0)},
+					{"Drag", 0},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", 1},
+					{"LightInfluence", 0},
+					{"LockedToPart", false},
+					{"ZOffset", 0},
+					{"Orientation", Enum.ParticleOrientation.VelocityPerpendicular},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,-3,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.None},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.Loop},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 5},
+				} },
+			{ t = 1.08033, kind = "vfx", class = "ParticleEmitter", name = "Ring", enabled = false, emit = 0, dur = 1,
+				mount = { part = nil, cf = CFrame.new(0.0034,-2.5627,-4.8606,-0.3752,0,0.9269,0,1,0,-0.9269,0,-0.3752) },
+				props = {
+					{"Texture", "rbxassetid://9293225960"},
+					{"Rate", 50},
+					{"Lifetime", NumberRange.new(0.2,0.5)},
+					{"Speed", NumberRange.new(0.1,0.1)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(0.032212,6.36031,3.47677),NumberSequenceKeypoint.new(0.130212,12.0437,3.7846),NumberSequenceKeypoint.new(0.374212,15.3005,3.48412),NumberSequenceKeypoint.new(0.648212,17.2163,2.77942),NumberSequenceKeypoint.new(1,17.779,2.75702)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(1,1,1)),ColorSequenceKeypoint.new(1,Color3.new(1,1,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0.9,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"Rotation", NumberRange.new(-360,360)},
+					{"RotSpeed", NumberRange.new(200,800)},
+					{"SpreadAngle", Vector2.new(10,10)},
+					{"Acceleration", Vector3.new(0,0,0)},
+					{"Drag", 0},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", 1},
+					{"LightInfluence", 1},
+					{"LockedToPart", false},
+					{"ZOffset", 2},
+					{"Orientation", Enum.ParticleOrientation.VelocityPerpendicular},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.Grid2x2},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.OneShot},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 1},
+				} },
+			{ t = 1.08488, kind = "vfx", class = "ParticleEmitter", name = "Glow", enabled = false, emit = 0, dur = 0.65,
+				mount = { part = nil, cf = CFrame.new(0.0034,-2.5627,-4.8606,-0.3752,0,0.9269,0,1,0,-0.9269,0,-0.3752) },
+				props = {
+					{"Texture", "rbxassetid://14511831163"},
+					{"Rate", 1},
+					{"Lifetime", NumberRange.new(0.15,0.15)},
+					{"Speed", NumberRange.new(0,0)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(0.125767,3.96947,0),NumberSequenceKeypoint.new(0.340491,7.3028,0),NumberSequenceKeypoint.new(0.67638,8.85496,0),NumberSequenceKeypoint.new(1,9.59288,0)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(0.333333,1,1)),ColorSequenceKeypoint.new(1,Color3.new(0.333333,1,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"Rotation", NumberRange.new(0,0)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(0,0)},
+					{"Acceleration", Vector3.new(0,0,0)},
+					{"Drag", 0},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", 1},
+					{"LightInfluence", 0},
+					{"LockedToPart", false},
+					{"ZOffset", 0},
+					{"Orientation", Enum.ParticleOrientation.FacingCamera},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.None},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.Loop},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 5},
+				} },
+			{ t = 1.08914, kind = "vfx", class = "ParticleEmitter", name = "Sparks", enabled = false, emit = 10, dur = 0.9,
+				mount = { part = nil, cf = CFrame.new(0.0034,-2.5627,-4.8606,-0.3752,0,0.9269,0,1,0,-0.9269,0,-0.3752) },
+				props = {
+					{"Texture", "rbxassetid://6660412891"},
+					{"Rate", 100},
+					{"Lifetime", NumberRange.new(0.2,0.4)},
+					{"Speed", NumberRange.new(20,80)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(0.165,3,0.239),NumberSequenceKeypoint.new(0.483,1,0.239),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(0.333333,1,1)),ColorSequenceKeypoint.new(1,Color3.new(0.333333,1,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(0.557745,0.18209,0),NumberSequenceKeypoint.new(0.894022,0.871642,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"Rotation", NumberRange.new(90,90)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(40,40)},
+					{"Acceleration", Vector3.new(0,0,0)},
+					{"Drag", 5},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", -10},
+					{"LightInfluence", 0},
+					{"LockedToPart", false},
+					{"ZOffset", 1},
+					{"Orientation", Enum.ParticleOrientation.VelocityParallel},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.None},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.Loop},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 5},
+				} },
+			{ t = 1.09348, kind = "vfx", class = "PointLight", name = "PointLight", enabled = true, dur = 1.45621,
+				mount = { part = nil, cf = CFrame.new(0.0034,-2.5627,-4.8606,-0.3752,0,0.9269,0,1,0,-0.9269,0,-0.3752) },
+				props = {
+					{"Brightness", 20},
+					{"Color", Color3.new(0.666667,1,1)},
+					{"Range", 9},
+					{"Shadows", true},
+				} },
+			{ t = 1.10349, kind = "vfx", class = "ParticleEmitter", name = "Hit", enabled = false, emit = 15, dur = 0.65,
+				mount = { part = nil, cf = CFrame.new(0.007,-0.711,-4.89,0.9999,-0.0063,0.0096,0.0105,0.1623,-0.9867,0.0046,0.9867,0.1623) },
+				props = {
+					{"Texture", "rbxassetid://8303971558"},
+					{"Rate", 20},
+					{"Lifetime", NumberRange.new(0.15,0.15)},
+					{"Speed", NumberRange.new(0,0)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,8,0)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(1,1,1)),ColorSequenceKeypoint.new(1,Color3.new(1,1,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"Rotation", NumberRange.new(0,360)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(0,0)},
+					{"Acceleration", Vector3.new(0,0,0)},
+					{"Drag", 0},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", 0},
+					{"LightInfluence", 0},
+					{"LockedToPart", false},
+					{"ZOffset", 0},
+					{"Orientation", Enum.ParticleOrientation.FacingCamera},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.None},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.Loop},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 5},
+				} },
+			{ t = 1.12567, kind = "vfx", class = "ParticleEmitter", name = "Hit", enabled = false, emit = 15, dur = 0.65,
+				mount = { part = nil, cf = CFrame.new(0.007,-0.711,-4.89,0.9999,-0.0063,0.0096,0.0105,0.1623,-0.9867,0.0046,0.9867,0.1623) },
+				props = {
+					{"Texture", "rbxassetid://8303971558"},
+					{"Rate", 20},
+					{"Lifetime", NumberRange.new(0.15,0.15)},
+					{"Speed", NumberRange.new(0,0)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,8,0)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(1,1,1)),ColorSequenceKeypoint.new(1,Color3.new(1,1,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"Rotation", NumberRange.new(0,360)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(0,0)},
+					{"Acceleration", Vector3.new(0,0,0)},
+					{"Drag", 0},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", 0},
+					{"LightInfluence", 0},
+					{"LockedToPart", false},
+					{"ZOffset", 0},
+					{"Orientation", Enum.ParticleOrientation.FacingCamera},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.None},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.Loop},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 5},
+				} },
+			{ t = 1.14351, kind = "sfx", name = "RagdollFall3", dur = 0.605058, pos = true,
+				props = {
+					{"SoundId", "rbxassetid://3784889529"},
+					{"Volume", 0},
+					{"PlaybackSpeed", 1.3},
+					{"Looped", false},
+					{"TimePosition", 0},
+					{"RollOffMode", Enum.RollOffMode.Linear},
+					{"RollOffMinDistance", 10},
+					{"RollOffMaxDistance", 300},
+				} },
+			{ t = 1.16788, kind = "vfx", class = "ParticleEmitter", name = "ParticleEmitter", enabled = false, emit = 15, dur = 1,
+				mount = { part = nil, cf = CFrame.new(-0.6279,-3.0247,-3.4559,0,-0.9848,-0.1736,1,0,0,0,-0.1736,0.9848) },
+				props = {
+					{"Texture", "rbxasset://textures/particles/smoke_main.dds"},
+					{"Rate", 20},
+					{"Lifetime", NumberRange.new(0.25,0.5)},
+					{"Speed", NumberRange.new(4,10)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,0.22,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(0.67451,0.0392157,0.0392157)),ColorSequenceKeypoint.new(1,Color3.new(0.67451,0.0392157,0.0392157))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0.1,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"Rotation", NumberRange.new(0,0)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(45,45)},
+					{"Acceleration", Vector3.new(0,-45,0)},
+					{"Drag", 0},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", 0},
+					{"LightInfluence", 1},
+					{"LockedToPart", false},
+					{"ZOffset", 0},
+					{"Orientation", Enum.ParticleOrientation.FacingCamera},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.None},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.Loop},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 1},
+				} },
+			{ t = 1.19006, kind = "vfx", class = "ParticleEmitter", name = "ParticleEmitter", enabled = false, emit = 15, dur = 1,
+				mount = { part = nil, cf = CFrame.new(-0.6279,-3.0247,-3.4559,0,-0.9848,-0.1736,1,0,0,0,-0.1736,0.9848) },
+				props = {
+					{"Texture", "rbxasset://textures/particles/smoke_main.dds"},
+					{"Rate", 20},
+					{"Lifetime", NumberRange.new(0.25,0.5)},
+					{"Speed", NumberRange.new(4,10)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,0.22,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(0.67451,0.0392157,0.0392157)),ColorSequenceKeypoint.new(1,Color3.new(0.67451,0.0392157,0.0392157))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0.1,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"Rotation", NumberRange.new(0,0)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(45,45)},
+					{"Acceleration", Vector3.new(0,-45,0)},
+					{"Drag", 0},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", 0},
+					{"LightInfluence", 1},
+					{"LockedToPart", false},
+					{"ZOffset", 0},
+					{"Orientation", Enum.ParticleOrientation.FacingCamera},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.None},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.Loop},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 1},
+				} },
+			{ t = 1.26292, kind = "vfx", class = "ParticleEmitter", name = "ParticleEmitter", enabled = false, emit = 15, dur = 1,
+				mount = { part = nil, cf = CFrame.new(0.1425,-3.0228,-3.9753,0,-0.7967,-0.6044,1,0,0,0,-0.6044,0.7967) },
+				props = {
+					{"Texture", "rbxasset://textures/particles/smoke_main.dds"},
+					{"Rate", 20},
+					{"Lifetime", NumberRange.new(0.25,0.5)},
+					{"Speed", NumberRange.new(4,10)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,0.22,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(0.67451,0.0392157,0.0392157)),ColorSequenceKeypoint.new(1,Color3.new(0.67451,0.0392157,0.0392157))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0.1,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"Rotation", NumberRange.new(0,0)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(45,45)},
+					{"Acceleration", Vector3.new(0,-45,0)},
+					{"Drag", 0},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", 0},
+					{"LightInfluence", 1},
+					{"LockedToPart", false},
+					{"ZOffset", 0},
+					{"Orientation", Enum.ParticleOrientation.FacingCamera},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.None},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.Loop},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 1},
+				} },
+	},
+	frames = {
+	{ dt = 0, j = {
+		["Right Shoulder"] = CFrame.new(0,0,0,0.9132,-0.2902,0.286,0.2441,0.9517,0.1864,-0.3263,-0.1004,0.9399), -- Right Arm rot -11, 17, 18
+		["Left Shoulder"] = CFrame.new(0,0,0,0.6486,0,0.7612,-0.3202,0.9072,0.2728,-0.6905,-0.4207,0.5884), -- Left Arm rot -25, 50, 0
+		["Right Hip"] = CFrame.new(0,0.1601,0,0.8011,0.1531,-0.5786,-0.0257,0.9746,0.2223,0.598,-0.1632,0.7847), -- Right Leg rot -16, -35, -11
+		["Left Hip"] = CFrame.new(-0.0772,0.1829,-0.0752,0.8157,-0.284,0.5039,0.1106,0.9317,0.3461,-0.5677,-0.2266,0.7914), -- Left Leg rot -24, 30, 19
+		["Neck"] = CFrame.new(0,0,0,1,0,0,0,0.8991,-0.4377,0,0.4377,0.8991), -- Head rot 26, 0, 0
+		["RootJoint"] = CFrame.new(0,0,0,1,0,0,0,1,0,0,0,1), -- Torso rot 0, 0, 0
+	} },
+	{ dt = 0.0667, j = {
+		["Right Shoulder"] = CFrame.new(0.3102,-0.2174,-0.2185,0.6623,-0.6539,0.3658,0.7424,0.6383,-0.2034,-0.1005,0.4063,0.9082), -- Right Arm rot 13, 21, 45
+		["Left Shoulder"] = CFrame.new(-0.078,-0.2503,0.0735,0.8497,0.1483,0.5059,-0.3975,0.8107,0.43,-0.3463,-0.5664,0.7478), -- Left Arm rot -30, 30, -10
+		["Right Hip"] = CFrame.new(0.129,0.033,0.0044,0.8162,-0.059,-0.5747,0.0543,0.9982,-0.0254,0.5752,-0.0105,0.8179), -- Right Leg rot 2, -35, 4
+		["Left Hip"] = CFrame.new(-0.027,0.0727,-0.07,0.8,-0.3205,0.5073,0.1665,0.9308,0.3254,-0.5765,-0.1759,0.798), -- Left Leg rot -22, 30, 22
+		["Neck"] = CFrame.new(0,0,0,0.9694,-0.2382,0.0588,0.2408,0.8778,-0.4141,0.047,0.4156,0.9083), -- Head rot 25, 3, 14
+		["RootJoint"] = CFrame.new(0,-0.0366,0,0.9577,0.2877,-0.0067,-0.2871,0.9537,-0.0901,-0.0196,0.0882,0.9959), -- Torso rot 5, 0, -17
+	} },
+	{ dt = 0.0333, j = {
+		["Right Shoulder"] = CFrame.new(0.4515,-0.0716,-0.3645,0.3809,-0.7632,0.5219,0.8974,0.1691,-0.4076,0.2229,0.6236,0.7493), -- Right Arm rot 29, 31, 63
+		["Left Shoulder"] = CFrame.new(-0.117,-0.3755,0.1102,0.9014,0.24,0.3604,-0.4065,0.7556,0.5136,-0.1491,-0.6094,0.7787), -- Left Arm rot -33, 21, -15
+		["Right Hip"] = CFrame.new(0.1935,-0.0306,0.0067,0.8171,-0.1633,-0.5529,0.0961,0.9842,-0.1487,0.5685,0.0684,0.8198), -- Right Leg rot 10, -34, 11
+		["Left Hip"] = CFrame.new(-0.002,0.0176,-0.0674,0.7913,-0.3384,0.5093,0.1944,0.9289,0.3151,-0.5797,-0.1503,0.8009), -- Left Leg rot -21, 31, 23
+		["Neck"] = CFrame.new(0,0,0,0.9317,-0.3531,0.0854,0.3569,0.8455,-0.3971,0.068,0.4005,0.9138), -- Head rot 23, 5, 21
+		["RootJoint"] = CFrame.new(0,-0.0549,0,0.9058,0.4233,-0.0197,-0.422,0.8967,-0.1333,-0.0387,0.1291,0.9909), -- Torso rot 8, -1, -25
+	} },
+	{ dt = 0.0333, j = {
+		["Right Shoulder"] = CFrame.new(0.3505,0.0897,-0.3973,0.0635,-0.815,0.576,0.9514,-0.1249,-0.2816,0.3015,0.5658,0.7674), -- Right Arm rot 20, 35, 86
+		["Left Shoulder"] = CFrame.new(-0.156,-0.5006,0.147,0.9171,0.3383,0.211,-0.395,0.6992,0.5959,0.0541,-0.6298,0.7748), -- Left Arm rot -38, 12, -20
+		["Right Hip"] = CFrame.new(0.258,-0.0941,0.0089,0.8134,-0.2641,-0.5183,0.1382,0.9532,-0.2688,0.565,0.1471,0.8118), -- Right Leg rot 18, -31, 18
+		["Left Hip"] = CFrame.new(0.0231,-0.0375,-0.0648,0.7821,-0.3559,0.5115,0.2223,0.9262,0.3047,-0.5822,-0.1246,0.8035), -- Left Leg rot -21, 31, 24
+		["Neck"] = CFrame.new(0,0,0,0.8796,-0.4628,0.1097,0.4677,0.7995,-0.3769,0.0868,0.3829,0.9197), -- Head rot 22, 6, 28
+		["RootJoint"] = CFrame.new(0,-0.1115,0,0.8035,0.5933,-0.0476,-0.5906,0.7847,-0.1882,-0.0743,0.1793,0.981), -- Torso rot 11, -3, -36
+	} },
+	{ dt = 0.0333, j = {
+		["Right Shoulder"] = CFrame.new(0.0208,0.0119,-0.2804,-0.1245,-0.936,0.3291,0.9873,-0.084,0.1347,-0.0984,0.3417,0.9346), -- Right Arm rot -8, 19, 98
+		["Left Shoulder"] = CFrame.new(-0.461,-0.4054,0.2691,0.8488,0.4942,0.1877,-0.4854,0.588,0.647,0.2094,-0.6403,0.739), -- Left Arm rot -41, 11, -30
+		["Right Hip"] = CFrame.new(0.3225,-0.1577,0.0111,0.8053,-0.3595,-0.4714,0.1798,0.9058,-0.3837,0.565,0.2242,0.7941), -- Right Leg rot 26, -28, 24
+		["Left Hip"] = CFrame.new(0.0482,-0.0926,-0.0622,0.7724,-0.3732,0.5139,0.25,0.9225,0.2942,-0.5839,-0.0988,0.8058), -- Left Leg rot -20, 31, 26
+		["Neck"] = CFrame.new(0,0,0,0.8141,-0.5657,0.1311,0.5715,0.7404,-0.354,0.1031,0.3631,0.926), -- Head rot 21, 8, 35
+		["RootJoint"] = CFrame.new(0,-0.2062,0,0.6286,0.7715,-0.0979,-0.7663,0.5931,-0.247,-0.1325,0.2303,0.964), -- Torso rot 14, -6, -51
+	} },
+	{ dt = 0.0333, j = {
+		["Right Shoulder"] = CFrame.new(-0.3089,-0.0658,-0.1635,-0.1797,-0.9837,0.0042,0.8395,-0.1511,0.5218,-0.5127,0.0973,0.853), -- Right Arm rot -31, 0, 100
+		["Left Shoulder"] = CFrame.new(-0.766,-0.3102,0.3913,0.7519,0.6355,0.1753,-0.551,0.4598,0.6964,0.3619,-0.6202,0.6959), -- Left Arm rot -45, 10, -40
+		["Right Hip"] = CFrame.new(0.4429,-0.2273,-0.0477,0.8792,-0.4009,-0.2575,0.2426,0.8417,-0.4824,0.4101,0.3617,0.8372), -- Right Leg rot 30, -15, 25
+		["Left Hip"] = CFrame.new(0.096,-0.0812,0.0666,0.7732,-0.3869,0.5024,0.3047,0.9215,0.2407,-0.5562,-0.0331,0.8304), -- Left Leg rot -16, 30, 27
+		["Neck"] = CFrame.new(0,0,0,0.7361,-0.6602,0.1495,0.6667,0.669,-0.3285,0.1168,0.3415,0.9326), -- Head rot 19, 9, 42
+		["RootJoint"] = CFrame.new(0,-0.2879,-0.0616,0.4285,0.8965,-0.1123,-0.8691,0.375,-0.3227,-0.2472,0.2359,0.9398), -- Torso rot 19, -6, -64
+	} },
+	{ dt = 0.0333, j = {
+		["Right Shoulder"] = CFrame.new(-0.6162,-0.0971,-0.1785,-0.0346,-0.9811,-0.1905,0.6652,-0.1649,0.7282,-0.7458,-0.1016,0.6583), -- Right Arm rot -48, -11, 92
+		["Left Shoulder"] = CFrame.new(-0.6803,-0.2501,0.3783,0.7515,0.6481,0.1231,-0.4946,0.4302,0.7552,0.4365,-0.6284,0.6439), -- Left Arm rot -50, 7, -41
+		["Right Hip"] = CFrame.new(0.6193,-0.3031,-0.1676,0.9339,-0.3309,0.1356,0.3502,0.7693,-0.5344,0.0725,0.5465,0.8343), -- Right Leg rot 33, 8, 20
+		["Left Hip"] = CFrame.new(0.1667,-0.0033,0.3214,0.783,-0.3993,0.477,0.3808,0.914,0.14,-0.4919,0.0721,0.8677), -- Left Leg rot -9, 28, 27
+		["Neck"] = CFrame.new(0,0,0,0.6468,-0.7447,0.1645,0.7519,0.5866,-0.3009,0.1276,0.3183,0.9394), -- Head rot 18, 9, 49
+		["RootJoint"] = CFrame.new(0,-0.3567,-0.1849,0.2156,0.9714,-0.0991,-0.8913,0.1544,-0.4264,-0.3989,0.1802,0.8991), -- Torso rot 25, -6, -77
+	} },
+	{ dt = 0.0333, j = {
+		["Right Shoulder"] = CFrame.new(-0.9011,-0.0818,-0.3253,0.2031,-0.9547,-0.2176,0.5512,-0.0722,0.8312,-0.8093,-0.2888,0.5116), -- Right Arm rot -58, -13, 78
+		["Left Shoulder"] = CFrame.new(-0.5946,-0.19,0.3654,0.7462,0.6619,0.0714,-0.4326,0.4004,0.8078,0.5061,-0.6337,0.5851), -- Left Arm rot -54, 4, -42
+		["Right Hip"] = CFrame.new(0.6032,-0.3462,-0.1999,0.9803,-0.12,0.1571,0.1889,0.8025,-0.5659,-0.0582,0.5844,0.8094), -- Right Leg rot 35, 9, 7
+		["Left Hip"] = CFrame.new(0.1667,-0.0033,0.3214,0.6346,-0.6309,0.4464,0.5889,0.7688,0.2494,-0.5005,0.1047,0.8594), -- Left Leg rot -16, 27, 45
+		["Neck"] = CFrame.new(0,0,0,0.6353,-0.7517,0.177,0.7655,0.5826,-0.2733,0.1023,0.3091,0.9455), -- Head rot 16, 10, 50
+		["RootJoint"] = CFrame.new(0,-0.432,-0.2784,0.1591,0.9857,0.0546,-0.8754,0.1665,-0.4539,-0.4565,0.0244,0.8894), -- Torso rot 27, 3, -81
+	} },
+	{ dt = 0.0333, j = {
+		["Right Shoulder"] = CFrame.new(-0.99,-0.1146,-0.0672,0.2476,-0.9228,-0.2952,0.4434,-0.163,0.8814,-0.8614,-0.3492,0.3688), -- Right Arm rot -67, -17, 75
+		["Left Shoulder"] = CFrame.new(-0.5089,-0.1299,0.3524,0.7358,0.6769,0.0209,-0.3653,0.3708,0.8539,0.5702,-0.6359,0.5201), -- Left Arm rot -59, 1, -43
+		["Right Hip"] = CFrame.new(0.5872,-0.3893,-0.2322,0.9808,0.0967,0.1695,0.0249,0.7996,-0.6001,-0.1935,0.5927,0.7818), -- Right Leg rot 38, 10, -6
+		["Left Hip"] = CFrame.new(0.1667,-0.0033,0.3214,0.4349,-0.8131,0.3869,0.7487,0.5652,0.3464,-0.5003,0.1391,0.8546), -- Left Leg rot -22, 23, 62
+		["Neck"] = CFrame.new(0,0,0,0.6233,-0.7587,0.1891,0.7782,0.5782,-0.2453,0.0768,0.3001,0.9508), -- Head rot 14, 11, 51
+		["RootJoint"] = CFrame.new(0,-0.5073,-0.372,0.0938,0.9743,0.205,-0.8589,0.1833,-0.4783,-0.5036,-0.1312,0.8539), -- Torso rot 29, 12, -85
+	} },
+	{ dt = 0.0333, j = {
+		["Right Shoulder"] = CFrame.new(-0.883,-0.1954,0.5961,0.1153,-0.8807,-0.4594,0.3361,-0.4007,0.8524,-0.9347,-0.2527,0.2498), -- Right Arm rot -74, -27, 83
+		["Left Shoulder"] = CFrame.new(-0.3106,-0.15,0.3944,0.5865,0.8077,0.0604,-0.4555,0.2672,0.8492,0.6697,-0.5256,0.5246), -- Left Arm rot -58, 3, -54
+		["Right Hip"] = CFrame.new(0.5833,-0.3948,-0.2402,0.9615,0.2079,0.1795,-0.0633,0.8037,-0.5917,-0.2673,0.5575,0.7859), -- Right Leg rot 37, 10, -12
+		["Left Hip"] = CFrame.new(0.1321,-0.0177,0.329,0.3381,-0.8875,0.3132,0.7993,0.4465,0.4021,-0.4967,0.1144,0.8603), -- Left Leg rot -25, 18, 69
+		["Neck"] = CFrame.new(0,0,0,0.611,-0.7658,0.2008,0.79,0.5734,-0.217,0.051,0.2912,0.9553), -- Head rot 13, 12, 51
+		["RootJoint"] = CFrame.new(0,-0.5591,-0.3864,0.1537,0.9438,0.2925,-0.8364,0.2819,-0.4701,-0.5261,-0.1724,0.8328), -- Torso rot 29, 17, -81
+	} },
+	{ dt = 0.0667, j = {
+		["Right Shoulder"] = CFrame.new(-1.6248,0.2486,0.3512,0.0292,-0.9408,-0.3378,0.1556,-0.3295,0.9312,-0.9874,-0.0797,0.1367), -- Right Arm rot -82, -20, 88
+		["Left Shoulder"] = CFrame.new(0.0861,-0.1903,0.4784,0.2231,0.9659,0.1317,-0.5657,0.0183,0.8244,0.7939,-0.2584,0.5504), -- Left Arm rot -56, 8, -77
+		["Right Hip"] = CFrame.new(0.5996,-0.3305,-0.2078,0.9522,0.2211,0.2109,-0.0954,0.8709,-0.4821,-0.2902,0.4389,0.8504), -- Right Leg rot 30, 12, -13
+		["Left Hip"] = CFrame.new(-0.0066,-0.0753,0.3596,0.4083,-0.8963,0.1732,0.7715,0.4402,0.4594,-0.488,-0.0539,0.8712), -- Left Leg rot -28, 10, 66
+		["Neck"] = CFrame.new(0,0,0,0.585,-0.7798,0.2229,0.811,0.5629,-0.1595,-0.0011,0.274,0.9617), -- Head rot 9, 13, 53
+		["RootJoint"] = CFrame.new(0,-0.6159,-0.2569,0.5101,0.7941,0.3305,-0.6961,0.6068,-0.3837,-0.5052,-0.0344,0.8623), -- Torso rot 24, 19, -57
+	} },
+	{ dt = 0.0333, j = {
+		["Right Shoulder"] = CFrame.new(0.1578,1.0764,0.1467,-0.2784,-0.8117,-0.5135,0.2971,-0.5811,0.7577,-0.9134,0.0584,0.4029), -- Right Arm rot -62, -31, 109
+		["Left Shoulder"] = CFrame.new(0.4139,-0.1251,0.0567,0.5182,0.7525,0.4064,-0.3978,-0.2087,0.8934,0.7571,-0.6246,0.1912), -- Left Arm rot -78, 24, -55
+		["Right Hip"] = CFrame.new(0.7643,0.3069,0.1127,0.9394,-0.2703,0.2109,0.3405,0.8073,-0.4821,-0.0399,0.5246,0.8504), -- Right Leg rot 30, 12, 16
+		["Left Hip"] = CFrame.new(-0.0989,0.534,0.6603,0.7467,-0.3908,0.5382,0.3774,0.9153,0.141,-0.5477,0.0978,0.8309), -- Left Leg rot -10, 33, 28
+		["Neck"] = CFrame.new(0,0,0,0.7337,-0.6764,-0.0651,0.6715,0.7363,-0.0828,0.1039,0.017,0.9944), -- Head rot 5, -4, 43
+		["RootJoint"] = CFrame.new(0,-0.5977,-0.7176,0.711,0.7018,0.0433,-0.4657,0.5162,-0.7188,-0.5268,0.4909,0.6939), -- Torso rot 46, 2, -45
+	} },
+	{ dt = 0.0333, j = {
+		["Right Shoulder"] = CFrame.new(0.8034,-0.2017,0.677,0.229,-0.7771,0.5862,0.0552,0.6116,0.7892,-0.9719,-0.1484,0.1829), -- Right Arm rot -77, 36, 74
+		["Left Shoulder"] = CFrame.new(0.7417,-0.0599,-0.365,0.7757,0.3874,0.4982,-0.2963,-0.4734,0.8295,0.5572,-0.7911,-0.2524), -- Left Arm rot -107, 30, -27
+		["Right Hip"] = CFrame.new(-0.1467,0.0654,0.2485,0.4645,-0.2049,-0.8615,-0.521,0.7234,-0.453,0.7161,0.6593,0.2293), -- Right Leg rot 63, -59, 24
+		["Left Hip"] = CFrame.new(-0.559,1.454,0.9639,0.7737,0.3187,0.5476,-0.1339,0.927,-0.3503,-0.6192,0.1977,0.7599), -- Left Leg rot 25, 33, -22
+		["Neck"] = CFrame.new(0,0,0,0.6152,0.5073,-0.6034,-0.6023,0.7964,0.0554,0.5087,0.3293,0.7955), -- Head rot -4, -37, -40
+		["RootJoint"] = CFrame.new(0,-0.7509,-1.0602,0.6203,-0.5215,0.5859,0.7832,0.3713,-0.4987,0.0426,0.7682,0.6388), -- Torso rot 38, 36, 40
+	} },
+	{ dt = 0.0333, j = {
+		["Right Shoulder"] = CFrame.new(0.8034,-0.2017,0.677,0.229,-0.7771,0.5862,0.0552,0.6116,0.7892,-0.9719,-0.1484,0.1829), -- Right Arm rot -77, 36, 74
+		["Left Shoulder"] = CFrame.new(0.7417,-0.0599,-0.365,0.7757,0.3874,0.4982,-0.2963,-0.4734,0.8295,0.5572,-0.7911,-0.2524), -- Left Arm rot -107, 30, -27
+		["Right Hip"] = CFrame.new(-0.1467,0.0654,0.2485,0.4645,-0.2049,-0.8615,-0.521,0.7234,-0.453,0.7161,0.6593,0.2293), -- Right Leg rot 63, -59, 24
+		["Left Hip"] = CFrame.new(-0.5591,1.454,0.9639,0.7737,0.3187,0.5476,-0.1339,0.927,-0.3503,-0.6192,0.1977,0.7599), -- Left Leg rot 25, 33, -22
+		["Neck"] = CFrame.new(0,0,0,0.6152,0.5073,-0.6034,-0.6023,0.7964,0.0554,0.5087,0.3293,0.7955), -- Head rot -4, -37, -40
+		["RootJoint"] = CFrame.new(0,-0.7509,-1.0602,0.6203,-0.5215,0.5859,0.7832,0.3713,-0.4987,0.0426,0.7682,0.6388), -- Torso rot 38, 36, 40
+	} },
+	{ dt = 0.0333, j = {
+		["Right Shoulder"] = CFrame.new(0.8731,-0.3471,0.6418,0.3103,-0.7771,0.5475,0.1672,0.6116,0.7733,-0.9358,-0.1484,0.3198), -- Right Arm rot -68, 33, 68
+		["Left Shoulder"] = CFrame.new(0.7115,-0.0903,-0.3392,0.7757,0.4217,0.4695,-0.2963,-0.4133,0.861,0.5572,-0.807,-0.1957), -- Left Arm rot -103, 28, -29
+		["Right Hip"] = CFrame.new(-0.1446,0.0576,0.2467,0.4568,-0.2102,-0.8644,-0.5015,0.7417,-0.4454,0.7347,0.6369,0.2334), -- Right Leg rot 62, -60, 25
+		["Left Hip"] = CFrame.new(-0.5474,1.3647,0.9149,0.7818,0.3329,0.5273,-0.168,0.9268,-0.3359,-0.6005,0.174,0.7805), -- Left Leg rot 23, 32, -23
+		["Neck"] = CFrame.new(0,0,0,0.6216,0.5073,-0.5969,-0.6028,0.7964,0.049,0.5002,0.3293,0.8008), -- Head rot -4, -37, -39
+		["RootJoint"] = CFrame.new(0,-0.7509,-1.0747,0.6203,-0.542,0.567,0.7832,0.3888,-0.4852,0.0426,0.7451,0.6656), -- Torso rot 36, 35, 41
+	} },
+	{ dt = 0.0333, j = {
+		["Right Shoulder"] = CFrame.new(0.9217,-0.4748,0.5843,0.4048,-0.7719,0.4901,0.2844,0.6157,0.7349,-0.8691,-0.1581,0.4688), -- Right Arm rot -57, 29, 62
+		["Left Shoulder"] = CFrame.new(0.6512,-0.151,-0.2875,0.7757,0.484,0.405,-0.2963,-0.2873,0.9109,0.5572,-0.8266,-0.0794), -- Left Arm rot -95, 24, -32
+		["Right Hip"] = CFrame.new(-0.1403,0.042,0.243,0.4411,-0.2199,-0.8701,-0.4609,0.7764,-0.4298,0.7701,0.5906,0.2411), -- Right Leg rot 61, -60, 26
+		["Left Hip"] = CFrame.new(-0.524,1.186,0.817,0.7949,0.3625,0.4865,-0.2348,0.9232,-0.3042,-0.5594,0.1276,0.819), -- Left Leg rot 20, 29, -25
+		["Neck"] = CFrame.new(0,0,0,0.6342,0.5073,-0.5835,-0.6037,0.7964,0.0361,0.483,0.3293,0.8113), -- Head rot -3, -36, -39
+		["RootJoint"] = CFrame.new(0,-0.7509,-0.9342,0.6203,-0.5697,0.5391,0.7832,0.4126,-0.4652,0.0426,0.7108,0.7021), -- Torso rot 34, 33, 43
+	} },
+	{ dt = 0.1333, j = {
+		["Right Shoulder"] = CFrame.new(0.7536,-0.3328,0.4051,0.552,-0.723,0.4155,0.3448,0.6516,0.6757,-0.7592,-0.2297,0.609), -- Right Arm rot -48, 25, 53
+		["Left Shoulder"] = CFrame.new(0.4099,-0.3938,-0.0807,0.7757,0.6259,0.0809,-0.2963,0.248,0.9223,0.5572,-0.7394,0.3779), -- Left Arm rot -68, 5, -39
+		["Right Hip"] = CFrame.new(-0.1231,-0.0204,0.2285,0.3731,-0.2486,-0.8939,-0.2807,0.888,-0.3641,0.8843,0.3868,0.2616), -- Right Leg rot 54, -63, 34
+		["Left Hip"] = CFrame.new(-0.4307,0.4714,0.4252,0.8068,0.4929,0.3257,-0.4741,0.8691,-0.141,-0.3526,-0.0407,0.9349), -- Left Leg rot 9, 19, -31
+		["Neck"] = CFrame.new(0,0,0,0.6816,0.5073,-0.5274,-0.6046,0.7964,-0.0154,0.4122,0.3293,0.8495), -- Head rot 1, -32, -37
+		["RootJoint"] = CFrame.new(0,-0.7509,-0.3721,0.6203,-0.6657,0.4149,0.7832,0.497,-0.3737,0.0426,0.5567,0.8296), -- Torso rot 24, 25, 47
+	} },
+	{ dt = 0.0333, j = {
+		["Right Shoulder"] = CFrame.new(0.3683,-0.1191,-0.011,0.5709,-0.7771,0.265,0.5857,0.6116,0.5318,-0.5754,-0.1484,0.8043), -- Right Arm rot -33, 15, 54
+		["Left Shoulder"] = CFrame.new(0.3496,-0.4544,-0.029,0.7757,0.631,-0.0085,-0.2963,0.3761,0.8779,0.5572,-0.6785,0.4787), -- Left Arm rot -61, 0, -39
+		["Right Hip"] = CFrame.new(-0.1188,-0.0361,0.2249,0.3553,-0.253,-0.8999,-0.232,0.9087,-0.3471,0.9055,0.332,0.2641), -- Right Leg rot 53, -64, 35
+		["Left Hip"] = CFrame.new(-0.4073,0.2927,0.3273,0.7995,0.5274,0.2875,-0.525,0.8461,-0.0924,-0.292,-0.077,0.9533), -- Left Leg rot 6, 17, -33
+		["Neck"] = CFrame.new(0,0,0,0.6926,0.5073,-0.5128,-0.6041,0.7964,-0.0282,0.394,0.3293,0.8581), -- Head rot 2, -31, -36
+		["RootJoint"] = CFrame.new(0,-0.7509,-0.2315,0.6203,-0.6856,0.381,0.7832,0.5151,-0.3483,0.0426,0.5144,0.8565), -- Torso rot 22, 22, 48
+	} },
+	{ dt = 0.0667, j = {
+		["Right Shoulder"] = CFrame.new(-0.0621,-0.2522,0.0851,0.9343,-0.3424,0.0992,0.2889,0.8903,0.3519,-0.2088,-0.3001,0.9308), -- Right Arm rot -21, 6, 20
+		["Left Shoulder"] = CFrame.new(0.229,-0.5758,0.0744,0.7757,0.6033,-0.185,-0.2963,0.6071,0.7373,0.5572,-0.5171,0.6497), -- Left Arm rot -49, -11, -38
+		["Right Hip"] = CFrame.new(-0.1103,-0.0673,0.2176,0.3188,-0.2586,-0.9119,-0.1312,0.9407,-0.3127,0.9387,0.2194,0.266), -- Right Leg rot 50, -66, 39
+		["Left Hip"] = CFrame.new(-0.3607,-0.0646,0.1314,0.7727,0.5972,0.2151,-0.6135,0.7896,0.0116,-0.1629,-0.1409,0.9765), -- Left Leg rot -1, 12, -38
+		["Neck"] = CFrame.new(0,0,0,0.7138,0.5073,-0.4828,-0.6024,0.7964,-0.0539,0.3572,0.3293,0.8741), -- Head rot 4, -29, -35
+		["RootJoint"] = CFrame.new(0,0,0,0.7584,-0.5957,0.2646,0.6518,0.6931,-0.3079,0,0.406,0.9139), -- Torso rot 19, 15, 38
+	} },
+	{ dt = 0.2667, j = {
+		["Right Shoulder"] = CFrame.new(-0.0621,-0.2522,0.0851,0.9343,-0.3424,0.0992,0.2889,0.8903,0.3519,-0.2088,-0.3001,0.9308), -- Right Arm rot -21, 6, 20
+		["Left Shoulder"] = CFrame.new(0.229,-0.5758,0.0744,0.7757,0.6033,-0.185,-0.2963,0.6071,0.7373,0.5572,-0.5171,0.6497), -- Left Arm rot -49, -11, -38
+		["Right Hip"] = CFrame.new(-0.1103,-0.0673,0.2176,0.3188,-0.2586,-0.9119,-0.1312,0.9407,-0.3127,0.9387,0.2194,0.266), -- Right Leg rot 50, -66, 39
+		["Left Hip"] = CFrame.new(-0.3607,-0.0646,0.1314,0.7727,0.5972,0.2151,-0.6135,0.7896,0.0116,-0.1629,-0.1409,0.9765), -- Left Leg rot -1, 12, -38
+		["Neck"] = CFrame.new(0,0,0,0.7138,0.5073,-0.4828,-0.6024,0.7964,-0.0539,0.3572,0.3293,0.8741), -- Head rot 4, -29, -35
+		["RootJoint"] = CFrame.new(0,0,0,0.7584,-0.5957,0.2646,0.6518,0.6931,-0.3079,0,0.406,0.9139), -- Torso rot 19, 15, 38
+	} },
+	{ dt = 0.0333, j = {
+		["Right Shoulder"] = CFrame.new(0.8034,-0.2017,0.677,0.229,-0.7771,0.5862,0.0552,0.6116,0.7892,-0.9719,-0.1484,0.1829), -- Right Arm rot -77, 36, 74
+		["Left Shoulder"] = CFrame.new(0.7417,-0.0599,-0.365,0.7757,0.3874,0.4982,-0.2963,-0.4734,0.8295,0.5572,-0.7911,-0.2524), -- Left Arm rot -107, 30, -27
+		["Right Hip"] = CFrame.new(-0.1467,0.0654,0.2485,0.4645,-0.2049,-0.8615,-0.521,0.7234,-0.453,0.7161,0.6593,0.2293), -- Right Leg rot 63, -59, 24
+		["Left Hip"] = CFrame.new(-0.559,1.454,0.9639,0.7737,0.3187,0.5476,-0.1339,0.927,-0.3503,-0.6192,0.1977,0.7599), -- Left Leg rot 25, 33, -22
+		["Neck"] = CFrame.new(0,0,0,0.6152,0.5073,-0.6034,-0.6023,0.7964,0.0554,0.5087,0.3293,0.7955), -- Head rot -4, -37, -40
+		["RootJoint"] = CFrame.new(0,-0.7509,-1.0602,0.6203,-0.5215,0.5859,0.7832,0.3713,-0.4987,0.0426,0.7682,0.6388), -- Torso rot 38, 36, 40
+	} },
+	{ dt = 0.1, j = {
+		["Right Shoulder"] = CFrame.new(0.6245,-0.0688,0.5461,0.5079,-0.4525,0.733,-0.1301,0.8009,0.5845,-0.8515,-0.3923,0.3479), -- Right Arm rot -59, 47, 42
+		["Left Shoulder"] = CFrame.new(0.4778,-0.1403,-0.0404,0.7757,0.6131,0.1495,-0.2963,0.1448,0.944,0.5572,-0.7766,0.294), -- Left Arm rot -73, 9, -38
+		["Right Hip"] = CFrame.new(-0.273,0.1255,-0.1009,0.3397,-0.3722,-0.8637,-0.1757,0.8771,-0.4471,0.924,0.3036,0.2325), -- Right Leg rot 63, -60, 48
+		["Left Hip"] = CFrame.new(-0.4921,0.6918,0.5833,0.7801,0.3297,0.5318,-0.1605,0.9269,-0.3392,-0.6047,0.1792,0.776), -- Left Leg rot 24, 32, -23
+		["Neck"] = CFrame.new(0,0,0,0.4581,0.788,-0.4112,-0.7973,0.5689,0.2019,0.3931,0.2353,0.8889), -- Head rot -13, -24, -60
+		["RootJoint"] = CFrame.new(0,-0.7165,-0.6289,0.2,-0.7417,0.6402,0.9631,0.0287,-0.2677,0.1802,0.6701,0.7201), -- Torso rot 20, 40, 75
+	} },
+	{ dt = 0.0681, j = {
+		["Right Shoulder"] = CFrame.new(0.2722,-0.1036,0.4938,0.4821,-0.3529,0.8019,-0.0926,0.8896,0.4472,-0.8712,-0.2898,0.3962), -- Right Arm rot -48, 53, 36
+		["Left Shoulder"] = CFrame.new(0.1913,-0.1099,-0.1981,0.3496,0.9205,0.1746,-0.4721,0.0121,0.8815,0.8093,-0.3905,0.4388), -- Left Arm rot -64, 10, -69
+		["Right Hip"] = CFrame.new(-0.1136,0.0522,-0.042,0.8701,-0.1074,-0.481,-0.0004,0.9758,-0.2186,0.4928,0.1904,0.849), -- Right Leg rot 14, -29, 7
+		["Left Hip"] = CFrame.new(-0.2048,0.288,0.2428,0.9604,0.1253,0.2487,-0.0949,0.9869,-0.1308,-0.2618,0.1021,0.9597), -- Left Leg rot 8, 14, -7
+		["Neck"] = CFrame.new(0,0,0,0.5485,0.6954,-0.4643,-0.728,0.6703,0.1438,0.4112,0.2591,0.8739), -- Head rot -9, -28, -52
+		["RootJoint"] = CFrame.new(-0.1085,-0.6864,-0.3107,0.4394,-0.7725,0.4584,0.896,0.4131,-0.1628,-0.0636,0.4823,0.8737), -- Torso rot 11, 27, 60
 	} },
 	},
 }
@@ -6359,9 +8945,19 @@ local CONFIG = {
 	WallReach = 3.6,         -- distancia (studs, do centro do corpo) pra contar como encostado
 	WallCooldown = 0.8,
 	WallBoost = true,        -- da um impulso pra cima/pra fora da parede junto da anim
-	WallBoostUp = 42,
-	WallBoostAway = 14,
+	WallBoostUp = 35,
+	WallBoostForward = 50,   -- impulso pra frente (direcao que voce olha)
+	WallBoostSide = 20,      -- impulso pro lado: positivo = se afasta da parede (direita->esquerda), negativo = em direcao a ela
 	WallSwapSides = false,   -- true = troca qual anim toca em cada lado (se o paste da direita/esquerda estiver invertido)
+	WallRollMinFall = 5,     -- depois de um wall jump, o Roll toca ao pousar se caiu pelo menos isso (studs)
+	RollMinFall = 22,        -- queda (studs) a partir da qual toca a anim Roll ao pousar
+	RollPush = 22,           -- empurraozinho pra frente no Roll
+	CrushCooldown = 8,       -- cooldown do Crushing Blow (nome da tool mostra os segundos)
+	CrushRange = 25,         -- alcance pra pegar um NPC / parte solta
+	CrushSlam1 = 0.39,       -- segundos da anim em que cada batida no chao acontece
+	CrushSlam2 = 1.04,
+	CrushRelease = 1.12,     -- solta o alvo
+	CrushStandDelay = 2.5,   -- segundos que o NPC fica caido (ragdoll) antes de levantar
 	ComboWindow = 1.5,       -- segundos pra apertar M1 de novo e continuar o combo (senao volta pro soco 1)
 	ComboEndCooldown = 0.9,  -- cooldown depois do soco 4
 	DashCooldown = 1.5,
@@ -6378,7 +8974,7 @@ local CONFIG = {
 	WalkMaxRatio = 0.25,     -- ate 25% da sua velocidade maxima = Walk; acima disso = Run
 	-- dano em NPCs (nunca em jogadores): M1, M1 do dash, M1 no ar (3o soco) e Black Flash
 	Damage = true,
-	DamageValues = { M1 = 10, DashM1 = 18, AirM1 = 25, BlackFlash = 100, Manji = 40 },
+	DamageValues = { M1 = 10, DashM1 = 18, AirM1 = 25, BlackFlash = 100, Manji = 40, Crush = 30 },
 	HitRange = 7,            -- alcance dos socos (studs)
 	BlackFlashRange = 11,    -- alcance do Black Flash
 	HitCone = 0.1,           -- 1 = so bem na frente, 0 = meia-lua, -1 = ao redor
@@ -7262,7 +9858,7 @@ end
 -- ragdoll: troca os Motor6D por BallSocketConstraint (as partes soltam; com o ownership a fisica replica)
 local ragdolled = setmetatable({}, { __mode = "k" })
 
-local function ragdollNpc(model, hum, mroot, push, permanent)
+local function ragdollNpc(model, hum, mroot, push, permanent, manual)
 	if ragdolled[model] then return end
 	ragdolled[model] = true
 	playSoundAt(mroot, RAGDOLL_SFX[math.random(#RAGDOLL_SFX)])
@@ -7296,7 +9892,7 @@ local function ragdollNpc(model, hum, mroot, push, permanent)
 	end
 	pcall(function() mroot.AssemblyLinearVelocity = push end)
 	if permanent then return end
-	task.delay(CONFIG.RagdollTime, function()
+	local function restore()
 		if not model.Parent then return end
 		for _, e in ipairs(made) do
 			pcall(function() e[1].Enabled = true end)
@@ -7309,7 +9905,9 @@ local function ragdollNpc(model, hum, mroot, push, permanent)
 		pcall(function() hum.PlatformStand = false end)
 		pcall(function() hum:ChangeState(Enum.HumanoidStateType.GettingUp) end)
 		ragdolled[model] = nil
-	end)
+	end
+	if manual then return restore end -- quem chamou decide quando o NPC levanta
+	task.delay(CONFIG.RagdollTime, restore)
 end
 
 -- pedrinhas da mesma cor do chao
@@ -7356,6 +9954,86 @@ local function groundBurst(r, scale)
 			end
 		end)
 	end
+end
+
+-- chao quebrado: rachaduras + pedacos que saem do chao (parados, enterrados pela metade) -- somem depois
+local function breakGround(r, scale)
+	scale = scale or 1
+	local TweenService = game:GetService("TweenService")
+	local rng = Random.new()
+	local col, mat = groundColor(r)
+	local n = r.Normal
+	if n.Magnitude < 0.5 then n = Vector3.new(0, 1, 0) end
+	n = n.Unit
+	local right = n:Cross(Vector3.new(0, 0, 1))
+	if right.Magnitude < 0.1 then right = n:Cross(Vector3.new(1, 0, 0)) end
+	right = right.Unit
+	local base = CFrame.fromMatrix(r.Position, right, n, right:Cross(n))
+	local made = {}
+	local function mk(size, cf, color, material)
+		local p = Instance.new("Part")
+		p.Size = size
+		p.Anchored = true
+		p.CanCollide = false
+		p.CanQuery = false
+		p.CanTouch = false
+		p.CastShadow = false
+		p.Color = color
+		p.Material = material
+		p.TopSurface = Enum.SurfaceType.Smooth
+		p.BottomSurface = Enum.SurfaceType.Smooth
+		p.CFrame = cf
+		p.Parent = workspace
+		made[#made + 1] = p
+		return p
+	end
+	local dark = col:Lerp(Color3.new(0, 0, 0), 0.78)
+	-- marca escura no chao
+	local crater = mk(Vector3.new(0.08, 6.5 * scale, 6.5 * scale), base * CFrame.new(0, 0.03, 0) * CFrame.Angles(0, 0, math.pi / 2), dark, Enum.Material.Slate)
+	crater.Shape = Enum.PartType.Cylinder
+	crater.CFrame = base * CFrame.new(0, 0.03, 0) * CFrame.Angles(0, 0, math.pi / 2)
+	crater.Transparency = 0.25
+	-- rachaduras saindo do centro (3 segmentos tortos cada)
+	for _ = 1, math.floor(7 * scale + 0.5) do
+		local a = rng:NextNumber(0, math.pi * 2)
+		local px, pz = 0, 0
+		for _ = 1, 3 do
+			local ang = a + rng:NextNumber(-0.45, 0.45)
+			local len = rng:NextNumber(1.2, 2.6) * scale
+			local dx, dz = math.cos(ang), math.sin(ang)
+			mk(Vector3.new(rng:NextNumber(0.14, 0.3), 0.06, len),
+				base * CFrame.new(px + dx * len / 2, 0.05, pz + dz * len / 2) * CFrame.Angles(0, math.pi / 2 - ang, 0),
+				dark, Enum.Material.Slate)
+			px, pz = px + dx * len, pz + dz * len
+			a = ang
+		end
+	end
+	-- placas quebradas empurradas pra cima (inclinadas) e pedras enterradas
+	for i = 1, math.floor(8 * scale + 0.5) do
+		local a = (i / 8) * math.pi * 2 + rng:NextNumber(-0.3, 0.3)
+		local d = rng:NextNumber(1.6, 3.8) * scale
+		local sx, sz = rng:NextNumber(1.2, 2.4), rng:NextNumber(1, 2)
+		mk(Vector3.new(sx, 0.4, sz),
+			base * CFrame.new(math.cos(a) * d, 0.1, math.sin(a) * d) * CFrame.Angles(0, math.pi / 2 - a, 0) * CFrame.Angles(rng:NextNumber(0.25, 0.65), rng:NextNumber(-0.3, 0.3), 0),
+			col:Lerp(Color3.new(0, 0, 0), rng:NextNumber(0, 0.25)), mat)
+	end
+	for _ = 1, math.floor(16 * scale + 0.5) do
+		local a = rng:NextNumber(0, math.pi * 2)
+		local d = rng:NextNumber(0.8, 5.5) * scale
+		local s = rng:NextNumber(0.35, 1.1)
+		mk(Vector3.new(s * rng:NextNumber(0.8, 1.6), s * rng:NextNumber(0.6, 1.3), s * rng:NextNumber(0.8, 1.6)),
+			base * CFrame.new(math.cos(a) * d, s * 0.1, math.sin(a) * d)
+				* CFrame.Angles(rng:NextNumber(-0.7, 0.7), rng:NextNumber(0, 6.28), rng:NextNumber(-0.7, 0.7)),
+			col:Lerp(Color3.new(0, 0, 0), rng:NextNumber(0, 0.3)), mat)
+	end
+	for _, p in ipairs(made) do Debris:AddItem(p, 13) end
+	task.delay(9.5, function()
+		for _, p in ipairs(made) do
+			if p.Parent then
+				pcall(function() TweenService:Create(p, TweenInfo.new(2.5), { Transparency = 1 }):Play() end)
+			end
+		end
+	end)
 end
 
 -- M1 do ar: NPC sobe um tiquinho e e jogado no chao, pedrinhas voam
@@ -7613,7 +10291,27 @@ local BREAK_STATES = {
 	[S.Dead] = true,
 }
 
-local function onStateChanged(_, new)
+-- queda: guarda a altura mais alta do pulo/queda pra saber de onde voce caiu
+local fall = { maxY = nil }
+track(RunService.Heartbeat:Connect(function()
+	local _, _, root = getRig()
+	if not root or not airborne then
+		fall.maxY = nil
+		return
+	end
+	local y = root.Position.Y
+	if not fall.maxY or y > fall.maxY then fall.maxY = y end
+end))
+
+local function onStateChanged(old, new)
+	if old == S.Climbing and new ~= S.Climbing and current and current.name == "Climb" then
+		endCurrent(false)
+	end
+	if new == S.Climbing then
+		airborne = false
+		if not actionBusy() then play("Climb", nil, "air") end
+		return
+	end
 	if new == S.Jumping then
 		airborne = true
 		if not actionBusy() then
@@ -7629,7 +10327,21 @@ local function onStateChanged(_, new)
 	elseif LAND_STATES[new] then
 		if not airborne then return end
 		airborne = false
+		local _, _, lroot = getRig()
+		local drop = (fall.maxY and lroot) and (fall.maxY - lroot.Position.Y) or 0
+		fall.maxY = nil
 		if actionBusy() then return end
+		local afterWall = state.wallRollUntil ~= nil and os.clock() < state.wallRollUntil
+		state.wallRollUntil = nil
+		if ANIMS.Roll and drop >= (afterWall and CONFIG.WallRollMinFall or CONFIG.RollMinFall) then
+			if play("Roll", function() refreshAir() end, "action") then
+				overlay.blocking = false
+				local lk = lroot.CFrame.LookVector
+				local v = lroot.AssemblyLinearVelocity
+				lroot.AssemblyLinearVelocity = Vector3.new(lk.X * CONFIG.RollPush, v.Y, lk.Z * CONFIG.RollPush)
+				return
+			end
+		end
 		if not play("Land", nil, "air") and current and current.layer == "air" then
 			endCurrent(false)
 		end
@@ -7872,18 +10584,16 @@ local manji = { lockedUntil = 0, windowEnd = 0, cur = nil, lastHp = nil, counter
 local manjiTool = nil
 
 local function nearestNpc(root, range)
-	local params = OverlapParams.new()
-	params.FilterType = Enum.RaycastFilterType.Exclude
-	params.FilterDescendantsInstances = { lp.Character }
 	local best, bd
-	for _, part in ipairs(workspace:GetPartBoundsInRadius(root.Position, range, params)) do
-		local model = part:FindFirstAncestorOfClass("Model")
-		local h = model and model:FindFirstChildOfClass("Humanoid")
-		if h and h.Health > 0 and not Players:GetPlayerFromCharacter(model) then
-			local mr = model:FindFirstChild("HumanoidRootPart") or model.PrimaryPart
-			if mr then
-				local d = (mr.Position - root.Position).Magnitude
-				if not bd or d < bd then best, bd = { model, h, mr }, d end
+	for _, h in ipairs(workspace:GetDescendants()) do
+		if h:IsA("Humanoid") and h.Health > 0 then
+			local model = h.Parent
+			if model and model:IsA("Model") and model ~= lp.Character and not Players:GetPlayerFromCharacter(model) then
+				local mr = model:FindFirstChild("HumanoidRootPart") or model.PrimaryPart
+				if mr and mr:IsA("BasePart") then
+					local d = (mr.Position - root.Position).Magnitude
+					if d <= range and (not bd or d < bd) then best, bd = { model, h, mr }, d end
+				end
 			end
 		end
 	end
@@ -8020,6 +10730,202 @@ track(RunService.Heartbeat:Connect(function()
 	if hp < last - 0.01 then triggerCounter(hum, root) end
 end))
 
+-- CRUSHING BLOW (tool): pega um NPC (ou parte solta) perto, segura na mao direita e bate no chao 2x
+-- (as batidas sao as da anim); o NPC fica caido (ragdoll) e depois levanta
+local crush = { lockedUntil = 0 }
+local crushTool = nil
+
+local function crushTarget(root)
+	local npc = nearestNpc(root, CONFIG.CrushRange)
+	if npc then return { kind = "npc", model = npc[1], hum = npc[2], mroot = npc[3] } end
+	local params = OverlapParams.new()
+	params.FilterType = Enum.RaycastFilterType.Exclude
+	params.FilterDescendantsInstances = { lp.Character }
+	local best, bd
+	for _, p in ipairs(workspace:GetPartBoundsInRadius(root.Position, CONFIG.CrushRange, params)) do
+		if p:IsA("BasePart") and not p.Anchored and not p:IsA("Terrain") and p.Size.Magnitude < 40 then
+			local m = p:FindFirstAncestorOfClass("Model")
+			if not (m and m:FindFirstChildOfClass("Humanoid")) then
+				local d = (p.Position - root.Position).Magnitude
+				if not bd or d < bd then best, bd = p, d end
+			end
+		end
+	end
+	if best then return { kind = "part", part = best } end
+	return nil
+end
+
+local function runCrush(cur, tgt, root, char)
+	local arm = char:FindFirstChild("Right Arm")
+	if not arm then return end
+	local model, nh, mr, part = tgt.model, tgt.hum, tgt.mroot, tgt.part
+	local function slamFx(pos)
+		local params = RaycastParams.new()
+		params.FilterType = Enum.RaycastFilterType.Exclude
+		params.FilterDescendantsInstances = { char, model or part }
+		local r = workspace:Raycast(pos + Vector3.new(0, 3, 0), Vector3.new(0, -12, 0), params)
+			or workspace:Raycast(root.Position, Vector3.new(0, -10, 0), params)
+		if r then
+			groundBurst(r, 0.5)
+			breakGround(r, 1)
+		else
+			kickCamera(1.5)
+		end
+	end
+	local slams = { CONFIG.CrushSlam1, CONFIG.CrushSlam2 }
+	if tgt.kind == "none" then
+		for _, st in ipairs(slams) do
+			task.delay(st, function()
+				if current ~= cur or not arm.Parent then return end
+				slamFx((arm.CFrame * CFrame.new(0, -1.4, 0)).Position)
+			end)
+		end
+		return
+	end
+	local held = (tgt.kind == "npc") and mr or part
+	local t0 = os.clock()
+	while CONFIG.OwnershipTrick and not ownsPart(held) and os.clock() - t0 < 0.3 and current == cur do
+		boostSimulation()
+		task.wait()
+	end
+	if current ~= cur or not held.Parent then return end
+	local restore
+	if tgt.kind == "npc" then
+		restore = ragdollNpc(model, nh, mr, Vector3.zero, false, true)
+	end
+	-- sem colisao com voce e sem massa enquanto segurado (depois tudo volta ao normal)
+	local saved, parts = {}, {}
+	local function prep(inst)
+		if inst:IsA("BasePart") then
+			saved[inst] = { inst.CanCollide, inst.Massless }
+			parts[#parts + 1] = inst
+		end
+	end
+	if model then
+		for _, d in ipairs(model:GetDescendants()) do prep(d) end
+	else
+		prep(part)
+	end
+	local ncs = {}
+	for _, mine in ipairs(char:GetChildren()) do
+		if mine:IsA("BasePart") then
+			for _, p in ipairs(parts) do
+				local nc = Instance.new("NoCollisionConstraint")
+				nc.Part0 = mine
+				nc.Part1 = p
+				nc.Parent = mine
+				ncs[#ncs + 1] = nc
+			end
+		end
+	end
+	local function noCollide()
+		for _, p in ipairs(parts) do
+			if p.Parent then
+				p.CanCollide = false
+				p.Massless = true
+			end
+		end
+	end
+	noCollide()
+	-- cola o alvo no punho: fica sempre na mao, seguindo a anim
+	local fistCF = arm.CFrame * CFrame.new(0, -1.4, 0)
+	pcall(function()
+		held.AssemblyLinearVelocity = Vector3.zero
+		held.CFrame = CFrame.new(fistCF.Position) * arm.CFrame.Rotation
+	end)
+	local weld = Instance.new("WeldConstraint")
+	weld.Part0 = arm
+	weld.Part1 = held
+	weld.Parent = held
+	local hp = nh and (virtualHp[nh] or nh.Health) or 0
+	local dead = false
+	local nextSlam = 1
+	local startT = os.clock()
+	local conn, stepConn
+	local function finish()
+		if conn then
+			conn:Disconnect()
+			conn = nil
+		end
+		if stepConn then
+			stepConn:Disconnect()
+			stepConn = nil
+		end
+		pcall(function() weld:Destroy() end)
+		for _, nc in ipairs(ncs) do pcall(function() nc:Destroy() end) end
+		for p, s in pairs(saved) do
+			if p.Parent then
+				pcall(function()
+					p.CanCollide = s[1]
+					p.Massless = s[2]
+				end)
+			end
+		end
+		if nh then
+			pcall(function() mr.AssemblyLinearVelocity = Vector3.new(0, -30, 0) end)
+			pcall(function() nh.Health = math.max(hp, 0) end)
+			if dead then
+				pcall(function() nh:ChangeState(Enum.HumanoidStateType.Dead) end)
+				pcall(function() nh.Health = 0 end)
+			else
+				task.delay(CONFIG.CrushStandDelay, function()
+					if restore then restore() end
+				end)
+			end
+		else
+			pcall(function() part.AssemblyLinearVelocity = Vector3.new(0, -40, 0) end)
+		end
+	end
+	-- o Humanoid religa o CanCollide do torso/root sozinho: desliga de novo antes de cada fisica
+	stepConn = RunService.Stepped:Connect(noCollide)
+	conn = RunService.Heartbeat:Connect(function()
+		local el = os.clock() - startT
+		if current ~= cur or not held.Parent or not arm.Parent or el >= CONFIG.CrushRelease then
+			finish()
+			return
+		end
+		local fistPos = (arm.CFrame * CFrame.new(0, -1.4, 0)).Position
+		while slams[nextSlam] and el >= slams[nextSlam] do
+			nextSlam += 1
+			slamFx(fistPos)
+			if nh then
+				hp -= (CONFIG.DamageValues.Crush or 30)
+				virtualHp[nh] = hp
+				if hp <= 0 then dead = true end
+			end
+		end
+	end)
+end
+
+local function crushingBlow()
+	local now = os.clock()
+	if now < crush.lockedUntil then return end
+	if actionBusy() and not (current and DASH_ANIMS[current.name]) then return end
+	local char, hum, root = getRig()
+	if not hum then return end
+	local tgt = crushTarget(root)
+	if not tgt then tgt = { kind = "none" } end -- sem alvo: bate no chao 2x mesmo assim
+	crush.lockedUntil = now + (tgt.kind == "none" and CONFIG.CrushCooldown * 0.4 or CONFIG.CrushCooldown)
+	overlay.blocking = false
+	boostFor(6)
+	stopVault()
+	stopDash()
+	state.combo = 1
+	local tpos = (tgt.kind == "npc") and tgt.mroot.Position or (tgt.kind == "part" and tgt.part.Position) or nil
+	local flat = tpos and Vector3.new(tpos.X - root.Position.X, 0, tpos.Z - root.Position.Z) or Vector3.zero
+	if flat.Magnitude > 0.05 then
+		root.CFrame = CFrame.lookAt(root.Position, root.Position + flat.Unit)
+	end
+	local started = play("CrushingBlow", function() refreshAir() end, "action")
+	if not started then
+		crush.lockedUntil = 0
+		return
+	end
+	speedState.frozenUntil = now + (ANIMS.CrushingBlow.total or 1.3) -- parado enquanto bate
+	local cur = current
+	task.spawn(runCrush, cur, tgt, root, char)
+end
+
 -- PAREDE: encostado numa parede (direita/esquerda) e apertou pulo 2x = WallRight / WallLeft
 local wallState = { lastJump = 0, lockedUntil = 0 }
 
@@ -8060,6 +10966,7 @@ local function wallJumpPress()
 	local side, normal = findWall(char, root)
 	if not side then return end
 	wallState.lockedUntil = now + CONFIG.WallCooldown
+	state.wallRollUntil = now + 8 -- ao pousar depois do wall parkour, o Roll usa WallRollMinFall
 	wallState.lastJump = 0
 	overlay.blocking = false
 	stopVault()
@@ -8068,11 +10975,22 @@ local function wallJumpPress()
 	if CONFIG.WallSwapSides then right = not right end
 	local started = play(right and "WallRight" or "WallLeft", function() refreshAir() end, "action")
 	if started and CONFIG.WallBoost then
-		local v = root.AssemblyLinearVelocity
-		root.AssemblyLinearVelocity = Vector3.new(
-			v.X * 0.5 + normal.X * CONFIG.WallBoostAway,
-			CONFIG.WallBoostUp,
-			v.Z * 0.5 + normal.Z * CONFIG.WallBoostAway)
+		local lk = root.CFrame.LookVector
+		local fwd = Vector3.new(lk.X, 0, lk.Z)
+		fwd = fwd.Magnitude > 0.01 and fwd.Unit or Vector3.zero
+		local away = Vector3.new(normal.X, 0, normal.Z)
+		away = away.Magnitude > 0.01 and away.Unit or Vector3.zero
+		local horiz = fwd * CONFIG.WallBoostForward + away * CONFIG.WallBoostSide
+		root.AssemblyLinearVelocity = horiz + Vector3.new(0, CONFIG.WallBoostUp, 0)
+		-- segura o impulso horizontal por uns frames (o controle do Humanoid no ar amorteceria)
+		task.spawn(function()
+			local t0 = os.clock()
+			while os.clock() - t0 < 0.25 and root.Parent do
+				RunService.Heartbeat:Wait()
+				local v = root.AssemblyLinearVelocity
+				root.AssemblyLinearVelocity = Vector3.new(horiz.X, v.Y, horiz.Z)
+			end
+		end)
 	end
 end
 track(UserInputService.JumpRequest:Connect(wallJumpPress))
@@ -8132,6 +11050,23 @@ local function destroyFlashTool()
 		pcall(function() manjiTool:Destroy() end)
 		manjiTool = nil
 	end
+	if crushTool then
+		pcall(function() crushTool:Destroy() end)
+		crushTool = nil
+	end
+end
+local function makeCrushTool()
+	local tool = Instance.new("Tool")
+	tool.Name = "Crushing Blow"
+	tool.RequiresHandle = false
+	tool.CanBeDropped = false
+	tool.ToolTip = "Crushing Blow - grab and slam (cooldown " .. CONFIG.CrushCooldown .. "s)"
+	tool.Activated:Connect(function() crushingBlow() end)
+	crushTool = tool
+	task.spawn(function()
+		local bp = lp:WaitForChild("Backpack", 10)
+		if bp and crushTool == tool then tool.Parent = bp end
+	end)
 end
 local function makeManjiTool()
 	local tool = Instance.new("Tool")
@@ -8160,8 +11095,14 @@ local function makeFlashTool()
 		if bp and flashTool == tool then tool.Parent = bp end
 	end)
 	makeManjiTool()
+	makeCrushTool()
 end
 track(RunService.Heartbeat:Connect(function()
+	if crushTool and crushTool.Parent then
+		local rem = crush.lockedUntil - os.clock()
+		local want = (rem > 0) and string.format("%.1fs", rem) or "Crushing Blow"
+		if crushTool.Name ~= want then crushTool.Name = want end
+	end
 	if manjiTool and manjiTool.Parent then
 		local rem = manji.lockedUntil - os.clock()
 		local want = (rem > 0) and string.format("%.1fs", rem) or "Manji Kick"
