@@ -9017,6 +9017,8 @@ local CONFIG = {
 	PvpLeeway = 4,           -- folga de alcance (lag)
 	PvpPoll = 0.2,           -- intervalo do poll durante a luta (s)
 	PvpMaxAge = 1.5,         -- ignora golpes mais velhos que isso (s)
+	PvpRealRagdoll = false,   -- false = queda segura no SEU personagem (nao quebra os joints, sem bug de ficar invisivel). true = ragdoll de verdade (so use com script de reanimate)
+	PvpKnockTime = 1.5,      -- segundos que voce fica caido (queda segura)
 }
 
 for i = 1, 4 do
@@ -11373,6 +11375,38 @@ do
 	end
 
 	-- ---------- lado de quem apanha ----------
+	-- queda segura no SEU personagem: nao desativa Motor6D (isso bugava sem reanimate:
+	-- o corpo ficava invisivel e o personagem deitado). Usa PlatformStand + empurrao e levanta no fim.
+	local safeBusy = setmetatable({}, { __mode = "k" })
+	local function isDown(char)
+		return ragdolled[char] or safeBusy[char]
+	end
+	local function selfRagdoll(char, hum, root, vel, _permanent, manual)
+		if CONFIG.PvpRealRagdoll then
+			return ragdollNpc(char, hum, root, vel, false, manual)
+		end
+		if safeBusy[char] then return end
+		safeBusy[char] = true
+		local lk = root.CFrame.LookVector
+		local heading = Vector3.new(lk.X, 0, lk.Z)
+		heading = heading.Magnitude > 0.05 and heading.Unit or Vector3.new(0, 0, -1)
+		pcall(function() hum.PlatformStand = true end)
+		pcall(function() root.AssemblyLinearVelocity = vel end)
+		local function restore()
+			safeBusy[char] = nil
+			if not root.Parent or not hum.Parent then return end
+			pcall(function()
+				local pos = root.Position + Vector3.new(0, 2.5, 0)
+				root.AssemblyAngularVelocity = Vector3.zero
+				root.CFrame = CFrame.lookAt(pos, pos + heading) -- de pe, olhando pro mesmo lado
+				hum.PlatformStand = false
+				hum:ChangeState(Enum.HumanoidStateType.GettingUp)
+			end)
+		end
+		if manual then return restore end
+		task.delay(CONFIG.PvpKnockTime, restore)
+	end
+
 	local function pvpCounter(atkId, atkRoot)
 		local _, hum, root = getRig()
 		if not root then return false end
@@ -11446,8 +11480,8 @@ do
 			if ev.idx then playNpcAnim(char, "NpcHit" .. ev.idx) end
 			if big then
 				task.delay(0.25, function()
-					if root.Parent and not ragdolled[char] then
-						ragdollNpc(char, hum, root, push * CONFIG.Knockback * 1.2 + Vector3.new(0, CONFIG.Knockback * 0.5, 0), false)
+					if root.Parent and not isDown(char) then
+						selfRagdoll(char, hum, root, push * CONFIG.Knockback * 1.2 + Vector3.new(0, CONFIG.Knockback * 0.5, 0), false)
 					end
 				end)
 			end
@@ -11460,7 +11494,7 @@ do
 		local char = lp.Character
 		local root = bodyPart(char)
 		local hum = char and char:FindFirstChildOfClass("Humanoid")
-		if not root or not hum or hum.Health <= 0 or ragdolled[char] then return end
+		if not root or not hum or hum.Health <= 0 or isDown(char) then return end
 		cancelAll()
 		local left = Vector3.new(ev.left[1], 0, ev.left[3])
 		local front = Vector3.new(ev.front[1], root.Position.Y, ev.front[3])
@@ -11480,10 +11514,10 @@ do
 			end)
 		end
 		task.delay(ev.delay or 0.3, function()
-			if not root.Parent or ragdolled[char] then return end
+			if not root.Parent or isDown(char) then return end
 			playSoundAt(root, HIT_SFX.Hit4)
 			kickCamera(1.2)
-			ragdollNpc(char, hum, root, left * CONFIG.ManjiThrow + Vector3.new(0, 30, 0), false)
+			selfRagdoll(char, hum, root, left * CONFIG.ManjiThrow + Vector3.new(0, 30, 0), false)
 			task.delay(0.2, function()
 				if not root.Parent then return end
 				pcall(function()
@@ -11513,9 +11547,9 @@ do
 		local char = lp.Character
 		local root = bodyPart(char)
 		local hum = char and char:FindFirstChildOfClass("Humanoid")
-		if not arm or not root or not hum or hum.Health <= 0 or ragdolled[char] then return end
+		if not arm or not root or not hum or hum.Health <= 0 or isDown(char) then return end
 		cancelAll()
-		local restore = ragdollNpc(char, hum, root, Vector3.zero, false, true)
+		local restore = selfRagdoll(char, hum, root, Vector3.zero, false, true)
 		local saved = {}
 		for _, d in ipairs(char:GetDescendants()) do
 			if d:IsA("BasePart") then saved[d] = d.CanCollide end
