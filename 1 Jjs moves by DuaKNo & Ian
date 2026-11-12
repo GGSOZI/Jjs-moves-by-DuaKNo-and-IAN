@@ -9018,6 +9018,7 @@ local CONFIG = {
 	PvpPoll = 0.2,           -- intervalo do poll durante a luta (s)
 	PvpMaxAge = 1.5,         -- ignora golpes mais velhos que isso (s)
 	PvpRealRagdoll = false,   -- false = queda segura no SEU personagem (nao quebra os joints, sem bug de ficar invisivel). true = ragdoll de verdade (so use com script de reanimate)
+	PvpDebug = false,        -- true = mostra notificacoes dos eventos do PvP (pra descobrir o que falha)
 	PvpKnockTime = 1.5,      -- segundos que voce fica caido (queda segura)
 }
 
@@ -9068,9 +9069,9 @@ local DASH_ANIMS = { Dash = true, DashLeft = true, DashRight = true, DashBack = 
 local airborne = false
 local stateConn = nil
 
-local function notify(text)
+local function notify(text, dur)
 	pcall(function()
-		StarterGui:SetCore("SendNotification", { Title = "Yuji", Text = text, Duration = 3 })
+		StarterGui:SetCore("SendNotification", { Title = "Yuji", Text = text, Duration = dur or 3 })
 	end)
 end
 
@@ -11367,14 +11368,69 @@ do
 				if d <= CONFIG.CrushRange and (not bd or d < bd) then best, bd = { plr = p, root = r }, d end
 			end
 		end
+		if not best and CONFIG.PvpDebug then notify("PvP: no player within CrushRange") end
 		return best
 	end
 
 	PVP.crush = function(tgt)
+		if CONFIG.PvpDebug then notify("PvP: crush sent to " .. tgt.plr.Name) end
 		post({ t = "crush", to = tgt.plr.UserId, rel = CONFIG.CrushRelease, s = { CONFIG.CrushSlam1, CONFIG.CrushSlam2 } })
 	end
 
 	-- ---------- lado de quem apanha ----------
+	local crushedBy = {} -- userId de quem me agarrou (so pra nao duplicar o efeito da batida no chao)
+
+	-- pedrinhas do impacto embaixo de quem levou o golpe (igual o efeito dos NPCs)
+	local function impact(char, part, scale)
+		if not part or not part.Parent then return end
+		local params = RaycastParams.new()
+		params.FilterType = Enum.RaycastFilterType.Exclude
+		params.FilterDescendantsInstances = { char, lp.Character }
+		local r = workspace:Raycast(part.Position, Vector3.new(0, -8, 0), params)
+		if r then groundBurst(r, scale) end
+	end
+
+	-- efeitos e sons de uma anim (anim.sfx, anim.loopSfx, anim.fx) no personagem do outro jogador:
+	-- Black Flash, Manji Kick, dash, Crushing Blow... ele ve as mesmas particulas e escuta os mesmos sons
+	local function remoteFx(name, char, root)
+		local anim = ANIMS[name]
+		if not anim then return end
+		local speed = anim.speed or 1
+		if CONFIG.Sounds then
+			for _, list in ipairs({ anim.sfx or {}, anim.loopSfx or {} }) do
+				for _, snd0 in ipairs(list) do
+					task.delay(snd0.t / speed, function()
+						if not root.Parent then return end
+						local snd = Instance.new("Sound")
+						snd.SoundId = snd0.id
+						snd.Volume = snd0.vol
+						snd.PlaybackSpeed = snd0.speed
+						snd.RollOffMode = Enum.RollOffMode.Linear
+						snd.RollOffMinDistance = 10
+						snd.RollOffMaxDistance = 300
+						snd.Parent = root
+						snd:Play()
+						Debris:AddItem(snd, 3)
+					end)
+				end
+			end
+		end
+		if anim.fx then
+			for _, e in ipairs(anim.fx) do
+				task.delay((e.t or 0) / speed, function()
+					if not root.Parent then return end
+					if e.kind == "sfx" then
+						if not CONFIG.Sounds then return end
+					elseif not CONFIG.Effects then
+						return
+					end
+					local ok, err = pcall(spawnFx, e, root.Parent, root)
+					if not ok then warn("[Yuji FX] ignorado:", err) end
+				end)
+			end
+		end
+	end
+
 	-- queda segura no SEU personagem: nao desativa Motor6D (isso bugava sem reanimate:
 	-- o corpo ficava invisivel e o personagem deitado). Usa PlatformStand + empurrao e levanta no fim.
 	local safeBusy = setmetatable({}, { __mode = "k" })
@@ -11449,10 +11505,11 @@ do
 		local kind = ev.kind
 		local range = (kind == "BlackFlash") and CONFIG.BlackFlashRange
 			or (kind == "DashM1" and CONFIG.DashHitRange or CONFIG.HitRange)
-		local cone = (kind == "DashM1") and CONFIG.DashHitCone or CONFIG.HitCone
+		local cone = (kind == "DashM1") and -1 or CONFIG.HitCone
 		local to = root.Position - ap
 		local flat = Vector3.new(to.X, 0, to.Z)
-		if to.Magnitude > range + CONFIG.PvpLeeway then return end
+		local lee = CONFIG.PvpLeeway + ((kind == "DashM1") and 10 or 0)
+		if to.Magnitude > range + lee then return end
 		if flat.Magnitude > 0.01 and flat.Unit:Dot(al) < cone then return end
 
 		-- Manji Kick armado: o golpe vira contra-ataque
@@ -11478,6 +11535,28 @@ do
 			local vel = push * CONFIG.Knockback * (big and 1.4 or 1) + Vector3.new(0, CONFIG.Knockback * 0.35, 0)
 			pcall(function() root.AssemblyLinearVelocity = vel end)
 			if ev.idx then playNpcAnim(char, "NpcHit" .. ev.idx) end
+			if kind ~= "AirM1" and kind ~= "BlackFlash" then
+				task.delay(0.1, impact, char, root, big and 0.7 or 0.45)
+			end
+			if kind == "AirM1" then
+				task.delay(0.14, function()
+					if not root.Parent then return end
+					pcall(function() root.AssemblyLinearVelocity = Vector3.new(push.X * 4, -CONFIG.SlamSpeed, push.Z * 4) end)
+					local params = RaycastParams.new()
+					params.FilterType = Enum.RaycastFilterType.Exclude
+					params.FilterDescendantsInstances = { char }
+					local t0 = os.clock()
+					while os.clock() - t0 < 0.8 do
+						RunService.Heartbeat:Wait()
+						if not root.Parent then return end
+						local r = workspace:Raycast(root.Position, Vector3.new(0, -6, 0), params)
+						if r and root.Position.Y - r.Position.Y < 3.4 then
+							groundBurst(r)
+							return
+						end
+					end
+				end)
+			end
 			if big then
 				task.delay(0.25, function()
 					if root.Parent and not isDown(char) then
@@ -11542,13 +11621,14 @@ do
 
 	-- Crushing Blow: ele me segura na mao direita (a anim dele toca no personagem dele aqui) e bate no chao 2x
 	local function onCrush(ev)
-		local _, ach = plrChar(ev.from)
+		local _, ach, aroot = plrChar(ev.from)
 		local arm = ach and ach:FindFirstChild("Right Arm")
 		local char = lp.Character
 		local root = bodyPart(char)
 		local hum = char and char:FindFirstChildOfClass("Humanoid")
-		if not arm or not root or not hum or hum.Health <= 0 or isDown(char) then return end
+		if not aroot or not root or not hum or hum.Health <= 0 or isDown(char) then return end
 		cancelAll()
+		crushedBy[ev.from] = os.clock()
 		local restore = selfRagdoll(char, hum, root, Vector3.zero, false, true)
 		local saved = {}
 		for _, d in ipairs(char:GetDescendants()) do
@@ -11563,6 +11643,13 @@ do
 		local nextSlam = 1
 		local t0 = os.clock()
 		local conn, stepConn
+		-- posicao da mao dele; se a anim dele ainda nao tocou aqui (braco longe do corpo), usa um ponto na frente dele
+		local function fistCF()
+			if arm and arm.Parent and (arm.Position - aroot.Position).Magnitude < 8 then
+				return arm.CFrame * CFrame.new(0, -1.4, 0)
+			end
+			return aroot.CFrame * CFrame.new(1.5, 0, -3.5)
+		end
 		local function finish()
 			if conn then conn:Disconnect() conn = nil end
 			if stepConn then stepConn:Disconnect() stepConn = nil end
@@ -11577,13 +11664,13 @@ do
 		stepConn = RunService.Stepped:Connect(noCollide)
 		conn = RunService.Heartbeat:Connect(function()
 			local el = os.clock() - t0
-			if not arm.Parent or not root.Parent or el >= (ev.rel or CONFIG.CrushRelease) then
+			if not aroot.Parent or not root.Parent or el >= (ev.rel or CONFIG.CrushRelease) then
 				finish()
 				return
 			end
-			local fist = arm.CFrame * CFrame.new(0, -1.4, 0)
+			local fist = fistCF()
 			pcall(function()
-				root.CFrame = CFrame.new(fist.Position) * arm.CFrame.Rotation
+				root.CFrame = CFrame.new(fist.Position) * fist.Rotation
 				root.AssemblyLinearVelocity = Vector3.zero
 			end)
 			while slams[nextSlam] and el >= slams[nextSlam] do
@@ -11614,17 +11701,43 @@ do
 			playSoundAt(vroot, big and HIT_SFX.Hit4 or HIT_SFX.Hit3)
 			kickCamera(big and 0.8 or 0.4)
 			if ev.idx then playNpcAnim(vchar, "NpcHit" .. ev.idx) end
+			if ev.kind ~= "AirM1" and ev.kind ~= "BlackFlash" then
+				task.delay(0.1, impact, vchar, vroot, big and 0.7 or 0.45)
+			end
 		end
 	end
 
 	-- animacao do outro (soco, dash, manji, crushing blow...) no personagem dele
 	local function onAnim(ev)
-		local _, c = plrChar(ev.from)
-		if c and ANIMS[ev.name] then playNpcAnim(c, ev.name) end
+		local _, c, aroot = plrChar(ev.from)
+		if not c or not ANIMS[ev.name] then return end
+		playNpcAnim(c, ev.name)
+		if aroot then remoteFx(ev.name, c, aroot) end
+		if ev.name == "CrushingBlow" and aroot then
+			for _, st in ipairs({ CONFIG.CrushSlam1, CONFIG.CrushSlam2 }) do
+				task.delay(st, function()
+					if not aroot.Parent then return end
+					if os.clock() - (crushedBy[ev.from] or -10) < 3 then return end -- quem foi agarrado ja faz o proprio efeito
+					local arm = c:FindFirstChild("Right Arm")
+					local pos = arm and (arm.CFrame * CFrame.new(0, -1.4, 0)).Position or aroot.Position
+					local params = RaycastParams.new()
+					params.FilterType = Enum.RaycastFilterType.Exclude
+					params.FilterDescendantsInstances = { c }
+					local r = workspace:Raycast(pos + Vector3.new(0, 3, 0), Vector3.new(0, -12, 0), params)
+					if r then
+						groundBurst(r, 0.5)
+						breakGround(r, 1)
+					else
+						kickCamera(1.5)
+					end
+				end)
+			end
+		end
 	end
 
 	local function handle(ev)
 		if ev.from == me then return end
+		if CONFIG.PvpDebug and ev.t ~= "anim" then notify("PvP got: " .. tostring(ev.t) .. " " .. tostring(ev.kind or "")) end
 		if ev.to and ev.to ~= me then return end
 		if (ev.age or 0) / 1000 > CONFIG.PvpMaxAge then return end
 		if ev.t == "hit" then onHit(ev)
@@ -11673,7 +11786,8 @@ do
 									local ev = data[k]
 									if type(ev) == "table" and lastKey ~= nil then
 										ev.age = nowMs() + offset - (tonumber(ev.ts) or 0)
-										pcall(handle, ev)
+										local okh, err = pcall(handle, ev)
+										if not okh and CONFIG.PvpDebug then notify("PvP error: " .. tostring(err)) end
 									end
 									lastKey = k
 								end
@@ -11687,7 +11801,7 @@ do
 				end
 			end
 		end)
-		notify("PvP activated")
+		notify("PvP activated", 2)
 	end
 
 	genv.YujiPvpStop = function()
@@ -11699,28 +11813,20 @@ do
 	startPvp()
 end
 
--- creditos: 3 mensagens do proprio Roblox (a 1a com a foto do DuaKNo)
+-- creditos: 3 mensagens do proprio Roblox (a 1a com a foto do DuaKNo), todas juntas e somem em 2s
 task.spawn(function()
 	local id
 	pcall(function() id = Players:GetUserIdFromNameAsync("DuaKNo") end)
 	local icon = id and ("rbxthumb://type=AvatarHeadShot&id=" .. id .. "&w=150&h=150") or nil
-	local function send(title, text, dur, withIcon, copyText)
-		local d = { Title = title, Text = text, Duration = dur }
+	local function send(title, text, withIcon)
+		local d = { Title = title, Text = text, Duration = 2 }
 		if withIcon and icon then d.Icon = icon end
-		if copyText and setclipboard then
-			local bf = Instance.new("BindableFunction")
-			bf.OnInvoke = function() pcall(setclipboard, copyText) end
-			d.Button1 = "Copy"
-			d.Callback = bf
-		end
 		for _ = 1, 10 do
 			if pcall(function() StarterGui:SetCore("SendNotification", d) end) then return end
-			task.wait(0.5)
+			task.wait(0.2)
 		end
 	end
-	send("Jjs moves for NPCs", "By DuaKNo", 7, true)
-	task.wait(1)
-	send("Follow on Instagram", "me_duakno", 7, false, "me_duakno")
-	task.wait(1)
-	send("Join Discord server for more", "discord.gg/empgqd5qpq", 9, false, "https://discord.gg/empgqd5qpq")
+	task.spawn(send, "Jjs moves for NPCs", "By DuaKNo", true)
+	task.spawn(send, "Follow on Instagram", "me_duakno", false)
+	task.spawn(send, "Join Discord server for more", "discord.gg/empgqd5qpq", false)
 end)
