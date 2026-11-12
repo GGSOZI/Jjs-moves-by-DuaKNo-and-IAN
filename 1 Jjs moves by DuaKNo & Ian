@@ -9076,7 +9076,7 @@ local function getRig()
 	local char = lp.Character
 	if not char then return end
 	local hum = char:FindFirstChildOfClass("Humanoid")
-	local root = char:FindFirstChild("HumanoidRootPart")
+	local root = char:FindFirstChild("HumanoidRootPart") or char:FindFirstChild("Torso") or char:FindFirstChild("UpperTorso")
 	if not hum or not root or hum.Health <= 0 then return end
 	if hum.RigType.Name ~= CONFIG.RigType then return end
 	return char, hum, root
@@ -10177,7 +10177,7 @@ local function hitNpcs(root, kind, animName)
 		local model = part:FindFirstAncestorOfClass("Model")
 		local hum = model and model:FindFirstChildOfClass("Humanoid")
 		if hum and not seen[hum] and hum.Health > 0 and not Players:GetPlayerFromCharacter(model) then
-			local mroot = model:FindFirstChild("HumanoidRootPart") or model.PrimaryPart or part
+			local mroot = model:FindFirstChild("HumanoidRootPart") or model:FindFirstChild("Torso") or model:FindFirstChild("UpperTorso") or model.PrimaryPart or part
 			local to = mroot.Position - root.Position
 			local flat = Vector3.new(to.X, 0, to.Z)
 			if flat.Magnitude < 0.01 or flat.Unit:Dot(flatLook) >= cone then
@@ -10601,7 +10601,7 @@ local function nearestNpc(root, range)
 		if h:IsA("Humanoid") and h.Health > 0 then
 			local model = h.Parent
 			if model and model:IsA("Model") and model ~= lp.Character and not Players:GetPlayerFromCharacter(model) then
-				local mr = model:FindFirstChild("HumanoidRootPart") or model.PrimaryPart
+				local mr = model:FindFirstChild("HumanoidRootPart") or model:FindFirstChild("Torso") or model:FindFirstChild("UpperTorso") or model.PrimaryPart
 				if mr and mr:IsA("BasePart") then
 					local d = (mr.Position - root.Position).Magnitude
 					if d <= range and (not bd or d < bd) then best, bd = { model, h, mr }, d end
@@ -11283,12 +11283,23 @@ do
 		ManjiStance = true, ManjiCounter = true, CrushingBlow = true,
 	}
 
+	local BODY_PARTS = { "HumanoidRootPart", "Torso", "UpperTorso", "LowerTorso", "Head" }
+	local function bodyPart(char)
+		if not char then return nil end
+		for _, n in ipairs(BODY_PARTS) do
+			local p = char:FindFirstChild(n)
+			if p and p:IsA("BasePart") then return p end
+		end
+		if char.PrimaryPart then return char.PrimaryPart end
+		return char:FindFirstChildWhichIsA("BasePart")
+	end
+
 	local function peerNear()
-		local root = lp.Character and lp.Character:FindFirstChild("HumanoidRootPart")
+		local root = bodyPart(lp.Character)
 		if not root then return false end
 		for _, p in ipairs(Players:GetPlayers()) do
 			if p ~= lp and p.Character then
-				local r = p.Character:FindFirstChild("HumanoidRootPart")
+				local r = bodyPart(p.Character)
 				if r and (r.Position - root.Position).Magnitude <= CONFIG.PvpNear then return true end
 			end
 		end
@@ -11324,7 +11335,7 @@ do
 	local function plrChar(userId)
 		local plr = Players:GetPlayerByUserId(userId)
 		local c = plr and plr.Character
-		return plr, c, c and c:FindFirstChild("HumanoidRootPart")
+		return plr, c, bodyPart(c)
 	end
 
 	-- ---------- lado de quem ataca ----------
@@ -11347,7 +11358,7 @@ do
 	PVP.crushPlayer = function(root)
 		local best, bd
 		for _, p in ipairs(Players:GetPlayers()) do
-			local r = p ~= lp and p.Character and p.Character:FindFirstChild("HumanoidRootPart")
+			local r = p ~= lp and bodyPart(p.Character)
 			local h = p.Character and p.Character:FindFirstChildOfClass("Humanoid")
 			if r and h and h.Health > 0 then
 				local d = (r.Position - root.Position).Magnitude
@@ -11392,7 +11403,7 @@ do
 
 	local function onHit(ev)
 		local char = lp.Character
-		local root = char and char:FindFirstChild("HumanoidRootPart")
+		local root = bodyPart(char)
 		local hum = char and char:FindFirstChildOfClass("Humanoid")
 		if not root or not hum or hum.Health <= 0 then return end
 		local atkPlr, _, atkRoot = plrChar(ev.from)
@@ -11447,7 +11458,7 @@ do
 	-- Manji Kick: fui contra-atacado -> me puxa pra frente dele e me joga pro lado esquerdo dele
 	local function onManji(ev)
 		local char = lp.Character
-		local root = char and char:FindFirstChild("HumanoidRootPart")
+		local root = bodyPart(char)
 		local hum = char and char:FindFirstChildOfClass("Humanoid")
 		if not root or not hum or hum.Health <= 0 or ragdolled[char] then return end
 		cancelAll()
@@ -11500,7 +11511,7 @@ do
 		local _, ach = plrChar(ev.from)
 		local arm = ach and ach:FindFirstChild("Right Arm")
 		local char = lp.Character
-		local root = char and char:FindFirstChild("HumanoidRootPart")
+		local root = bodyPart(char)
 		local hum = char and char:FindFirstChildOfClass("Humanoid")
 		if not arm or not root or not hum or hum.Health <= 0 or ragdolled[char] then return end
 		cancelAll()
