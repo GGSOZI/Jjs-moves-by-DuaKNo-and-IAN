@@ -9008,6 +9008,15 @@ local CONFIG = {
 	DashHitRange = 14,       -- alcance do M1 do dash (mais facil de acertar)
 	DashHitCone = -0.3,      -- cone do M1 do dash (-1 = ao redor)
 	KnockUnanchored = true,  -- golpes tambem empurram partes soltas (unanchored)
+
+	-- PvP entre 2 jogadores com este script (relay via Firebase Realtime Database). Sem dano: so efeitos.
+	Pvp = true,
+	PvpUrl = "https://jjs-multiplayer-default-rtdb.firebaseio.com", -- URL do seu Firebase Realtime Database, sem / no final
+	PvpRoom = "DuaKNoIsTheGoatBetterThanDiddy",  -- mesmo codigo nos 2 (so letras e numeros, 4-32)
+	PvpNear = 80,            -- so fala com o relay se tiver outro jogador a ate X studs (economiza requests)
+	PvpLeeway = 4,           -- folga de alcance (lag)
+	PvpPoll = 0.2,           -- intervalo do poll durante a luta (s)
+	PvpMaxAge = 1.5,         -- ignora golpes mais velhos que isso (s)
 }
 
 for i = 1, 4 do
@@ -9399,6 +9408,7 @@ local function playSfx(cur, root)
 end
 
 local scheduleHit -- definido mais abaixo (dano em NPCs)
+local PVP = {} -- ganchos do PvP (preenchido no fim do script)
 
 -- layers: "action" (soco/dash) > "air" (pulo/queda/pouso) > "move" (correr)
 -- uma layer mais forte interrompe a mais fraca, o contrario nao acontece
@@ -9421,6 +9431,7 @@ local function play(name, onDone, layer)
 		end
 	end
 	if count == 0 then return false end
+	if layer == "action" and PVP.anim then pcall(PVP.anim, name) end
 
 	-- pega o estado base da animacao anterior pra nao reativar o Animate entre transicoes
 	local inherited = nil
@@ -10149,6 +10160,7 @@ local function pushLooseParts(root, range, cone, flatLook)
 end
 
 local function hitNpcs(root, kind, animName)
+	if PVP.send then pcall(PVP.send, root, kind, animName) end
 	local dmg = CONFIG.DamageValues[kind] or 10
 	local punchIdx = tonumber(string.match(animName or "", "^Punch(%d)$"))
 	local range = (kind == "BlackFlash") and CONFIG.BlackFlashRange or (kind == "DashM1" and CONFIG.DashHitRange or CONFIG.HitRange)
@@ -10903,15 +10915,16 @@ local function crushingBlow()
 	if actionBusy() and not (current and DASH_ANIMS[current.name]) then return end
 	local char, hum, root = getRig()
 	if not hum then return end
-	local tgt = crushTarget(root)
+	local ptgt = PVP.crushPlayer and PVP.crushPlayer(root)
+	local tgt = (not ptgt) and crushTarget(root) or nil
 	if not tgt then tgt = { kind = "none" } end -- sem alvo: bate no chao 2x mesmo assim
-	crush.lockedUntil = now + (tgt.kind == "none" and CONFIG.CrushCooldown * 0.4 or CONFIG.CrushCooldown)
+	crush.lockedUntil = now + ((tgt.kind == "none" and not ptgt) and CONFIG.CrushCooldown * 0.4 or CONFIG.CrushCooldown)
 	overlay.blocking = false
 	boostFor(6)
 	stopVault()
 	stopDash()
 	state.combo = 1
-	local tpos = (tgt.kind == "npc") and tgt.mroot.Position or (tgt.kind == "part" and tgt.part.Position) or nil
+	local tpos = (ptgt and ptgt.root.Position) or ((tgt.kind == "npc") and tgt.mroot.Position or (tgt.kind == "part" and tgt.part.Position)) or nil
 	local flat = tpos and Vector3.new(tpos.X - root.Position.X, 0, tpos.Z - root.Position.Z) or Vector3.zero
 	if flat.Magnitude > 0.05 then
 		root.CFrame = CFrame.lookAt(root.Position, root.Position + flat.Unit)
@@ -10922,6 +10935,7 @@ local function crushingBlow()
 		return
 	end
 	speedState.frozenUntil = now + (ANIMS.CrushingBlow.total or 1.3) -- parado enquanto bate
+	if ptgt and PVP.crush then pcall(PVP.crush, ptgt) end
 	local cur = current
 	task.spawn(runCrush, cur, tgt, root, char)
 end
@@ -11221,6 +11235,7 @@ if lp.Character then
 end
 
 genv.YujiMovesetCleanup = function()
+	if genv.YujiPvpStop then pcall(genv.YujiPvpStop) end
 	cancelAll()
 	controlsOn = false
 	layoutToken += 1
@@ -11246,6 +11261,397 @@ genv.YujiMovesetCleanup = function()
 	end
 	connections = {}
 	genv.YujiMovesetCleanup = nil
+end
+
+
+---------------------------------------------------------------------
+-- PVP (2 jogadores com este script) via Firebase Realtime Database (REST)
+-- Sem vida/dano: so os efeitos (hit, block, knockback, ragdoll, Manji Kick, Crushing Blow).
+-- Quem apanha aplica o efeito no PROPRIO personagem (e o dono da fisica dele).
+---------------------------------------------------------------------
+do
+	local HttpService = game:GetService("HttpService")
+	local httpReq = (syn and syn.request) or (http and http.request) or http_request or request
+	local base = tostring(CONFIG.PvpUrl or "")
+	local room = tostring(CONFIG.PvpRoom or "")
+	local me = lp.UserId
+	local alive = true
+
+	local ANIM_OK = {
+		Punch1 = true, Punch2 = true, Punch3 = true, Punch4 = true, AirSkill = true,
+		Dash = true, DashLeft = true, DashRight = true, DashBack = true, BlackFlash = true,
+		ManjiStance = true, ManjiCounter = true, CrushingBlow = true,
+	}
+
+	local function peerNear()
+		local root = lp.Character and lp.Character:FindFirstChild("HumanoidRootPart")
+		if not root then return false end
+		for _, p in ipairs(Players:GetPlayers()) do
+			if p ~= lp and p.Character then
+				local r = p.Character:FindFirstChild("HumanoidRootPart")
+				if r and (r.Position - root.Position).Magnitude <= CONFIG.PvpNear then return true end
+			end
+		end
+		return false
+	end
+
+	local function nowMs() return DateTime.now().UnixTimestampMillis end
+	local offset = 0 -- relogio do servidor - relogio do aparelho (ms)
+	local JSON_HEADERS = { ["Content-Type"] = "application/json" }
+
+	local function post(t)
+		t.from = me
+		t.ts = { [".sv"] = "timestamp" } -- o Firebase troca pelo horario do servidor
+		task.spawn(function()
+			pcall(httpReq, {
+				Url = base .. "/rooms/" .. room .. "/ev.json?print=silent",
+				Method = "POST",
+				Headers = JSON_HEADERS,
+				Body = HttpService:JSONEncode(t),
+			})
+		end)
+	end
+
+	local function get(path)
+		local ok, res = pcall(httpReq, { Url = base .. path, Method = "GET" })
+		if ok and res and res.Success and res.Body then
+			local okd, data = pcall(function() return HttpService:JSONDecode(res.Body) end)
+			if okd then return data, true end
+		end
+		return nil, false
+	end
+
+	local function plrChar(userId)
+		local plr = Players:GetPlayerByUserId(userId)
+		local c = plr and plr.Character
+		return plr, c, c and c:FindFirstChild("HumanoidRootPart")
+	end
+
+	-- ---------- lado de quem ataca ----------
+	PVP.send = function(root, kind, animName)
+		if not peerNear() then return end
+		local lk = root.CFrame.LookVector
+		post({
+			t = "hit", kind = kind,
+			idx = tonumber(string.match(animName or "", "^Punch(%d)$")),
+			p = { root.Position.X, root.Position.Y, root.Position.Z },
+			l = { lk.X, lk.Y, lk.Z },
+		})
+	end
+
+	PVP.anim = function(name)
+		if ANIM_OK[name] and peerNear() then post({ t = "anim", name = name }) end
+	end
+
+	-- Crushing Blow: jogador mais perto dentro do alcance vira o alvo
+	PVP.crushPlayer = function(root)
+		local best, bd
+		for _, p in ipairs(Players:GetPlayers()) do
+			local r = p ~= lp and p.Character and p.Character:FindFirstChild("HumanoidRootPart")
+			local h = p.Character and p.Character:FindFirstChildOfClass("Humanoid")
+			if r and h and h.Health > 0 then
+				local d = (r.Position - root.Position).Magnitude
+				if d <= CONFIG.CrushRange and (not bd or d < bd) then best, bd = { plr = p, root = r }, d end
+			end
+		end
+		return best
+	end
+
+	PVP.crush = function(tgt)
+		post({ t = "crush", to = tgt.plr.UserId, rel = CONFIG.CrushRelease, s = { CONFIG.CrushSlam1, CONFIG.CrushSlam2 } })
+	end
+
+	-- ---------- lado de quem apanha ----------
+	local function pvpCounter(atkId, atkRoot)
+		local _, hum, root = getRig()
+		if not root then return false end
+		manji.cur = nil
+		boostFor(4)
+		local to = atkRoot.Position - root.Position
+		local flat = Vector3.new(to.X, 0, to.Z)
+		if flat.Magnitude > 0.05 then
+			root.CFrame = CFrame.lookAt(root.Position, root.Position + flat.Unit)
+		end
+		local started = play("ManjiCounter", function() refreshAir() end, "action")
+		if not started then return false end
+		manji.counterUntil = os.clock() + (ANIMS.ManjiCounter.total or 1)
+		local lf = -root.CFrame.RightVector
+		local left = Vector3.new(lf.X, 0, lf.Z)
+		left = left.Magnitude > 0.01 and left.Unit or Vector3.new(-1, 0, 0)
+		local front = flat.Magnitude > 0.05 and (root.Position + flat.Unit * 3.4) or root.Position
+		post({
+			t = "manji", to = atkId, delay = CONFIG.ManjiHitTime,
+			left = { left.X, 0, left.Z }, front = { front.X, front.Y, front.Z },
+		})
+		task.delay(CONFIG.ManjiHitTime, function()
+			if atkRoot.Parent then playSoundAt(atkRoot, HIT_SFX.Hit4) end
+			kickCamera(1.2)
+		end)
+		return true
+	end
+
+	local function onHit(ev)
+		local char = lp.Character
+		local root = char and char:FindFirstChild("HumanoidRootPart")
+		local hum = char and char:FindFirstChildOfClass("Humanoid")
+		if not root or not hum or hum.Health <= 0 then return end
+		local atkPlr, _, atkRoot = plrChar(ev.from)
+		if not atkPlr then return end -- so quem esta no mesmo servidor
+		local ap = Vector3.new(ev.p[1], ev.p[2], ev.p[3])
+		local al = Vector3.new(ev.l[1], 0, ev.l[3])
+		if al.Magnitude < 0.01 then return end
+		al = al.Unit
+		local kind = ev.kind
+		local range = (kind == "BlackFlash") and CONFIG.BlackFlashRange
+			or (kind == "DashM1" and CONFIG.DashHitRange or CONFIG.HitRange)
+		local cone = (kind == "DashM1") and CONFIG.DashHitCone or CONFIG.HitCone
+		local to = root.Position - ap
+		local flat = Vector3.new(to.X, 0, to.Z)
+		if to.Magnitude > range + CONFIG.PvpLeeway then return end
+		if flat.Magnitude > 0.01 and flat.Unit:Dot(al) < cone then return end
+
+		-- Manji Kick armado: o golpe vira contra-ataque
+		if manji.cur and current == manji.cur and os.clock() <= manji.windowEnd and atkRoot then
+			if pvpCounter(ev.from, atkRoot) then return end
+		end
+
+		-- bloqueio: so vale se estou bloqueando e de frente pro atacante
+		local ml = root.CFrame.LookVector
+		local myLook = Vector3.new(ml.X, 0, ml.Z)
+		local facing = flat.Magnitude < 0.01 or (myLook.Magnitude > 0.01 and myLook.Unit:Dot(-flat.Unit) > 0)
+		local blocked = overlay.blocking and facing
+
+		if blocked then
+			triggerBlockHit(root)
+		else
+			local push = flat.Magnitude > 0.01 and flat.Unit or al
+			local big = (kind == "AirM1" or kind == "BlackFlash" or ev.idx == 4)
+			cancelAll()
+			state.punchLockedUntil = os.clock() + 0.35
+			playSoundAt(root, big and HIT_SFX.Hit4 or HIT_SFX.Hit3)
+			kickCamera(big and 0.8 or 0.4)
+			local vel = push * CONFIG.Knockback * (big and 1.4 or 1) + Vector3.new(0, CONFIG.Knockback * 0.35, 0)
+			pcall(function() root.AssemblyLinearVelocity = vel end)
+			if ev.idx then playNpcAnim(char, "NpcHit" .. ev.idx) end
+			if big then
+				task.delay(0.25, function()
+					if root.Parent and not ragdolled[char] then
+						ragdollNpc(char, hum, root, push * CONFIG.Knockback * 1.2 + Vector3.new(0, CONFIG.Knockback * 0.5, 0), false)
+					end
+				end)
+			end
+		end
+		post({ t = "res", to = ev.from, blocked = blocked, kind = kind, idx = ev.idx })
+	end
+
+	-- Manji Kick: fui contra-atacado -> me puxa pra frente dele e me joga pro lado esquerdo dele
+	local function onManji(ev)
+		local char = lp.Character
+		local root = char and char:FindFirstChild("HumanoidRootPart")
+		local hum = char and char:FindFirstChildOfClass("Humanoid")
+		if not root or not hum or hum.Health <= 0 or ragdolled[char] then return end
+		cancelAll()
+		local left = Vector3.new(ev.left[1], 0, ev.left[3])
+		local front = Vector3.new(ev.front[1], root.Position.Y, ev.front[3])
+		local startPos = root.Position
+		if (Vector3.new(front.X - startPos.X, 0, front.Z - startPos.Z)).Magnitude > 1 then
+			task.spawn(function()
+				local t0 = os.clock()
+				while os.clock() - t0 < 0.12 do
+					RunService.Heartbeat:Wait()
+					if not root.Parent then return end
+					local p = startPos:Lerp(front, (os.clock() - t0) / 0.12)
+					pcall(function()
+						root.CFrame = CFrame.lookAt(p, Vector3.new(ev.front[1] - left.X, p.Y, ev.front[3] - left.Z))
+						root.AssemblyLinearVelocity = Vector3.zero
+					end)
+				end
+			end)
+		end
+		task.delay(ev.delay or 0.3, function()
+			if not root.Parent or ragdolled[char] then return end
+			playSoundAt(root, HIT_SFX.Hit4)
+			kickCamera(1.2)
+			ragdollNpc(char, hum, root, left * CONFIG.ManjiThrow + Vector3.new(0, 30, 0), false)
+			task.delay(0.2, function()
+				if not root.Parent then return end
+				pcall(function()
+					root.AssemblyLinearVelocity = Vector3.new(left.X * 28, -CONFIG.SlamSpeed, left.Z * 28)
+				end)
+				local params = RaycastParams.new()
+				params.FilterType = Enum.RaycastFilterType.Exclude
+				params.FilterDescendantsInstances = { char }
+				local t1 = os.clock()
+				while os.clock() - t1 < 0.8 do
+					RunService.Heartbeat:Wait()
+					if not root.Parent then return end
+					local r = workspace:Raycast(root.Position, Vector3.new(0, -6, 0), params)
+					if r and root.Position.Y - r.Position.Y < 3.4 then
+						groundBurst(r)
+						break
+					end
+				end
+			end)
+		end)
+	end
+
+	-- Crushing Blow: ele me segura na mao direita (a anim dele toca no personagem dele aqui) e bate no chao 2x
+	local function onCrush(ev)
+		local _, ach = plrChar(ev.from)
+		local arm = ach and ach:FindFirstChild("Right Arm")
+		local char = lp.Character
+		local root = char and char:FindFirstChild("HumanoidRootPart")
+		local hum = char and char:FindFirstChildOfClass("Humanoid")
+		if not arm or not root or not hum or hum.Health <= 0 or ragdolled[char] then return end
+		cancelAll()
+		local restore = ragdollNpc(char, hum, root, Vector3.zero, false, true)
+		local saved = {}
+		for _, d in ipairs(char:GetDescendants()) do
+			if d:IsA("BasePart") then saved[d] = d.CanCollide end
+		end
+		local function noCollide()
+			for p in pairs(saved) do
+				if p.Parent then p.CanCollide = false end
+			end
+		end
+		local slams = ev.s or { CONFIG.CrushSlam1, CONFIG.CrushSlam2 }
+		local nextSlam = 1
+		local t0 = os.clock()
+		local conn, stepConn
+		local function finish()
+			if conn then conn:Disconnect() conn = nil end
+			if stepConn then stepConn:Disconnect() stepConn = nil end
+			for p, c in pairs(saved) do
+				if p.Parent then pcall(function() p.CanCollide = c end) end
+			end
+			pcall(function() root.AssemblyLinearVelocity = Vector3.new(0, -30, 0) end)
+			task.delay(CONFIG.CrushStandDelay, function()
+				if restore then restore() end
+			end)
+		end
+		stepConn = RunService.Stepped:Connect(noCollide)
+		conn = RunService.Heartbeat:Connect(function()
+			local el = os.clock() - t0
+			if not arm.Parent or not root.Parent or el >= (ev.rel or CONFIG.CrushRelease) then
+				finish()
+				return
+			end
+			local fist = arm.CFrame * CFrame.new(0, -1.4, 0)
+			pcall(function()
+				root.CFrame = CFrame.new(fist.Position) * arm.CFrame.Rotation
+				root.AssemblyLinearVelocity = Vector3.zero
+			end)
+			while slams[nextSlam] and el >= slams[nextSlam] do
+				nextSlam += 1
+				local params = RaycastParams.new()
+				params.FilterType = Enum.RaycastFilterType.Exclude
+				params.FilterDescendantsInstances = { char, ach }
+				local r = workspace:Raycast(fist.Position + Vector3.new(0, 3, 0), Vector3.new(0, -12, 0), params)
+				if r then
+					groundBurst(r, 0.5)
+					breakGround(r, 1)
+				else
+					kickCamera(1.5)
+				end
+			end
+		end)
+	end
+
+	-- resultado do meu golpe: efeito no personagem do outro (so voce ve, igual o resto do script)
+	local function onRes(ev)
+		local _, vchar, vroot = plrChar(ev.from)
+		if not vroot then return end
+		if ev.blocked then
+			playSoundAt(vroot, BLOCK_SFX[math.random(#BLOCK_SFX)])
+			kickCamera(0.3)
+		else
+			local big = (ev.kind == "AirM1" or ev.kind == "BlackFlash" or ev.idx == 4)
+			playSoundAt(vroot, big and HIT_SFX.Hit4 or HIT_SFX.Hit3)
+			kickCamera(big and 0.8 or 0.4)
+			if ev.idx then playNpcAnim(vchar, "NpcHit" .. ev.idx) end
+		end
+	end
+
+	-- animacao do outro (soco, dash, manji, crushing blow...) no personagem dele
+	local function onAnim(ev)
+		local _, c = plrChar(ev.from)
+		if c and ANIMS[ev.name] then playNpcAnim(c, ev.name) end
+	end
+
+	local function handle(ev)
+		if ev.from == me then return end
+		if ev.to and ev.to ~= me then return end
+		if (ev.age or 0) / 1000 > CONFIG.PvpMaxAge then return end
+		if ev.t == "hit" then onHit(ev)
+		elseif ev.t == "res" then onRes(ev)
+		elseif ev.t == "anim" then onAnim(ev)
+		elseif ev.t == "manji" then onManji(ev)
+		elseif ev.t == "crush" then onCrush(ev) end
+	end
+
+	local function startPvp()
+		if not CONFIG.Pvp then return end
+		if not httpReq then notify("PvP: your executor has no request function") return end
+		if base == "" or room == "" or string.find(base, "SEU%-PROJETO") then
+			notify("PvP: set PvpUrl and PvpRoom in CONFIG")
+			return
+		end
+		task.spawn(function()
+			-- calibra o relogio do servidor (manda um ping e le o horario que o Firebase gravou)
+			local t0 = nowMs()
+			local ok, res = pcall(httpReq, {
+				Url = base .. "/rooms/" .. room .. "/ev.json",
+				Method = "POST",
+				Headers = JSON_HEADERS,
+				Body = HttpService:JSONEncode({ t = "ping", from = me, ts = { [".sv"] = "timestamp" } }),
+			})
+			if ok and res and res.Success and res.Body then
+				local okd, d = pcall(function() return HttpService:JSONDecode(res.Body) end)
+				if okd and type(d) == "table" and d.name then
+					local ts = get("/rooms/" .. room .. "/ev/" .. d.name .. "/ts.json")
+					if type(ts) == "number" then offset = ts - (t0 + nowMs()) / 2 end
+				end
+			end
+
+			local lastKey = nil -- ultima chave (ordem cronologica) ja vista
+			while alive do
+				if lastKey == nil or peerNear() then
+					local q = lastKey and ("&startAt=%22" .. lastKey .. "%22&limitToLast=30") or "&limitToLast=1"
+					local data, got = get("/rooms/" .. room .. "/ev.json?orderBy=%22$key%22" .. q)
+					if got then
+						if type(data) == "table" then
+							local keys = {}
+							for k in pairs(data) do keys[#keys + 1] = k end
+							table.sort(keys)
+							for _, k in ipairs(keys) do
+								if lastKey == nil or k > lastKey then
+									local ev = data[k]
+									if type(ev) == "table" and lastKey ~= nil then
+										ev.age = nowMs() + offset - (tonumber(ev.ts) or 0)
+										pcall(handle, ev)
+									end
+									lastKey = k
+								end
+							end
+						end
+						if lastKey == nil then lastKey = "" end
+					end
+					task.wait(CONFIG.PvpPoll)
+				else
+					task.wait(3) -- ninguem perto: poll devagar
+				end
+			end
+		end)
+		notify("PvP activated")
+	end
+
+	genv.YujiPvpStop = function()
+		alive = false
+		PVP.send, PVP.anim, PVP.crush, PVP.crushPlayer = nil, nil, nil, nil
+		genv.YujiPvpStop = nil
+	end
+
+	startPvp()
 end
 
 -- creditos: 3 mensagens do proprio Roblox (a 1a com a foto do DuaKNo)
