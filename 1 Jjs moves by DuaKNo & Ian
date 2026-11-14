@@ -9268,14 +9268,15 @@ local CONFIG = {
 	-- Cursed Strikes (tool): sem alvo toca a anim parada; com alvo (NPC ou jogador) faz dash curto, agarra e bate
 	CursedCooldown = 10,
 	CursedRange = 30,        -- distancia pra achar o alvo
-	CursedDashTime = 0.2,    -- duracao do dash
+	CursedDashDelay = 0.5,   -- the dash starts this many seconds after you press it
+	CursedDashTime = 0.12,    -- duracao do dash
 	CursedDashMax = 28,       -- maximo de studs do dash
 	CursedHoldDist = 3.2,    -- o alvo fica a essa distancia na sua frente
-	CursedGrabAt = 0.3,     -- segundo em que agarra
+	CursedGrabAt = 0.64,     -- segundo em que agarra
 	CursedHoldTime = 3.1,    -- segundo em que solta (na sua frente, sem ragdoll)
 	CursedIdleDash = 20,      -- sem alvo: quantos studs ele avanca pra frente
 	CursedIdleDashTime = 0.18, -- sem alvo: duracao desse avanco
-	CursedAdvanceSpeed = 5,  -- com alvo: studs/s que ele continua andando pra frente enquanto bate (0 = fica parado)
+	CursedAdvanceSpeed = 18,  -- com alvo: studs/s que ele continua andando pra frente enquanto bate (0 = fica parado)
 	CursedAdvanceStop = 0.4, -- com alvo: para de avancar X s antes de soltar
 	DashM1Lead = 0.12,       -- dash M1: o soco sai nos ultimos X segundos do dash
 
@@ -9303,14 +9304,14 @@ local CONFIG = {
 	FugaDamagePct = 0.7,     -- Open(fuga) tira 70% da vida maxima do NPC
 	-- Rush (tool da ult)
 	RushCooldown = 6,
-	RushRange = 40,          -- distancia pra achar NPC / jogador
-	RushMissDash = 10,       -- sem alvo: studs que avanca
+	RushRange = 60,          -- distancia pra achar NPC / jogador
+	RushMissDash = 28,       -- sem alvo: studs que avanca
 	RushMissAt = 0.45,       -- sem alvo: segundo da anim em que o avanco comeca
-	RushMissTime = 0.3,
+	RushMissTime = 0.35,
 	RushHold = 3.2,          -- distancia do alvo na sua frente durante o chute
 	RushRunDist = 25,        -- studs que voce corre ate ele depois do 1o chute
-	RushUpHeight = 16,       -- altura do chute pra cima
-	RushSlamTime = 0.38,     -- tempo da descida ate o chao
+	RushUpHeight = 34,       -- altura do chute pra cima
+	RushSlamTime = 0.45,     -- tempo da descida ate o chao
 }
 
 for i = 1, 4 do
@@ -11307,6 +11308,25 @@ F(0.1317, C(0.2484,-0.037,0.3587,0.492,-0.8687,-0.0579,0.1519,0.0202,0.9882,-0.8
 		impactFx = impactFx, hitFx = hitFx }
 	ANIMS.RushMiss = { length = 1.01, loop = false, blendIn = 0.06, blendOut = 0.3, fx = missFx, frames = missFrames }
 	ANIMS.NpcRush = { length = 1.35, loop = false, blendIn = 0.04, blendOut = 0.2, frames = npcFrames }
+	-- Cursed Strikes usa as particulas do dash (fumaca) no comeco do avanco
+	do
+		local dashFx = {}
+		for _, e in ipairs((ANIMS.Dash and ANIMS.Dash.fx) or {}) do
+			if e.kind == "vfx" then dashFx[#dashFx + 1] = e end
+		end
+		for _, nm in ipairs({ "CursedIdle", "CursedStrikes" }) do
+			local a = ANIMS[nm]
+			if a then
+				a.fx = a.fx or {}
+				for _, e in ipairs(dashFx) do
+					local c = {}
+					for k, v in pairs(e) do c[k] = v end
+					c.t = (e.t or 0) + CONFIG.CursedDashDelay -- particles follow the delayed dash
+					a.fx[#a.fx + 1] = c
+				end
+			end
+		end
+	end
 end
 
 for _, anim in pairs(ANIMS) do
@@ -11346,6 +11366,16 @@ local function notify(text, dur)
 	pcall(function()
 		StarterGui:SetCore("SendNotification", { Title = "Yuji", Text = text, Duration = dur or 3 })
 	end)
+end
+
+-- this script only works on R6: stop right away if you execute it on R15
+do
+	local c0 = lp.Character
+	local h0 = c0 and c0:FindFirstChildOfClass("Humanoid")
+	if h0 and h0.RigType.Name == "R15" then
+		notify("This script is for R6 only", 5)
+		return
+	end
 end
 
 -- o corpo pode nao ter HumanoidRootPart (reanimate etc): usa Torso/UpperTorso/Head/qualquer parte
@@ -11582,7 +11612,7 @@ local SoundService = game:GetService("SoundService")
 
 local function fxMount(char, root, m)
 	local att = Instance.new("Attachment")
-	local part = m and m.part and char:FindFirstChild(m.part, true)
+	local part = m and m.part and state.findPart(char, m.part)
 	if part and part:IsA("BasePart") then
 		att.CFrame = m.cf or CFrame.new()
 		att.Parent = part
@@ -11690,13 +11720,67 @@ local function playSfx(cur, root)
 					return
 				end
 				local ok, err = pcall(spawnFx, e, root.Parent, root)
-				if not ok then warn("[Yuji FX] ignorado:", err) end
+				if not ok then warn("[Yuji FX] ignored:", err) end
 			end)
 		end
 	end
 end
 
 local scheduleHit -- definido mais abaixo (dano em NPCs)
+do
+-- ===== R15: as anims foram gravadas em R6. Cada junta R6 vira a junta R15 equivalente e a rotacao e
+-- convertida (os Motor6D do R6 tem C0/C1 rotacionados, os do R15 nao): Transform15 = R * Transform6 * R^-1
+local R15_NAME = { RightShoulder = "Right Shoulder", LeftShoulder = "Left Shoulder", RightHip = "Right Hip", LeftHip = "Left Hip", Neck = "Neck", Root = "RootJoint" }
+local R15_ROT = {
+	["Right Shoulder"] = CFrame.new(0, 0, 0, 0, 0, 1, 0, 1, 0, -1, 0, 0),
+	["Left Shoulder"] = CFrame.new(0, 0, 0, 0, 0, -1, 0, 1, 0, 1, 0, 0),
+	["Right Hip"] = CFrame.new(0, 0, 0, 0, 0, 1, 0, 1, 0, -1, 0, 0),
+	["Left Hip"] = CFrame.new(0, 0, 0, 0, 0, -1, 0, 1, 0, 1, 0, 0),
+	["Neck"] = CFrame.new(0, 0, 0, -1, 0, 0, 0, 0, 1, 0, 1, 0),
+	["RootJoint"] = CFrame.new(0, 0, 0, -1, 0, 0, 0, 0, 1, 0, 1, 0),
+}
+local R15_PART = { Torso = "UpperTorso", ["Right Arm"] = "RightHand", ["Left Arm"] = "LeftHand", ["Right Leg"] = "RightUpperLeg", ["Left Leg"] = "LeftUpperLeg" }
+local r15Proxies = setmetatable({}, { __mode = "k" })
+local function r15Proxy(motor, r6name)
+	local p = r15Proxies[motor]
+	if p then return p end
+	local R = R15_ROT[r6name]
+	local Ri = R:Inverse()
+	p = setmetatable({}, {
+		__index = function(_, k)
+			if k == "Transform" then return Ri * motor.Transform * R end
+			local v = motor[k]
+			if typeof(v) == "function" then return function(_, ...) return v(motor, ...) end end
+			return v
+		end,
+		__newindex = function(_, k, v)
+			if k == "Transform" then motor.Transform = R * v * Ri else motor[k] = v end
+		end,
+	})
+	r15Proxies[motor] = p
+	return p
+end
+-- junta -> motor (R6) ou proxy (R15), pelo nome R6 da anim
+state.collectMotors = function(model, want, into)
+	into = into or {}
+	local r15 = model:FindFirstChild("UpperTorso") ~= nil
+	local count = 0
+	for _, d in ipairs(model:GetDescendants()) do
+		if d:IsA("Motor6D") and d.Part1 then
+			local nm = r15 and R15_NAME[d.Name] or ((not r15) and d.Name or nil)
+			if nm and want[nm] and not into[nm] then
+				into[nm] = r15 and r15Proxy(d, nm) or d
+				count += 1
+			end
+		end
+	end
+	return into, count
+end
+state.findPart = function(char, name)
+	return char:FindFirstChild(name, true) or (R15_PART[name] and char:FindFirstChild(R15_PART[name], true)) or nil
+end
+end
+
 local PVP = {} -- ganchos do PvP (preenchido no fim do script)
 
 -- layers: "action" (soco/dash) > "air" (pulo/queda/pouso) > "move" (correr)
@@ -11712,13 +11796,7 @@ local function play(name, onDone, layer)
 		if layer == "move" and current.layer ~= "move" then return false end
 	end
 
-	local motors, count = {}, 0
-	for _, d in ipairs(char:GetDescendants()) do
-		if d:IsA("Motor6D") and anim.joints[d.Name] and d.Part1 and not motors[d.Name] then
-			motors[d.Name] = d
-			count += 1
-		end
-	end
+	local motors, count = state.collectMotors(char, anim.joints)
 	if count == 0 then return false end
 	if layer == "action" and PVP.anim then pcall(PVP.anim, name) end
 
@@ -12029,13 +12107,8 @@ RunService:BindToRenderStep("YujiOverlay", Enum.RenderPriority.Last.Value, funct
 	end
 	if char ~= ovChar then
 		ovChar = char
-		ovMotors = {}
 		local want = { ["Right Shoulder"] = true, ["Left Shoulder"] = true, ["Neck"] = true, ["RootJoint"] = true }
-		for _, d in ipairs(char:GetDescendants()) do
-			if d:IsA("Motor6D") and want[d.Name] and d.Part1 and not ovMotors[d.Name] then
-				ovMotors[d.Name] = d
-			end
-		end
+		ovMotors = state.collectMotors(char, want)
 		ovLastHp = hum.Health
 	end
 	-- bloqueando: perde 75% da velocidade + simulation radius
@@ -12115,14 +12188,12 @@ end
 
 local function playNpcAnim(model, name, onDone)
 	local anim = ANIMS[name]
+	if state.npcAnimOut then pcall(state.npcAnimOut, model, name) end
 	local motors, found = {}, false
 	if anim then
-		for _, d in ipairs(model:GetDescendants()) do
-			if d:IsA("Motor6D") and anim.joints[d.Name] and d.Part1 and not motors[d.Name] then
-				motors[d.Name] = d
-				found = true
-			end
-		end
+		local c
+		motors, c = state.collectMotors(model, anim.joints)
+		found = c > 0
 	end
 	if not found then
 		if onDone then onDone() end
@@ -12162,6 +12233,7 @@ local ragdolled = setmetatable({}, { __mode = "k" })
 local function ragdollNpc(model, hum, mroot, push, permanent, manual)
 	if ragdolled[model] then return end
 	ragdolled[model] = true
+	if state.npcRagOut then pcall(state.npcRagOut, model, push, permanent) end
 	playSoundAt(mroot, RAGDOLL_SFX[math.random(#RAGDOLL_SFX)])
 	local look = mroot.CFrame.LookVector
 	local flatLook = Vector3.new(look.X, 0, look.Z)
@@ -12524,7 +12596,6 @@ function scheduleHit(cur, root)
 end
 
 local function punch(forced)
-	if state.ultOn then return end
 	local now = os.clock()
 	local dashing = (current ~= nil and DASH_ANIMS[current.name] == true) or forced == "dash"
 	if (actionBusy() and not dashing) or now < state.punchLockedUntil then return end
@@ -12951,6 +13022,60 @@ track(workspace.DescendantRemoving:Connect(function(d)
 	if npcHums[d] then npcHums[d] = nil end
 end))
 
+do
+-- corpos sem Humanoid / sem HumanoidRootPart: acha pelas partes do corpo e por quem manda na fisica
+local BODY_HINTS = { "Head", "Torso", "UpperTorso", "LowerTorso", "Left Arm", "Right Arm", "Left Leg", "Right Leg", "HumanoidRootPart" }
+local stubHums = setmetatable({}, { __mode = "k" })
+state.stubHum = function(model)
+	local h = model:FindFirstChildOfClass("Humanoid")
+	if h then return h end
+	local st = stubHums[model]
+	if not st then
+		st = { Health = 100, MaxHealth = 100, Parent = model, PlatformStand = false, IsStub = true }
+		stubHums[model] = st
+	end
+	return st
+end
+state.ownerOf = function(model)
+	for _, d in ipairs(model:GetChildren()) do
+		if d:IsA("BasePart") and not d.Anchored then
+			local ok, o = pcall(function() return d:GetNetworkOwner() end)
+			if ok and typeof(o) == "Instance" and o:IsA("Player") then return o end
+			break
+		end
+	end
+	for _, p in ipairs(Players:GetPlayers()) do
+		if p ~= lp and (model.Name == p.Name or model.Name == p.DisplayName) then return p end
+	end
+	return nil
+end
+state.scanBodies = function(root, range)
+	local out, seen = {}, {}
+	local params = OverlapParams.new()
+	params.FilterType = Enum.RaycastFilterType.Exclude
+	params.FilterDescendantsInstances = { lp.Character }
+	local okp, parts = pcall(function() return workspace:GetPartBoundsInRadius(root.Position, range, params) end)
+	if not okp then return out end
+	for _, p in ipairs(parts) do
+		local m = p:FindFirstAncestorOfClass("Model")
+		if m and not seen[m] and m ~= lp.Character and not m:FindFirstChildOfClass("Humanoid") and not Players:GetPlayerFromCharacter(m) then
+			seen[m] = true
+			local n = 0
+			for _, nm in ipairs(BODY_HINTS) do
+				if m:FindFirstChild(nm) then n += 1 end
+			end
+			if n >= 3 then
+				local r = bodyOf(m)
+				local h = state.stubHum(m)
+				if r and h.Health > 0 then
+					out[#out + 1] = { model = m, hum = h, part = r, plr = state.ownerOf(m) }
+				end
+			end
+		end
+	end
+	return out
+end
+end
 local function nearestNpc(root, range)
 	local best, bd
 	for h in pairs(npcHums) do
@@ -12965,18 +13090,26 @@ local function nearestNpc(root, range)
 			end
 		end
 	end
+	for _, b in ipairs(state.scanBodies(root, range)) do
+		if not b.plr then
+			local d = (b.part.Position - root.Position).Magnitude
+			if d <= range and (not bd or d < bd) then best, bd = { b.model, b.hum, b.part }, d end
+		end
+	end
 	return best
 end
-
--- guarda a pose de TODAS as partes do corpo e move tudo junto (corpo reanimado = partes soltas, nao so o root)
+state.relInfo = setmetatable({}, { __mode = "k" })
 local function captureRel(model, base)
 	local rel = {}
 	for _, d in ipairs(model:GetDescendants()) do
 		if d:IsA("BasePart") then rel[d] = base.CFrame:ToObjectSpace(d.CFrame) end
 	end
+	state.relInfo[rel] = { model = model }
 	return rel
 end
 local function moveRel(rel, cf)
+	local info = state.relInfo[rel]
+	if info and state.npcOut then state.npcOut(info.model, cf) end
 	for part, r in pairs(rel) do
 		if part.Parent then
 			part.CFrame = cf * r
@@ -13144,7 +13277,7 @@ local function crushTarget(root)
 end
 
 local function runCrush(cur, tgt, root, char)
-	local arm = char:FindFirstChild("Right Arm")
+	local arm = state.findPart(char, "Right Arm")
 	if not arm then return end
 	local model, nh, mr, part = tgt.model, tgt.hum, tgt.mroot, tgt.part
 	local function slamFx(pos)
@@ -13433,7 +13566,9 @@ local function runCursed(cur, root, tpart, tmodel, tplayer)
 		-- velocidade: dash ate o alvo, depois segue andando pra frente enquanto bate
 		if lv and lv.Parent then
 			local v = 0
-			if el < CONFIG.CursedDashTime then
+			if el < CONFIG.CursedDashDelay then
+				v = 0
+			elseif el < CONFIG.CursedDashDelay + CONFIG.CursedDashTime then
 				v = dashSpeed
 			elseif el < CONFIG.CursedHoldTime - CONFIG.CursedAdvanceStop then
 				v = CONFIG.CursedAdvanceSpeed
@@ -13485,7 +13620,11 @@ local function cursedStrikes()
 	if not ptgt and not npc then
 		CS.lockedUntil = now + CONFIG.CursedCooldown * 0.4
 		if not play("CursedIdle", function() refreshAir() end, "action") then CS.lockedUntil = 0 return end
-		CS.forwardDash(root, CONFIG.CursedIdleDash, CONFIG.CursedIdleDashTime)
+		local idleCur = current
+		task.delay(CONFIG.CursedDashDelay, function()
+			if current ~= idleCur or not root.Parent then return end
+			CS.forwardDash(root, CONFIG.CursedIdleDash, CONFIG.CursedIdleDashTime)
+		end)
 		return
 	end
 	CS.lockedUntil = now + CONFIG.CursedCooldown
@@ -13562,7 +13701,7 @@ do
 		if PVP.isPeer then
 			for _, p in ipairs(Players:GetPlayers()) do
 				if p ~= lp and p.Character and PVP.isPeer(p) then
-					local h = p.Character:FindFirstChildOfClass("Humanoid")
+					local h = state.stubHum(p.Character)
 					local r = bodyOf(p.Character)
 					if h and r and h.Health > 0 then
 						local d = (r.Position - root.Position).Magnitude
@@ -13756,6 +13895,7 @@ do
 				end
 				kickCamera(1.8)
 				state.shake(2.2, 0.5)
+				if PVP.boom then pcall(PVP.boom, tpart.Position, 1.3) end
 				if CONFIG.Effects then
 					for _, e in ipairs(ANIMS.Rush.impactFx or {}) do
 						pcall(spawnFx, e, char, root)
@@ -13891,24 +14031,49 @@ do
 					{"Brightness", 5},
 				} }
 
+	-- aura da ult em TODAS as partes do corpo, bem mais densa (e os outros jogadores com o script tambem veem)
+	state.ultAura = function(char, root, dur)
+		local parts = {}
+		for _, d in ipairs(char:GetChildren()) do
+			if d:IsA("BasePart") and d.Name ~= "HumanoidRootPart" then parts[#parts + 1] = d end
+		end
+		if #parts == 0 then parts[1] = root end
+		local rate = math.clamp(math.floor(480 / #parts), 30, 100)
+		for _, p in ipairs(parts) do
+			local props = {}
+			for _, kv in ipairs(AURA.props) do
+				if kv[1] == "Rate" then
+					props[#props + 1] = { "Rate", rate }
+				elseif kv[1] == "Size" then
+					props[#props + 1] = { "Size", NumberSequence.new({ NumberSequenceKeypoint.new(0, 1.6), NumberSequenceKeypoint.new(1, 2.2) }) }
+				else
+					props[#props + 1] = kv
+				end
+			end
+			pcall(spawnFx, { t = 0, kind = "vfx", class = "ParticleEmitter", name = "UltAura", enabled = true, emit = 40,
+				dur = dur or AURA.dur, mount = { part = p.Name, cf = CFrame.new() }, props = props }, char, root)
+		end
+		if PVP.aura and char == lp.Character then pcall(PVP.aura, dur or AURA.dur) end
+	end
+
 	---------------------------------------------------------------------
 	-- FUGA: alvo (NPC ou jogador na frente), corpo preto 7s, sobe junto com o feixe
 	---------------------------------------------------------------------
-	local function findFugaTarget(root)
+	local function findFugaTargets(root)
 		local lk = root.CFrame.LookVector
 		local look = Vector3.new(lk.X, 0, lk.Z)
-		if look.Magnitude < 0.01 then return nil end
+		if look.Magnitude < 0.01 then return {} end
 		look = look.Unit
-		local best, bd
+		local list, seen = {}, {}
 		local function consider(kind, model, hum, part, plr)
+			if seen[model] then return end
 			local to = part.Position - root.Position
 			local d = to.Magnitude
 			if d > CONFIG.FugaRange then return end
 			local flat = Vector3.new(to.X, 0, to.Z)
 			if d > 6 and (flat.Magnitude < 0.01 or flat.Unit:Dot(look) < 0.5) then return end
-			if not bd or d < bd then
-				best, bd = { kind = kind, model = model, hum = hum, part = part, plr = plr }, d
-			end
+			seen[model] = true
+			list[#list + 1] = { kind = kind, model = model, hum = hum, part = part, plr = plr, d = d }
 		end
 		for h in pairs(npcHums) do
 			local m = h.Parent
@@ -13917,15 +14082,24 @@ do
 				if mr then consider("npc", m, h, mr, nil) end
 			end
 		end
+		for _, b in ipairs(state.scanBodies(root, CONFIG.FugaRange)) do
+			if b.plr then
+				if PVP.isPeer and PVP.isPeer(b.plr) then consider("player", b.model, b.hum, b.part, b.plr) end
+			else
+				consider("npc", b.model, b.hum, b.part, nil)
+			end
+		end
 		for _, p in ipairs(Players:GetPlayers()) do
 			if p ~= lp and p.Character and PVP.isPeer and PVP.isPeer(p) then -- so jogadores com este script
-				local h = p.Character:FindFirstChildOfClass("Humanoid")
+				local h = state.stubHum(p.Character)
 				local r = bodyOf(p.Character)
 				if h and r and h.Health > 0 then consider("player", p.Character, h, r, p) end
 			end
 		end
-		return best
+		table.sort(list, function(a, b) return a.d < b.d end)
+		return list
 	end
+	local function findFugaTarget(root) return findFugaTargets(root)[1] end
 
 	local function blacken(model, secs)
 		local hl = Instance.new("Highlight")
@@ -14012,7 +14186,8 @@ do
 		end)
 	end
 
-	local function applyFuga(t)
+	state.blacken, state.beamColumn = blacken, beamColumn
+	local function applyFuga(t, quiet)
 		if not t or not t.part.Parent or not t.model.Parent then return end
 		blacken(t.model, CONFIG.FugaBlackTime)
 		local params = RaycastParams.new()
@@ -14021,8 +14196,11 @@ do
 		local r = workspace:Raycast(t.part.Position, Vector3.new(0, -30, 0), params)
 		local base = r and r.Position or (t.part.Position - Vector3.new(0, 3, 0))
 		beamColumn(base, CONFIG.FugaHeight * 2.6, CONFIG.FugaRise + CONFIG.FugaStay)
-		kickCamera(1.8)
-		state.shake(2.4, 1.0) -- tremida da camera quando o Open acerta
+		if PVP.fugaFx then pcall(PVP.fugaFx, t, base) end
+		if not quiet then
+			kickCamera(1.8)
+			state.shake(2.4, 1.0) -- tremida da camera quando o Open acerta
+		end
 		if t.kind == "npc" then
 			state.hurtNpc(t.model, t.hum, t.part, (t.hum.MaxHealth or 100) * CONFIG.FugaDamagePct)
 			liftNpc(t.model, t.hum, t.part)
@@ -14059,7 +14237,9 @@ do
 		local cur = current
 		task.delay(CONFIG.FugaHitAt, function()
 			if current ~= cur or not root.Parent then return end
-			applyFuga(findFugaTarget(root))
+			for i, t in ipairs(findFugaTargets(root)) do -- pega TODOS na frente
+				applyFuga(t, i > 1)
+			end
 		end)
 	end
 
@@ -14136,7 +14316,6 @@ do
 			pcall(function() ult.stash:Destroy() end)
 			ult.stash = nil
 		end
-		notify("Ult acabou - seus ataques voltaram", 3)
 	end
 
 	local function startUlt()
@@ -14153,7 +14332,7 @@ do
 		if play("UltActivate", function() refreshAir() end, "action") then
 			speedState.frozenUntil = os.clock() + (ANIMS.UltActivate.total or 2.25)
 		end
-		local okA, errA = pcall(spawnFx, AURA, char, root)
+		local okA, errA = pcall(state.ultAura, char, root, AURA.dur)
 		if not okA then warn("[Yuji ULT] aura:", errA) end
 		-- os ataques normais SOMEM da hotbar ate a ult acabar (ficam guardados); so Open(fuga) e Rush aparecem
 		ult.stash = Instance.new("Folder")
@@ -14180,7 +14359,7 @@ do
 	local function tryActivate()
 		if ult.active or ult.charge < 99.99 then return end
 		local ok, err = pcall(startUlt)
-		if not ok then warn("[Yuji ULT] falhou:", err) end
+		if not ok then warn("[Yuji ULT] failed:", err) end
 	end
 
 	-- ganho da barra (chamado pelos golpes la em cima)
@@ -14238,6 +14417,18 @@ do
 
 	local function update(dt)
 		local now = os.clock()
+		do -- R15: no bar, only a message (the script is R6 only)
+			local c1 = lp.Character
+			local h1 = c1 and c1:FindFirstChildOfClass("Humanoid")
+			local is15 = h1 ~= nil and h1.RigType.Name == "R15"
+			if gui then gui.Enabled = not is15 end
+			if is15 and not ult.r15Warned then
+				ult.r15Warned = true
+				notify("This script is for R6 only", 5)
+			elseif not is15 then
+				ult.r15Warned = false
+			end
+		end
 		if ult.rushTool and ult.rushTool.Parent then
 			local rem = state.rushLockedUntil - now
 			local want = (rem > 0) and string.format("%.1fs", rem) or "Rush"
@@ -14276,7 +14467,7 @@ do
 		gui = new("ScreenGui", { Name = "YujiHud", ResetOnSpawn = false, DisplayOrder = 20, IgnoreGuiInset = false,
 			ZIndexBehavior = Enum.ZIndexBehavior.Sibling }, nil)
 		local okU, resU = pcall(buildUlt, gui)
-		if okU then ultUi = resU else warn("[Yuji HUD] barra falhou:", resU) end
+		if okU then ultUi = resU else warn("[Yuji HUD] bar failed:", resU) end
 		gui.Parent = (gethui and gethui()) or lp:FindFirstChildOfClass("PlayerGui")
 		updateInputKind()
 		conns[#conns + 1] = UIS.LastInputTypeChanged:Connect(updateInputKind)
@@ -14651,11 +14842,11 @@ do
 	local me = lp.UserId
 	local alive = true
 
-	local ANIM_OK = {
-		Punch1 = true, Punch2 = true, Punch3 = true, Punch4 = true, AirSkill = true,
-		Dash = true, DashLeft = true, DashRight = true, DashBack = true, BlackFlash = true,
-		ManjiStance = true, ManjiCounter = true, CrushingBlow = true, CursedIdle = true, CursedStrikes = true,
-		Rush = true, RushMiss = true,
+	-- TODA anim de acao e mandada pros outros (so as de quem apanha / andar nao)
+	local ANIM_SKIP = {
+		NpcHit1 = true, NpcHit2 = true, NpcHit3 = true, NpcHit4 = true, NpcRush = true,
+		Run = true, Walk = true, WalkLeft = true, WalkRight = true, Jump = true, Fall = true, Land = true,
+		BlockHit1 = true, BlockHit2 = true,
 	}
 
 	local bodyPart = bodyOf
@@ -14741,15 +14932,15 @@ do
 	end
 
 	PVP.anim = function(name)
-		if ANIM_OK[name] and peerNear() then post({ t = "anim", name = name }) end
+		if ANIMS[name] and not ANIM_SKIP[name] and peerNear() then post({ t = "anim", name = name }) end
 	end
 
 	-- Crushing Blow: jogador mais perto dentro do alcance vira o alvo
 	PVP.crushPlayer = function(root)
 		local best, bd
 		for _, p in ipairs(Players:GetPlayers()) do
-			local r = p ~= lp and bodyPart(p.Character)
-			local h = p.Character and p.Character:FindFirstChildOfClass("Humanoid")
+			local r = p ~= lp and PVP.isPeer(p) and bodyPart(p.Character)
+			local h = p.Character and state.stubHum(p.Character)
 			if r and h and h.Health > 0 then
 				local d = (r.Position - root.Position).Magnitude
 				if d <= CONFIG.CrushRange and (not bd or d < bd) then best, bd = { plr = p, root = r }, d end
@@ -14764,7 +14955,7 @@ do
 		for _, p in ipairs(Players:GetPlayers()) do
 			if p ~= lp and p.Character and PVP.isPeer(p) then -- so quem usa este script
 				local r = bodyPart(p.Character)
-				local h = p.Character:FindFirstChildOfClass("Humanoid")
+				local h = state.stubHum(p.Character)
 				if r and h and h.Health > 0 then
 					local d = (r.Position - root.Position).Magnitude
 					if d <= CONFIG.CursedRange and (not bd or d < bd) then best, bd = { plr = p, root = r, char = p.Character }, d end
@@ -14835,7 +15026,7 @@ do
 						return
 					end
 					local ok, err = pcall(spawnFx, e, root.Parent, root)
-					if not ok then warn("[Yuji FX] ignorado:", err) end
+					if not ok then warn("[Yuji FX] ignored:", err) end
 				end)
 			end
 		end
@@ -15040,7 +15231,7 @@ do
 	-- Crushing Blow: ele me segura na mao direita (a anim dele toca no personagem dele aqui) e bate no chao 2x
 	local function onCrush(ev)
 		local _, ach, aroot = plrChar(ev.from)
-		local arm = ach and ach:FindFirstChild("Right Arm")
+		local arm = ach and state.findPart(ach, "Right Arm")
 		local char = lp.Character
 		local root = bodyPart(char)
 		local hum = char and char:FindFirstChildOfClass("Humanoid")
@@ -15317,7 +15508,7 @@ do
 				task.delay(st, function()
 					if not aroot.Parent then return end
 					if os.clock() - (crushedBy[ev.from] or -10) < 3 then return end -- quem foi agarrado ja faz o proprio efeito
-					local arm = c:FindFirstChild("Right Arm")
+					local arm = state.findPart(c, "Right Arm")
 					local pos = arm and (arm.CFrame * CFrame.new(0, -1.4, 0)).Position or aroot.Position
 					local params = RaycastParams.new()
 					params.FilterType = Enum.RaycastFilterType.Exclude
@@ -15332,6 +15523,165 @@ do
 				end)
 			end
 		end
+	end
+
+
+	do
+	local N = {}
+	-- ---------- tudo que voce faz com NPC (corpo, anim, ragdoll), Open, aura e impactos: os outros jogadores com o script veem ----------
+	N.npcSend = {}
+	state.npcSend = N.npcSend
+	function N.isNpcModel(m) return m ~= nil and m ~= lp.Character and not Players:GetPlayerFromCharacter(m) end
+	state.npcOut = function(model, cf)
+		if N.isNpcModel(model) then N.npcSend[model] = { cf = cf, t = os.clock(), sent = (N.npcSend[model] and N.npcSend[model].sent) or 0 } end
+	end
+	state.npcAnimOut = function(model, name)
+		if state.noEcho or not N.isNpcModel(model) or not peerNear() then return end
+		local r = bodyPart(model)
+		if not r then return end
+		post({ t = "npcanim", path = model:GetFullName(), p = { r.Position.X, r.Position.Y, r.Position.Z }, name = name })
+	end
+	state.npcRagOut = function(model, push, permanent)
+		if state.noEcho or not N.isNpcModel(model) or not peerNear() then return end
+		local r = bodyPart(model)
+		if not r then return end
+		post({ t = "npcrag", path = model:GetFullName(), p = { r.Position.X, r.Position.Y, r.Position.Z },
+			push = push and { push.X, push.Y, push.Z } or nil, perm = permanent and true or false })
+	end
+	PVP.aura = function(dur) if peerNear() then post({ t = "aura", dur = dur }) end end
+	PVP.boom = function(pos, scale) if peerNear() then post({ t = "boom", p = { pos.X, pos.Y, pos.Z }, scale = scale }) end end
+	PVP.fugaFx = function(t, base)
+		if not peerNear() then return end
+		post({ t = "fugafx", base = { base.X, base.Y, base.Z },
+			p = { t.part.Position.X, t.part.Position.Y, t.part.Position.Z },
+			path = (t.kind == "npc") and t.model:GetFullName() or nil, uid = t.plr and t.plr.UserId or nil })
+	end
+
+	N.pathCache = {}
+	function N.resolveModel(path, pos)
+		local cached = N.pathCache[path]
+		if cached and cached.Parent then return cached end
+		local segs = string.split(path or "", ".")
+		local cur = game
+		for i = 1, #segs - 1 do
+			cur = cur and cur:FindFirstChild(segs[i])
+			if not cur then return nil end
+		end
+		local name = segs[#segs]
+		local best, bd
+		for _, c in ipairs(cur:GetChildren()) do
+			if c.Name == name and c:IsA("Model") then
+				local r = bodyPart(c)
+				local d = (r and pos) and (r.Position - pos).Magnitude or 0
+				if not bd or d < bd then best, bd = c, d end
+			end
+		end
+		if best then N.pathCache[path] = best end
+		return best
+	end
+
+	-- espelho: NPC mexido por outro jogador (Cursed Strikes, Crushing Blow, Open, Rush...) mexe igual aqui
+	N.mirrors = {}
+	function N.mirrorRelease(model)
+		local m = N.mirrors[model]
+		if not m then return end
+		N.mirrors[model] = nil
+		for part, c in pairs(m.saved) do
+			if part.Parent then pcall(function() part.CanCollide = c end) end
+		end
+		if m.hum and typeof(m.hum) == "Instance" then pcall(function() m.hum.PlatformStand = false end) end
+	end
+	track(RunService.Heartbeat:Connect(function()
+		for model, m in pairs(N.mirrors) do
+			if not model.Parent or os.clock() - m.last > 0.6 then
+				N.mirrorRelease(model)
+			else
+				m.cf = m.cf:Lerp(m.target, 0.55)
+				for part, r in pairs(m.rel) do
+					if part.Parent then
+						part.CFrame = m.cf * r
+						part.AssemblyLinearVelocity = Vector3.zero
+						part.AssemblyAngularVelocity = Vector3.zero
+						part.CanCollide = false
+					end
+				end
+			end
+		end
+	end))
+	function N.onNpc(ev)
+		if type(ev.c) ~= "table" or #ev.c < 12 then return end
+		local cf = CFrame.new(table.unpack(ev.c))
+		local model = N.resolveModel(ev.path, cf.Position)
+		if not N.isNpcModel(model) then return end
+		local m = N.mirrors[model]
+		if not m then
+			local base = bodyPart(model)
+			if not base then return end
+			m = { rel = {}, saved = {}, cf = base.CFrame, target = cf, last = os.clock(), hum = model:FindFirstChildOfClass("Humanoid") }
+			for _, d in ipairs(model:GetDescendants()) do
+				if d:IsA("BasePart") then
+					m.rel[d] = base.CFrame:ToObjectSpace(d.CFrame)
+					m.saved[d] = d.CanCollide
+				end
+			end
+			if m.hum then pcall(function() m.hum.PlatformStand = true end) end
+			N.mirrors[model] = m
+		end
+		m.target, m.last = cf, os.clock()
+	end
+	function N.onNpcEnd(ev)
+		local model = N.resolveModel(ev.path)
+		if model then N.mirrorRelease(model) end
+		N.pathCache[ev.path or ""] = nil
+	end
+	function N.onNpcAnim(ev)
+		local model = N.resolveModel(ev.path, ev.p and Vector3.new(ev.p[1], ev.p[2], ev.p[3]))
+		if not N.isNpcModel(model) then return end
+		state.noEcho = true
+		pcall(playNpcAnim, model, ev.name)
+		state.noEcho = false
+	end
+	function N.onNpcRag(ev)
+		local model = N.resolveModel(ev.path, ev.p and Vector3.new(ev.p[1], ev.p[2], ev.p[3]))
+		if not N.isNpcModel(model) then return end
+		local mr = bodyPart(model)
+		if not mr then return end
+		N.mirrorRelease(model)
+		local push = ev.push and Vector3.new(ev.push[1], ev.push[2], ev.push[3]) or Vector3.zero
+		state.noEcho = true
+		pcall(ragdollNpc, model, state.stubHum(model), mr, push, ev.perm)
+		state.noEcho = false
+	end
+	function N.onAura(ev)
+		local _, c, r = plrChar(ev.from)
+		if c and r then pcall(state.ultAura, c, r, ev.dur) end
+	end
+	function N.onBoom(ev)
+		if type(ev.p) ~= "table" then return end
+		local pos = Vector3.new(ev.p[1], ev.p[2], ev.p[3])
+		local params = RaycastParams.new()
+		params.FilterType = Enum.RaycastFilterType.Exclude
+		params.FilterDescendantsInstances = { lp.Character }
+		local r = workspace:Raycast(pos + Vector3.new(0, 2, 0), Vector3.new(0, -14, 0), params)
+		if r then
+			groundBurst(r, ev.scale or 1)
+			pcall(breakGround, r, ev.scale or 1)
+		end
+		local root = bodyPart(lp.Character)
+		if root then state.shake(math.clamp(2.2 - (root.Position - pos).Magnitude / 40, 0.3, 2.2), 0.4) end
+	end
+	function N.onFugaFx(ev)
+		if type(ev.base) ~= "table" then return end
+		pcall(state.beamColumn, Vector3.new(ev.base[1], ev.base[2], ev.base[3]), CONFIG.FugaHeight * 2.6, CONFIG.FugaRise + CONFIG.FugaStay)
+		if ev.path then
+			local model = N.resolveModel(ev.path, ev.p and Vector3.new(ev.p[1], ev.p[2], ev.p[3]))
+			if N.isNpcModel(model) then pcall(state.blacken, model, CONFIG.FugaBlackTime) end
+		elseif ev.uid and ev.uid ~= me then
+			local plr = Players:GetPlayerByUserId(ev.uid)
+			if plr and plr.Character then pcall(state.blacken, plr.Character, CONFIG.FugaBlackTime) end
+		end
+	end
+	state.net = { npc = N.onNpc, npcend = N.onNpcEnd, npcanim = N.onNpcAnim, npcrag = N.onNpcRag, aura = N.onAura, boom = N.onBoom, fugafx = N.onFugaFx }
 	end
 
 	local function handle(ev)
@@ -15356,7 +15706,14 @@ do
 		elseif ev.t == "crush" then onCrush(ev)
 		elseif ev.t == "cursed" then onCursed(ev)
 		elseif ev.t == "fuga" then onFuga(ev)
-		elseif ev.t == "rush" then onRush(ev) end
+		elseif ev.t == "rush" then onRush(ev)
+		elseif ev.t == "npc" then state.net.npc(ev)
+		elseif ev.t == "npcend" then state.net.npcend(ev)
+		elseif ev.t == "npcanim" then state.net.npcanim(ev)
+		elseif ev.t == "npcrag" then state.net.npcrag(ev)
+		elseif ev.t == "aura" then state.net.aura(ev)
+		elseif ev.t == "boom" then state.net.boom(ev)
+		elseif ev.t == "fugafx" then state.net.fugafx(ev) end
 	end
 
 	-- destrava estados presos (acao que nunca terminou, queda segura, Animator sumido, cooldowns absurdos)
@@ -15460,6 +15817,20 @@ do
 					lastHere = os.clock()
 					post({ t = "here" })
 				end
+				if next(state.npcSend) then
+					local near = peerNear()
+					for model, e in pairs(state.npcSend) do
+						if not model.Parent then
+							state.npcSend[model] = nil
+						elseif os.clock() - e.t > 0.3 then
+							state.npcSend[model] = nil
+							if near then post({ t = "npcend", path = model:GetFullName() }) end
+						elseif near and os.clock() - e.sent >= 0.1 then
+							e.sent = os.clock()
+							post({ t = "npc", path = model:GetFullName(), c = { e.cf:GetComponents() } })
+						end
+					end
+				end
 				flush()
 			end
 		end)
@@ -15482,7 +15853,8 @@ do
 	genv.YujiPvpStop = function()
 		alive = false
 		PVP.send, PVP.anim, PVP.crush, PVP.crushPlayer, PVP.cursed, PVP.cursedPlayer = nil, nil, nil, nil, nil, nil
-		PVP.fuga, PVP.rush, PVP.isPeer = nil, nil, nil
+		PVP.fuga, PVP.rush, PVP.isPeer, PVP.aura, PVP.boom, PVP.fugaFx = nil, nil, nil, nil, nil, nil
+		state.npcOut, state.npcAnimOut, state.npcRagOut = nil, nil, nil
 		genv.YujiPvpStop = nil
 	end
 
