@@ -9205,6 +9205,24 @@ local CONFIG = {
 	ComboWindow = 1.5,       -- segundos pra apertar M1 de novo e continuar o combo (senao volta pro soco 1)
 	ComboEndCooldown = 0.9,  -- cooldown depois do soco 4
 	DashCooldown = 1.5,      -- cooldown do dash (Q / botao DASH)
+	-- variantes no ar
+	CrushAirForward = 26,    -- Crushing Blow no ar: studs que vai pra frente ate a 1a batida
+	CrushAirSlam1 = 0.385,   -- segundo da anim da 1a batida (impacto)
+	CrushAirSlam2 = 0.51,    -- 2a batida
+	CrushAirRange = 14,
+	CursedAirUp = 38,        -- Cursed Strikes no ar: 0 - 0.12s sobe e vai pra tras (carregando)
+	CursedAirBack = 22,
+	CursedAirDiveAngle = 38, -- mergulho minimo (graus pra baixo). Ele segue pra onde a CAMERA olha, mas NUNCA sobe: olhando pra cima/reto usa esse angulo
+	CursedAirMaxDiveAngle = 75, -- olhando bem pra baixo ele mergulha mais fechado, ate esse angulo
+	CursedAirTurn = 14,      -- quao rapido o mergulho vira pra onde a camera olha
+	CursedAirChargeTime = 0.12, -- fase de carregar (sobe um pouco) antes do mergulho
+	CursedAirSpinTime = 0.08, -- giro rapido no comeco (mostra que voce esta pronto pra descer)
+	CursedAirSpinDeg = 360,  -- quanto gira nesse tempo (360 = uma volta; use multiplo de 360 pra nao dar tranco)
+	CursedAirTilt = 28,      -- inclinacao do corpo no mergulho
+	CursedAirSpeed = 95,     -- studs/s do mergulho
+	CursedAirRange = 14,
+	CursedAirDamage = 40,
+	CursedAirMaxTime = 8,    -- se nao achar chao (void), cancela depois disso
 	BlackFlashCooldown = 5,  -- cooldown do Black Flash (o nome da tool mostra os segundos que faltam)
 	DashSpeed = 75,          -- studs/s
 	DashTime = 0.3,          -- quanto tempo o impulso dura
@@ -9242,7 +9260,7 @@ local CONFIG = {
 	VaultSpeed = 1,          -- velocidade das anims de parkour (1 = original 0.35s; menor = mais lento)
 
 	-- botoes mobile (so aparecem em R6): tamanho e distancia minima do botao de pulo
-	ButtonSize = 90,
+	ButtonSize = 70,
 	ButtonJumpGap = 70,
 	-- extras
 	SimRadius = 200,         -- SimulationRadius ao usar dash / M1 / M1 do ar / Black Flash / block
@@ -11311,6 +11329,1493 @@ F(0.1317, C(0.2484,-0.037,0.3587,0.492,-0.8687,-0.0579,0.1519,0.0202,0.9882,-0.8
 		impactFx = impactFx, hitFx = hitFx }
 	ANIMS.RushMiss = { length = 1.01, loop = false, blendIn = 0.06, blendOut = 0.3, fx = missFx, frames = missFrames }
 	ANIMS.NpcRush = { length = 1.35, loop = false, blendIn = 0.04, blendOut = 0.2, frames = npcFrames }
+
+	-- ---------- VARIANTES NO AR (pastes do logger) ----------
+	-- CrushingBlowAir: Crushing Blow usado no ar (vai pra frente e desce batendo)
+	ANIMS.CrushingBlowAir = {
+		length = 0.9618, loop = false, blendIn = 0.05, blendOut = 0.3,
+		fx = {
+			{ t = 0, kind = "sfx", name = "Water", dur = 0.602948, pos = true,
+				props = {
+					{"SoundId", "rbxassetid://5639244517"},
+					{"Volume", 0.5},
+					{"PlaybackSpeed", 1},
+					{"Looped", false},
+					{"TimePosition", 0},
+					{"RollOffMode", Enum.RollOffMode.Linear},
+					{"RollOffMinDistance", 10},
+					{"RollOffMaxDistance", 300},
+				} },
+			{ t = 0, kind = "vfx", class = "Sparkles", name = "Sparkles", enabled = true, dur = 1.5,
+				mount = { part = "Handle", cf = CFrame.new(0,0,0,1,0,0,0,1,0,0,0,1) },
+				props = {
+					{"SparkleColor", Color3.new(0.666667,0,1)},
+					{"TimeScale", 1},
+				} },
+			{ t = 0, kind = "sfx", name = "Water", dur = 0.590627, pos = true,
+				props = {
+					{"SoundId", "rbxassetid://5639243489"},
+					{"Volume", 0.5},
+					{"PlaybackSpeed", 0.9},
+					{"Looped", false},
+					{"TimePosition", 0},
+					{"RollOffMode", Enum.RollOffMode.Linear},
+					{"RollOffMinDistance", 10},
+					{"RollOffMaxDistance", 300},
+				} },
+			{ t = 0, kind = "vfx", class = "PointLight", name = "PointLight", enabled = true, dur = 0.998905,
+				mount = { part = nil, cf = CFrame.new(1.7455,0.9803,1.0519,-0.1204,-0.9403,0.3184,0.6566,-0.316,-0.6848,0.7446,0.1266,0.6554) },
+				props = {
+					{"Brightness", 0.593783},
+					{"Color", Color3.new(0,1,1)},
+					{"Range", 5},
+					{"Shadows", true},
+				} },
+			{ t = 0, kind = "vfx", class = "Trail", name = "Trail", enabled = true, dur = 0.731535,
+				mount = { part = nil, cf = CFrame.new(1.7455,0.9803,1.0519,-0.1204,-0.9403,0.3184,0.6566,-0.316,-0.6848,0.7446,0.1266,0.6554) },
+				att0 = { part = nil, cf = CFrame.new(3.1635,0.2691,1.9086,-0.1204,-0.9403,0.3184,0.6566,-0.316,-0.6848,0.7446,0.1266,0.6554) },
+				att1 = { part = nil, cf = CFrame.new(2.2083,2.3236,-0.0577,-0.1204,-0.9403,0.3184,0.6566,-0.316,-0.6848,0.7446,0.1266,0.6554) },
+				props = {
+					{"Texture", "rbxassetid://14218638249"},
+					{"TextureLength", 10},
+					{"TextureMode", Enum.TextureMode.Static},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(0.333333,0.666667,1)),ColorSequenceKeypoint.new(1,Color3.new(0.333333,0.666667,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"LightEmission", 0},
+					{"LightInfluence", 0},
+					{"Lifetime", 0.2},
+					{"MinLength", 0.1},
+					{"MaxLength", 0},
+					{"WidthScale", NumberSequence.new({NumberSequenceKeypoint.new(0,0.5,0),NumberSequenceKeypoint.new(0.0981595,0.724719,0),NumberSequenceKeypoint.new(0.233,0.8,0),NumberSequenceKeypoint.new(0.458589,0.735955,0),NumberSequenceKeypoint.new(0.707055,0.5,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"FaceCamera", true},
+				} },
+			{ t = 0, kind = "vfx", class = "ParticleEmitter", name = "Sparks", enabled = true, emit = 15, dur = 0.454401,
+				mount = { part = nil, cf = CFrame.new(2.6859,1.2963,0.9253,-0.1204,-0.9403,0.3184,0.6566,-0.316,-0.6848,0.7446,0.1266,0.6554) },
+				props = {
+					{"Texture", "rbxassetid://15269497616"},
+					{"Rate", 50},
+					{"Lifetime", NumberRange.new(0.4,0.6)},
+					{"Speed", NumberRange.new(0,2)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,1,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(0.333333,0.666667,1)),ColorSequenceKeypoint.new(1,Color3.new(0.333333,0.666667,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Rotation", NumberRange.new(-360,360)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(360,360)},
+					{"Acceleration", Vector3.new(0,10,0)},
+					{"Drag", 0},
+					{"EmissionDirection", Enum.NormalId.Front},
+					{"LightEmission", -5},
+					{"LightInfluence", 0},
+					{"LockedToPart", false},
+					{"ZOffset", 0},
+					{"Orientation", Enum.ParticleOrientation.FacingCamera},
+					{"VelocityInheritance", 0.2},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.Grid4x4},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.OneShot},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", true},
+					{"Brightness", 5},
+				} },
+			{ t = 0, kind = "vfx", class = "ParticleEmitter", name = "Aura", enabled = true, emit = 15, dur = 0.438348,
+				mount = { part = nil, cf = CFrame.new(2.6859,1.2963,0.9253,-0.1204,-0.9403,0.3184,0.6566,-0.316,-0.6848,0.7446,0.1266,0.6554) },
+				props = {
+					{"Texture", "rbxassetid://9285330517"},
+					{"Rate", 15},
+					{"Lifetime", NumberRange.new(0.4,0.6)},
+					{"Speed", NumberRange.new(0,2)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,1.3486,0.7),NumberSequenceKeypoint.new(0.360429,1.24682,0.504601),NumberSequenceKeypoint.new(0.705521,1.01781,0.353704),NumberSequenceKeypoint.new(0.868098,0.636132,0.217807),NumberSequenceKeypoint.new(1,0.38168,0)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(0.333333,0.666667,1)),ColorSequenceKeypoint.new(1,Color3.new(0.333333,0.666667,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Rotation", NumberRange.new(-360,360)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(360,360)},
+					{"Acceleration", Vector3.new(0,15,0)},
+					{"Drag", 0},
+					{"EmissionDirection", Enum.NormalId.Front},
+					{"LightEmission", -5},
+					{"LightInfluence", 0},
+					{"LockedToPart", true},
+					{"ZOffset", 1.5},
+					{"Orientation", Enum.ParticleOrientation.FacingCamera},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.Grid4x4},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.OneShot},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 5},
+				} },
+			{ t = 0.0258938, kind = "vfx", class = "ParticleEmitter", name = "Final", enabled = false, emit = 10, dur = 0.6,
+				mount = { part = nil, cf = CFrame.new(1.634,1.2339,0.9347,-0.2961,-0.7125,0.6361,0.3076,-0.7017,-0.6427,0.9043,0.0053,0.4269) },
+				props = {
+					{"Texture", "rbxassetid://6660412891"},
+					{"Rate", 200},
+					{"Lifetime", NumberRange.new(0.1,0.1)},
+					{"Speed", NumberRange.new(10,20)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,2.88793,0),NumberSequenceKeypoint.new(0.142145,6.98276,0),NumberSequenceKeypoint.new(0.302993,1.25,0),NumberSequenceKeypoint.new(0.4601,3.62069,0),NumberSequenceKeypoint.new(0.622195,2.32759,0),NumberSequenceKeypoint.new(0.776808,1.46552,0),NumberSequenceKeypoint.new(0.891521,2.5431,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(0.333333,0.666667,1)),ColorSequenceKeypoint.new(1,Color3.new(0.333333,0.666667,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(0.557745,0.18209,0),NumberSequenceKeypoint.new(0.894022,0.871642,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"Rotation", NumberRange.new(90,90)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(180,-180)},
+					{"Acceleration", Vector3.new(0,0,0)},
+					{"Drag", 5},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", -10},
+					{"LightInfluence", 0},
+					{"LockedToPart", true},
+					{"ZOffset", -1},
+					{"Orientation", Enum.ParticleOrientation.VelocityParallel},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,-2.25882,0),NumberSequenceKeypoint.new(0.194401,-0.741177,0),NumberSequenceKeypoint.new(1,1.27059,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.None},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.Loop},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 5},
+				} },
+			{ t = 0.0277195, kind = "vfx", class = "ParticleEmitter", name = "Flare", enabled = false, emit = 15, dur = 1.5,
+				mount = { part = nil, cf = CFrame.new(1.634,1.2339,0.9347,-0.2961,-0.7125,0.6361,0.3076,-0.7017,-0.6427,0.9043,0.0053,0.4269) },
+				props = {
+					{"Texture", "http://www.roblox.com/asset/?id=5192965045"},
+					{"Rate", 20},
+					{"Lifetime", NumberRange.new(1,1)},
+					{"Speed", NumberRange.new(0,0)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,10,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(0.333333,0.666667,1)),ColorSequenceKeypoint.new(1,Color3.new(0.333333,0.666667,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(0.7,0,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"Rotation", NumberRange.new(0,0)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(0,0)},
+					{"Acceleration", Vector3.new(0,0,0)},
+					{"Drag", 0},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", 0},
+					{"LightInfluence", 0},
+					{"LockedToPart", true},
+					{"ZOffset", 3},
+					{"Orientation", Enum.ParticleOrientation.FacingCamera},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,2.95437,0),NumberSequenceKeypoint.new(0.290814,-5.63388,0),NumberSequenceKeypoint.new(0.554814,-9.35948,0),NumberSequenceKeypoint.new(1,-11.561,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.None},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.Loop},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 5},
+				} },
+			{ t = 0.029165, kind = "sfx", name = "Crack", dur = 0.829286, pos = true,
+				props = {
+					{"SoundId", "rbxassetid://4403634269"},
+					{"Volume", 1},
+					{"PlaybackSpeed", 1},
+					{"Looped", false},
+					{"TimePosition", 0},
+					{"RollOffMode", Enum.RollOffMode.Linear},
+					{"RollOffMinDistance", 10},
+					{"RollOffMaxDistance", 300},
+				} },
+			{ t = 0.0291976, kind = "vfx", class = "ParticleEmitter", name = "Wind2", enabled = false, emit = 30, dur = 0.6,
+				mount = { part = nil, cf = CFrame.new(1.634,1.2339,0.9347,-0.2961,-0.7125,0.6361,0.3076,-0.7017,-0.6427,0.9043,0.0053,0.4269) },
+				props = {
+					{"Texture", "rbxassetid://1053548563"},
+					{"Rate", 100},
+					{"Lifetime", NumberRange.new(0.1,0.1)},
+					{"Speed", NumberRange.new(0.01,0.01)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,40,0),NumberSequenceKeypoint.new(1,40,0)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(0.333333,0.666667,1)),ColorSequenceKeypoint.new(1,Color3.new(0.333333,0.666667,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"Rotation", NumberRange.new(-360,360)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(360,360)},
+					{"Acceleration", Vector3.new(0,0,0)},
+					{"Drag", 0},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", 1},
+					{"LightInfluence", 0},
+					{"LockedToPart", false},
+					{"ZOffset", 0},
+					{"Orientation", Enum.ParticleOrientation.VelocityPerpendicular},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,-3,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.None},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.Loop},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 2},
+				} },
+			{ t = 0.0309958, kind = "vfx", class = "ParticleEmitter", name = "Hit", enabled = false, emit = 5, dur = 0.7,
+				mount = { part = nil, cf = CFrame.new(1.634,1.2339,0.9347,-0.2961,-0.7125,0.6361,0.3076,-0.7017,-0.6427,0.9043,0.0053,0.4269) },
+				props = {
+					{"Texture", "http://www.roblox.com/asset/?id=16803107330"},
+					{"Rate", 5},
+					{"Lifetime", NumberRange.new(0.05,0.2)},
+					{"Speed", NumberRange.new(0.0260193,0.0260193)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,0,1.08686),NumberSequenceKeypoint.new(0.1,7.89032,1.08686),NumberSequenceKeypoint.new(0.2,10.1273,1.08686),NumberSequenceKeypoint.new(0.3,11.4449,1.08686),NumberSequenceKeypoint.new(0.4,12.2941,1.08686),NumberSequenceKeypoint.new(0.5,12.851,1.08686),NumberSequenceKeypoint.new(0.6,13.2082,1.08686),NumberSequenceKeypoint.new(0.7,13.4227,1.08686),NumberSequenceKeypoint.new(0.8,13.5353,1.08686),NumberSequenceKeypoint.new(0.9,13.5791,1.08686),NumberSequenceKeypoint.new(1,13.5858,1.08686)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(1,0,0)),ColorSequenceKeypoint.new(1,Color3.new(1,0,0))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Rotation", NumberRange.new(-360,360)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(360,-360)},
+					{"Acceleration", Vector3.new(0,0,0)},
+					{"Drag", 0},
+					{"EmissionDirection", Enum.NormalId.Front},
+					{"LightEmission", -15},
+					{"LightInfluence", 0},
+					{"LockedToPart", false},
+					{"ZOffset", 0},
+					{"Orientation", Enum.ParticleOrientation.VelocityParallel},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.Grid4x4},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.OneShot},
+					{"FlipbookFramerate", NumberRange.new(41,66)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 15},
+				} },
+			{ t = 0.0822192, kind = "vfx", class = "ParticleEmitter", name = "Final", enabled = false, emit = 10, dur = 0.6,
+				mount = { part = nil, cf = CFrame.new(1.7081,1.1479,1.0171,-0.1423,-0.8243,0.5479,0.375,-0.5572,-0.7409,0.916,0.1,0.3884) },
+				props = {
+					{"Texture", "rbxassetid://6660412891"},
+					{"Rate", 200},
+					{"Lifetime", NumberRange.new(0.1,0.1)},
+					{"Speed", NumberRange.new(10,20)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,2.88793,0),NumberSequenceKeypoint.new(0.142145,6.98276,0),NumberSequenceKeypoint.new(0.302993,1.25,0),NumberSequenceKeypoint.new(0.4601,3.62069,0),NumberSequenceKeypoint.new(0.622195,2.32759,0),NumberSequenceKeypoint.new(0.776808,1.46552,0),NumberSequenceKeypoint.new(0.891521,2.5431,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(0.333333,0.666667,1)),ColorSequenceKeypoint.new(1,Color3.new(0.333333,0.666667,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(0.557745,0.18209,0),NumberSequenceKeypoint.new(0.894022,0.871642,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"Rotation", NumberRange.new(90,90)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(180,-180)},
+					{"Acceleration", Vector3.new(0,0,0)},
+					{"Drag", 5},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", -10},
+					{"LightInfluence", 0},
+					{"LockedToPart", true},
+					{"ZOffset", -1},
+					{"Orientation", Enum.ParticleOrientation.VelocityParallel},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,-2.25882,0),NumberSequenceKeypoint.new(0.194401,-0.741177,0),NumberSequenceKeypoint.new(1,1.27059,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.None},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.Loop},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 5},
+				} },
+			{ t = 0.0972375, kind = "vfx", class = "ParticleEmitter", name = "Flare", enabled = false, emit = 15, dur = 1.5,
+				mount = { part = nil, cf = CFrame.new(1.7081,1.1479,1.0171,-0.1423,-0.8243,0.5479,0.375,-0.5572,-0.7409,0.916,0.1,0.3884) },
+				props = {
+					{"Texture", "http://www.roblox.com/asset/?id=5192965045"},
+					{"Rate", 20},
+					{"Lifetime", NumberRange.new(1,1)},
+					{"Speed", NumberRange.new(0,0)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,10,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(0.333333,0.666667,1)),ColorSequenceKeypoint.new(1,Color3.new(0.333333,0.666667,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(0.7,0,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"Rotation", NumberRange.new(0,0)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(0,0)},
+					{"Acceleration", Vector3.new(0,0,0)},
+					{"Drag", 0},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", 0},
+					{"LightInfluence", 0},
+					{"LockedToPart", true},
+					{"ZOffset", 3},
+					{"Orientation", Enum.ParticleOrientation.FacingCamera},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,2.95437,0),NumberSequenceKeypoint.new(0.290814,-5.63388,0),NumberSequenceKeypoint.new(0.554814,-9.35948,0),NumberSequenceKeypoint.new(1,-11.561,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.None},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.Loop},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 5},
+				} },
+			{ t = 0.107332, kind = "vfx", class = "ParticleEmitter", name = "Wind2", enabled = false, emit = 30, dur = 0.6,
+				mount = { part = nil, cf = CFrame.new(1.7081,1.1479,1.0171,-0.1423,-0.8243,0.5479,0.375,-0.5572,-0.7409,0.916,0.1,0.3884) },
+				props = {
+					{"Texture", "rbxassetid://1053548563"},
+					{"Rate", 100},
+					{"Lifetime", NumberRange.new(0.1,0.1)},
+					{"Speed", NumberRange.new(0.01,0.01)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,40,0),NumberSequenceKeypoint.new(1,40,0)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(0.333333,0.666667,1)),ColorSequenceKeypoint.new(1,Color3.new(0.333333,0.666667,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"Rotation", NumberRange.new(-360,360)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(360,360)},
+					{"Acceleration", Vector3.new(0,0,0)},
+					{"Drag", 0},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", 1},
+					{"LightInfluence", 0},
+					{"LockedToPart", false},
+					{"ZOffset", 0},
+					{"Orientation", Enum.ParticleOrientation.VelocityPerpendicular},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,-3,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.None},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.Loop},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 2},
+				} },
+			{ t = 0.108974, kind = "vfx", class = "ParticleEmitter", name = "Hit", enabled = false, emit = 5, dur = 0.7,
+				mount = { part = nil, cf = CFrame.new(1.7081,1.1479,1.0171,-0.1423,-0.8243,0.5479,0.375,-0.5572,-0.7409,0.916,0.1,0.3884) },
+				props = {
+					{"Texture", "http://www.roblox.com/asset/?id=16803107330"},
+					{"Rate", 5},
+					{"Lifetime", NumberRange.new(0.05,0.2)},
+					{"Speed", NumberRange.new(0.0260193,0.0260193)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,0,1.08686),NumberSequenceKeypoint.new(0.1,7.89032,1.08686),NumberSequenceKeypoint.new(0.2,10.1273,1.08686),NumberSequenceKeypoint.new(0.3,11.4449,1.08686),NumberSequenceKeypoint.new(0.4,12.2941,1.08686),NumberSequenceKeypoint.new(0.5,12.851,1.08686),NumberSequenceKeypoint.new(0.6,13.2082,1.08686),NumberSequenceKeypoint.new(0.7,13.4227,1.08686),NumberSequenceKeypoint.new(0.8,13.5353,1.08686),NumberSequenceKeypoint.new(0.9,13.5791,1.08686),NumberSequenceKeypoint.new(1,13.5858,1.08686)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(1,0,0)),ColorSequenceKeypoint.new(1,Color3.new(1,0,0))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Rotation", NumberRange.new(-360,360)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(360,-360)},
+					{"Acceleration", Vector3.new(0,0,0)},
+					{"Drag", 0},
+					{"EmissionDirection", Enum.NormalId.Front},
+					{"LightEmission", -15},
+					{"LightInfluence", 0},
+					{"LockedToPart", false},
+					{"ZOffset", 0},
+					{"Orientation", Enum.ParticleOrientation.VelocityParallel},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.Grid4x4},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.OneShot},
+					{"FlipbookFramerate", NumberRange.new(41,66)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 15},
+				} },
+			{ t = 0.38475, kind = "vfx", class = "ParticleEmitter", name = "Flames", enabled = false, emit = 20, dur = 1.2,
+				mount = { part = nil, cf = CFrame.new(0.0105,-9.6736,5.4191,-0.2785,0,-0.9604,0,1,0,0.9604,0,-0.2785) },
+				props = {
+					{"Texture", "rbxassetid://15269497616"},
+					{"Rate", 100},
+					{"Lifetime", NumberRange.new(0.3,0.7)},
+					{"Speed", NumberRange.new(0,30)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(0.131902,2.03562,1),NumberSequenceKeypoint.new(0.331288,4.07125,1.17059),NumberSequenceKeypoint.new(0.720859,5.29262,1.08727),NumberSequenceKeypoint.new(1,5.69975,0.992366)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(0.333333,1,1)),ColorSequenceKeypoint.new(1,Color3.new(0.333333,1,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Rotation", NumberRange.new(-360,360)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(60,60)},
+					{"Acceleration", Vector3.new(0,0,0)},
+					{"Drag", 15},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", -3},
+					{"LightInfluence", 0},
+					{"LockedToPart", false},
+					{"ZOffset", 0},
+					{"Orientation", Enum.ParticleOrientation.FacingCamera},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 0.8},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.Grid4x4},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.OneShot},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", true},
+					{"Brightness", 15},
+				} },
+			{ t = 0.384811, kind = "vfx", class = "ParticleEmitter", name = "Glow", enabled = false, emit = 1, dur = 0.65,
+				mount = { part = nil, cf = CFrame.new(0.0105,-9.6736,5.4191,-0.2785,0,-0.9604,0,1,0,0.9604,0,-0.2785) },
+				props = {
+					{"Texture", "rbxassetid://14511831163"},
+					{"Rate", 1},
+					{"Lifetime", NumberRange.new(0.15,0.15)},
+					{"Speed", NumberRange.new(0,0)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(0.125767,3.96947,0),NumberSequenceKeypoint.new(0.340491,7.3028,0),NumberSequenceKeypoint.new(0.67638,8.85496,0),NumberSequenceKeypoint.new(1,9.59288,0)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(0.333333,1,1)),ColorSequenceKeypoint.new(1,Color3.new(0.333333,1,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"Rotation", NumberRange.new(0,0)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(0,0)},
+					{"Acceleration", Vector3.new(0,0,0)},
+					{"Drag", 0},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", 1},
+					{"LightInfluence", 0},
+					{"LockedToPart", false},
+					{"ZOffset", 0},
+					{"Orientation", Enum.ParticleOrientation.FacingCamera},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.None},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.Loop},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 5},
+				} },
+			{ t = 0.384826, kind = "vfx", class = "ParticleEmitter", name = "Ring", enabled = false, emit = 10, dur = 1,
+				mount = { part = nil, cf = CFrame.new(0.0105,-9.6736,5.4191,-0.2785,0,-0.9604,0,1,0,0.9604,0,-0.2785) },
+				props = {
+					{"Texture", "rbxassetid://9293225960"},
+					{"Rate", 50},
+					{"Lifetime", NumberRange.new(0.2,0.5)},
+					{"Speed", NumberRange.new(0.1,0.1)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(0.032212,6.36031,3.47677),NumberSequenceKeypoint.new(0.130212,12.0437,3.7846),NumberSequenceKeypoint.new(0.374212,15.3005,3.48412),NumberSequenceKeypoint.new(0.648212,17.2163,2.77942),NumberSequenceKeypoint.new(1,17.779,2.75702)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(1,1,1)),ColorSequenceKeypoint.new(1,Color3.new(1,1,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0.9,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"Rotation", NumberRange.new(-360,360)},
+					{"RotSpeed", NumberRange.new(200,800)},
+					{"SpreadAngle", Vector2.new(10,10)},
+					{"Acceleration", Vector3.new(0,0,0)},
+					{"Drag", 0},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", 1},
+					{"LightInfluence", 1},
+					{"LockedToPart", false},
+					{"ZOffset", 2},
+					{"Orientation", Enum.ParticleOrientation.VelocityPerpendicular},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.Grid2x2},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.OneShot},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 1},
+				} },
+			{ t = 0.384865, kind = "vfx", class = "ParticleEmitter", name = "Sparks", enabled = false, emit = 10, dur = 0.9,
+				mount = { part = nil, cf = CFrame.new(0.0105,-9.6736,5.4191,-0.2785,0,-0.9604,0,1,0,0.9604,0,-0.2785) },
+				props = {
+					{"Texture", "rbxassetid://6660412891"},
+					{"Rate", 100},
+					{"Lifetime", NumberRange.new(0.2,0.4)},
+					{"Speed", NumberRange.new(20,80)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(0.165,3,0.239),NumberSequenceKeypoint.new(0.483,1,0.239),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(0.333333,1,1)),ColorSequenceKeypoint.new(1,Color3.new(0.333333,1,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(0.557745,0.18209,0),NumberSequenceKeypoint.new(0.894022,0.871642,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"Rotation", NumberRange.new(90,90)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(40,40)},
+					{"Acceleration", Vector3.new(0,0,0)},
+					{"Drag", 5},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", -10},
+					{"LightInfluence", 0},
+					{"LockedToPart", false},
+					{"ZOffset", 1},
+					{"Orientation", Enum.ParticleOrientation.VelocityParallel},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.None},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.Loop},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 5},
+				} },
+			{ t = 0.384877, kind = "vfx", class = "ParticleEmitter", name = "Wind2", enabled = false, emit = 8, dur = 0.6,
+				mount = { part = nil, cf = CFrame.new(0.0105,-9.6736,5.4191,-0.2785,0,-0.9604,0,1,0,0.9604,0,-0.2785) },
+				props = {
+					{"Texture", "rbxassetid://1053548563"},
+					{"Rate", 100},
+					{"Lifetime", NumberRange.new(0.1,0.1)},
+					{"Speed", NumberRange.new(0.01,0.01)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,40,0),NumberSequenceKeypoint.new(1,40,0)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(0.333333,1,1)),ColorSequenceKeypoint.new(1,Color3.new(0.333333,1,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"Rotation", NumberRange.new(-360,360)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(10,10)},
+					{"Acceleration", Vector3.new(0,0,0)},
+					{"Drag", 0},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", 1},
+					{"LightInfluence", 0},
+					{"LockedToPart", false},
+					{"ZOffset", 0},
+					{"Orientation", Enum.ParticleOrientation.VelocityPerpendicular},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,-3,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.None},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.Loop},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 5},
+				} },
+			{ t = 0.386571, kind = "sfx", name = "GroundImpact", dur = 0.992, pos = true,
+				props = {
+					{"SoundId", "rbxassetid://7093763783"},
+					{"Volume", 1},
+					{"PlaybackSpeed", 1.25},
+					{"Looped", false},
+					{"TimePosition", 0},
+					{"RollOffMode", Enum.RollOffMode.Linear},
+					{"RollOffMinDistance", 10},
+					{"RollOffMaxDistance", 300},
+				} },
+			{ t = 0.459728, kind = "sfx", name = "Impact1", dur = 3, pos = true,
+				props = {
+					{"SoundId", "rbxassetid://9118617342"},
+					{"Volume", 1},
+					{"PlaybackSpeed", 1},
+					{"Looped", false},
+					{"TimePosition", 0},
+					{"RollOffMode", Enum.RollOffMode.Linear},
+					{"RollOffMinDistance", 10},
+					{"RollOffMaxDistance", 300},
+				} },
+			{ t = 0.488075, kind = "sfx", name = "Impact4", dur = 3, pos = true,
+				props = {
+					{"SoundId", "rbxassetid://9118616096"},
+					{"Volume", 1},
+					{"PlaybackSpeed", 1},
+					{"Looped", false},
+					{"TimePosition", 0},
+					{"RollOffMode", Enum.RollOffMode.Linear},
+					{"RollOffMinDistance", 10},
+					{"RollOffMaxDistance", 300},
+				} },
+			{ t = 0.488874, kind = "sfx", name = "Water", dur = 0.590627, pos = true,
+				props = {
+					{"SoundId", "rbxassetid://5639243489"},
+					{"Volume", 0.5},
+					{"PlaybackSpeed", 0.9},
+					{"Looped", false},
+					{"TimePosition", 0},
+					{"RollOffMode", Enum.RollOffMode.Linear},
+					{"RollOffMinDistance", 10},
+					{"RollOffMaxDistance", 300},
+				} },
+			{ t = 0.494357, kind = "sfx", name = "Impact2", dur = 3, pos = true,
+				props = {
+					{"SoundId", "rbxassetid://9118615862"},
+					{"Volume", 1},
+					{"PlaybackSpeed", 1},
+					{"Looped", false},
+					{"TimePosition", 0},
+					{"RollOffMode", Enum.RollOffMode.Linear},
+					{"RollOffMinDistance", 10},
+					{"RollOffMaxDistance", 300},
+				} },
+			{ t = 0.502914, kind = "sfx", name = "Impact3", dur = 3, pos = true,
+				props = {
+					{"SoundId", "rbxassetid://9118614058"},
+					{"Volume", 1},
+					{"PlaybackSpeed", 1},
+					{"Looped", false},
+					{"TimePosition", 0},
+					{"RollOffMode", Enum.RollOffMode.Linear},
+					{"RollOffMinDistance", 10},
+					{"RollOffMaxDistance", 300},
+				} },
+			{ t = 0.509072, kind = "vfx", class = "ParticleEmitter", name = "Flames", enabled = false, emit = 0, dur = 1.2,
+				mount = { part = nil, cf = CFrame.new(0.0105,-9.6736,5.4191,-0.2785,0,-0.9604,0,1,0,0.9604,0,-0.2785) },
+				props = {
+					{"Texture", "rbxassetid://15269497616"},
+					{"Rate", 100},
+					{"Lifetime", NumberRange.new(0.3,0.7)},
+					{"Speed", NumberRange.new(0,30)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(0.131902,2.03562,1),NumberSequenceKeypoint.new(0.331288,4.07125,1.17059),NumberSequenceKeypoint.new(0.720859,5.29262,1.08727),NumberSequenceKeypoint.new(1,5.69975,0.992366)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(0.333333,1,1)),ColorSequenceKeypoint.new(1,Color3.new(0.333333,1,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Rotation", NumberRange.new(-360,360)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(60,60)},
+					{"Acceleration", Vector3.new(0,0,0)},
+					{"Drag", 15},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", -3},
+					{"LightInfluence", 0},
+					{"LockedToPart", false},
+					{"ZOffset", 0},
+					{"Orientation", Enum.ParticleOrientation.FacingCamera},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 0.8},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.Grid4x4},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.OneShot},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", true},
+					{"Brightness", 15},
+				} },
+			{ t = 0.510986, kind = "vfx", class = "ParticleEmitter", name = "Wind2", enabled = false, emit = 30, dur = 0.6,
+				mount = { part = nil, cf = CFrame.new(0.0105,-9.6736,5.4191,-0.2785,0,-0.9604,0,1,0,0.9604,0,-0.2785) },
+				props = {
+					{"Texture", "rbxassetid://1053548563"},
+					{"Rate", 100},
+					{"Lifetime", NumberRange.new(0.1,0.1)},
+					{"Speed", NumberRange.new(0.01,0.01)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,40,0),NumberSequenceKeypoint.new(1,40,0)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(0.333333,1,1)),ColorSequenceKeypoint.new(1,Color3.new(0.333333,1,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"Rotation", NumberRange.new(-360,360)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(10,10)},
+					{"Acceleration", Vector3.new(0,0,0)},
+					{"Drag", 0},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", 1},
+					{"LightInfluence", 0},
+					{"LockedToPart", false},
+					{"ZOffset", 0},
+					{"Orientation", Enum.ParticleOrientation.VelocityPerpendicular},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,-3,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.None},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.Loop},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 5},
+				} },
+			{ t = 0.512383, kind = "vfx", class = "ParticleEmitter", name = "Ring", enabled = false, emit = 0, dur = 1,
+				mount = { part = nil, cf = CFrame.new(0.0105,-9.6736,5.4191,-0.2785,0,-0.9604,0,1,0,0.9604,0,-0.2785) },
+				props = {
+					{"Texture", "rbxassetid://9293225960"},
+					{"Rate", 50},
+					{"Lifetime", NumberRange.new(0.2,0.5)},
+					{"Speed", NumberRange.new(0.1,0.1)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(0.032212,6.36031,3.47677),NumberSequenceKeypoint.new(0.130212,12.0437,3.7846),NumberSequenceKeypoint.new(0.374212,15.3005,3.48412),NumberSequenceKeypoint.new(0.648212,17.2163,2.77942),NumberSequenceKeypoint.new(1,17.779,2.75702)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(1,1,1)),ColorSequenceKeypoint.new(1,Color3.new(1,1,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0.9,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"Rotation", NumberRange.new(-360,360)},
+					{"RotSpeed", NumberRange.new(200,800)},
+					{"SpreadAngle", Vector2.new(10,10)},
+					{"Acceleration", Vector3.new(0,0,0)},
+					{"Drag", 0},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", 1},
+					{"LightInfluence", 1},
+					{"LockedToPart", false},
+					{"ZOffset", 2},
+					{"Orientation", Enum.ParticleOrientation.VelocityPerpendicular},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.Grid2x2},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.OneShot},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 1},
+				} },
+			{ t = 0.514563, kind = "vfx", class = "ParticleEmitter", name = "Glow", enabled = false, emit = 0, dur = 0.65,
+				mount = { part = nil, cf = CFrame.new(0.0105,-9.6736,5.4191,-0.2785,0,-0.9604,0,1,0,0.9604,0,-0.2785) },
+				props = {
+					{"Texture", "rbxassetid://14511831163"},
+					{"Rate", 1},
+					{"Lifetime", NumberRange.new(0.15,0.15)},
+					{"Speed", NumberRange.new(0,0)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(0.125767,3.96947,0),NumberSequenceKeypoint.new(0.340491,7.3028,0),NumberSequenceKeypoint.new(0.67638,8.85496,0),NumberSequenceKeypoint.new(1,9.59288,0)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(0.333333,1,1)),ColorSequenceKeypoint.new(1,Color3.new(0.333333,1,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"Rotation", NumberRange.new(0,0)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(0,0)},
+					{"Acceleration", Vector3.new(0,0,0)},
+					{"Drag", 0},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", 1},
+					{"LightInfluence", 0},
+					{"LockedToPart", false},
+					{"ZOffset", 0},
+					{"Orientation", Enum.ParticleOrientation.FacingCamera},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.None},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.Loop},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 5},
+				} },
+			{ t = 0.51617, kind = "vfx", class = "ParticleEmitter", name = "Sparks", enabled = false, emit = 10, dur = 0.9,
+				mount = { part = nil, cf = CFrame.new(0.0105,-9.6736,5.4191,-0.2785,0,-0.9604,0,1,0,0.9604,0,-0.2785) },
+				props = {
+					{"Texture", "rbxassetid://6660412891"},
+					{"Rate", 100},
+					{"Lifetime", NumberRange.new(0.2,0.4)},
+					{"Speed", NumberRange.new(20,80)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(0.165,3,0.239),NumberSequenceKeypoint.new(0.483,1,0.239),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(0.333333,1,1)),ColorSequenceKeypoint.new(1,Color3.new(0.333333,1,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(0.557745,0.18209,0),NumberSequenceKeypoint.new(0.894022,0.871642,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"Rotation", NumberRange.new(90,90)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(40,40)},
+					{"Acceleration", Vector3.new(0,0,0)},
+					{"Drag", 5},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", -10},
+					{"LightInfluence", 0},
+					{"LockedToPart", false},
+					{"ZOffset", 1},
+					{"Orientation", Enum.ParticleOrientation.VelocityParallel},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.None},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.Loop},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 5},
+				} },
+			{ t = 0.517922, kind = "vfx", class = "PointLight", name = "PointLight", enabled = true, dur = 1.3917,
+				mount = { part = nil, cf = CFrame.new(0.0105,-9.6736,5.4191,-0.2785,0,-0.9604,0,1,0,0.9604,0,-0.2785) },
+				props = {
+					{"Brightness", 20},
+					{"Color", Color3.new(0.666667,1,1)},
+					{"Range", 9},
+					{"Shadows", true},
+				} },
+			{ t = 0.568474, kind = "sfx", name = "Fist", dur = 0.124548, pos = true,
+				props = {
+					{"SoundId", "rbxassetid://4571259077"},
+					{"Volume", 2},
+					{"PlaybackSpeed", 1.1},
+					{"Looped", false},
+					{"TimePosition", 0},
+					{"RollOffMode", Enum.RollOffMode.Linear},
+					{"RollOffMinDistance", 10},
+					{"RollOffMaxDistance", 300},
+				} },
+			{ t = 0.930687, kind = "sfx", name = "Water", dur = 0.590627, pos = true,
+				props = {
+					{"SoundId", "rbxassetid://5639243489"},
+					{"Volume", 0.5},
+					{"PlaybackSpeed", 0.9},
+					{"Looped", false},
+					{"TimePosition", 0},
+					{"RollOffMode", Enum.RollOffMode.Linear},
+					{"RollOffMinDistance", 10},
+					{"RollOffMaxDistance", 300},
+				} },
+		},
+		frames = {
+	{ dt = 0, j = {
+		["Right Shoulder"] = CFrame.new(0,0,0,0.9132,-0.2902,0.286,0.2441,0.9517,0.1864,-0.3263,-0.1004,0.9399), -- Right Arm rot -11, 17, 18
+		["Left Shoulder"] = CFrame.new(0,0,0,0.6486,0,0.7612,-0.3202,0.9072,0.2728,-0.6905,-0.4207,0.5884), -- Left Arm rot -25, 50, 0
+		["Right Hip"] = CFrame.new(0,0.1601,0,0.8011,0.1531,-0.5786,-0.0257,0.9746,0.2223,0.598,-0.1632,0.7847), -- Right Leg rot -16, -35, -11
+		["Left Hip"] = CFrame.new(-0.0772,0.1829,-0.0752,0.8157,-0.284,0.5039,0.1106,0.9317,0.3461,-0.5677,-0.2266,0.7914), -- Left Leg rot -24, 30, 19
+		["Neck"] = CFrame.new(0,0,0,1,0,0,0,0.8991,-0.4377,0,0.4377,0.8991), -- Head rot 26, 0, 0
+		["RootJoint"] = CFrame.new(0,0,0,1,0,0,0,1,0,0,0,1), -- Torso rot 0, 0, 0
+	} },
+	{ dt = 0.0667, j = {
+		["Right Shoulder"] = CFrame.new(0.3102,-0.2174,-0.2185,0.6623,-0.6539,0.3658,0.7424,0.6383,-0.2034,-0.1005,0.4063,0.9082), -- Right Arm rot 13, 21, 45
+		["Left Shoulder"] = CFrame.new(-0.078,-0.2503,0.0735,0.8497,0.1483,0.5059,-0.3975,0.8107,0.43,-0.3463,-0.5664,0.7478), -- Left Arm rot -30, 30, -10
+		["Right Hip"] = CFrame.new(0.129,0.033,0.0044,0.8162,-0.059,-0.5747,0.0543,0.9982,-0.0254,0.5752,-0.0105,0.8179), -- Right Leg rot 2, -35, 4
+		["Left Hip"] = CFrame.new(-0.027,0.0727,-0.07,0.8,-0.3205,0.5073,0.1665,0.9308,0.3254,-0.5765,-0.1759,0.798), -- Left Leg rot -22, 30, 22
+		["Neck"] = CFrame.new(0,0,0,0.9694,-0.2382,0.0588,0.2408,0.8778,-0.4141,0.047,0.4156,0.9083), -- Head rot 25, 3, 14
+		["RootJoint"] = CFrame.new(0,-0.0366,0,0.9577,0.2877,-0.0067,-0.2871,0.9537,-0.0901,-0.0196,0.0882,0.9959), -- Torso rot 5, 0, -17
+	} },
+	{ dt = 0.0333, j = {
+		["Right Shoulder"] = CFrame.new(0.4515,-0.0716,-0.3645,0.3809,-0.7632,0.5219,0.8974,0.1691,-0.4076,0.2229,0.6236,0.7493), -- Right Arm rot 29, 31, 63
+		["Left Shoulder"] = CFrame.new(-0.117,-0.3755,0.1102,0.9014,0.24,0.3604,-0.4065,0.7556,0.5136,-0.1491,-0.6094,0.7787), -- Left Arm rot -33, 21, -15
+		["Right Hip"] = CFrame.new(0.1935,-0.0306,0.0067,0.8171,-0.1633,-0.5529,0.0961,0.9842,-0.1487,0.5685,0.0684,0.8198), -- Right Leg rot 10, -34, 11
+		["Left Hip"] = CFrame.new(-0.002,0.0176,-0.0674,0.7913,-0.3384,0.5093,0.1944,0.9289,0.3151,-0.5797,-0.1503,0.8009), -- Left Leg rot -21, 31, 23
+		["Neck"] = CFrame.new(0,0,0,0.9317,-0.3531,0.0854,0.3569,0.8455,-0.3971,0.068,0.4005,0.9138), -- Head rot 23, 5, 21
+		["RootJoint"] = CFrame.new(0,-0.0549,0,0.9058,0.4233,-0.0197,-0.422,0.8967,-0.1333,-0.0387,0.1291,0.9909), -- Torso rot 8, -1, -25
+	} },
+	{ dt = 0.0333, j = {
+		["Right Shoulder"] = CFrame.new(0.3505,0.0897,-0.3973,0.0635,-0.815,0.576,0.9514,-0.1249,-0.2816,0.3015,0.5658,0.7674), -- Right Arm rot 20, 35, 86
+		["Left Shoulder"] = CFrame.new(-0.156,-0.5006,0.147,0.9171,0.3383,0.211,-0.395,0.6992,0.5959,0.0541,-0.6298,0.7748), -- Left Arm rot -38, 12, -20
+		["Right Hip"] = CFrame.new(0.258,-0.0941,0.0089,0.8134,-0.2641,-0.5183,0.1382,0.9532,-0.2688,0.565,0.1471,0.8118), -- Right Leg rot 18, -31, 18
+		["Left Hip"] = CFrame.new(0.0231,-0.0375,-0.0648,0.7821,-0.3559,0.5115,0.2223,0.9262,0.3047,-0.5822,-0.1246,0.8035), -- Left Leg rot -21, 31, 24
+		["Neck"] = CFrame.new(0,0,0,0.8796,-0.4628,0.1097,0.4677,0.7995,-0.3769,0.0868,0.3829,0.9197), -- Head rot 22, 6, 28
+		["RootJoint"] = CFrame.new(0,-0.1115,0,0.8035,0.5933,-0.0476,-0.5906,0.7847,-0.1882,-0.0743,0.1793,0.981), -- Torso rot 11, -3, -36
+	} },
+	{ dt = 0.0333, j = {
+		["Right Shoulder"] = CFrame.new(0.0208,0.0119,-0.2804,-0.1245,-0.936,0.3291,0.9873,-0.084,0.1347,-0.0984,0.3417,0.9346), -- Right Arm rot -8, 19, 98
+		["Left Shoulder"] = CFrame.new(-0.461,-0.4054,0.2691,0.8488,0.4942,0.1877,-0.4854,0.588,0.647,0.2094,-0.6403,0.739), -- Left Arm rot -41, 11, -30
+		["Right Hip"] = CFrame.new(0.3225,-0.1577,0.0111,0.8053,-0.3595,-0.4714,0.1798,0.9058,-0.3837,0.565,0.2242,0.7941), -- Right Leg rot 26, -28, 24
+		["Left Hip"] = CFrame.new(0.0482,-0.0926,-0.0622,0.7724,-0.3732,0.5139,0.25,0.9225,0.2942,-0.5839,-0.0988,0.8058), -- Left Leg rot -20, 31, 26
+		["Neck"] = CFrame.new(0,0,0,0.8141,-0.5657,0.1311,0.5715,0.7404,-0.354,0.1031,0.3631,0.926), -- Head rot 21, 8, 35
+		["RootJoint"] = CFrame.new(0,-0.2062,0,0.6286,0.7715,-0.0979,-0.7663,0.5931,-0.247,-0.1325,0.2303,0.964), -- Torso rot 14, -6, -51
+	} },
+	{ dt = 0.0333, j = {
+		["Right Shoulder"] = CFrame.new(-0.3089,-0.0658,-0.1635,-0.1797,-0.9837,0.0042,0.8395,-0.1511,0.5218,-0.5127,0.0973,0.853), -- Right Arm rot -31, 0, 100
+		["Left Shoulder"] = CFrame.new(-0.766,-0.3102,0.3913,0.7519,0.6355,0.1753,-0.551,0.4598,0.6964,0.3619,-0.6202,0.6959), -- Left Arm rot -45, 10, -40
+		["Right Hip"] = CFrame.new(0.4429,-0.2273,-0.0477,0.8792,-0.4009,-0.2575,0.2426,0.8417,-0.4824,0.4101,0.3617,0.8372), -- Right Leg rot 30, -15, 25
+		["Left Hip"] = CFrame.new(0.096,-0.0812,0.0666,0.7732,-0.3869,0.5024,0.3047,0.9215,0.2407,-0.5562,-0.0331,0.8304), -- Left Leg rot -16, 30, 27
+		["Neck"] = CFrame.new(0,0,0,0.7361,-0.6602,0.1495,0.6667,0.669,-0.3285,0.1168,0.3415,0.9326), -- Head rot 19, 9, 42
+		["RootJoint"] = CFrame.new(0,-0.2879,-0.0616,0.4285,0.8965,-0.1123,-0.8691,0.375,-0.3227,-0.2472,0.2359,0.9398), -- Torso rot 19, -6, -64
+	} },
+	{ dt = 0.0333, j = {
+		["Right Shoulder"] = CFrame.new(-0.6162,-0.0971,-0.1785,-0.0346,-0.9811,-0.1905,0.6652,-0.1649,0.7282,-0.7458,-0.1016,0.6583), -- Right Arm rot -48, -11, 92
+		["Left Shoulder"] = CFrame.new(-0.6803,-0.2501,0.3783,0.7515,0.6481,0.1231,-0.4946,0.4302,0.7552,0.4365,-0.6284,0.6439), -- Left Arm rot -50, 7, -41
+		["Right Hip"] = CFrame.new(0.6193,-0.3031,-0.1676,0.9339,-0.3309,0.1356,0.3502,0.7693,-0.5344,0.0725,0.5465,0.8343), -- Right Leg rot 33, 8, 20
+		["Left Hip"] = CFrame.new(0.1667,-0.0033,0.3214,0.783,-0.3993,0.477,0.3808,0.914,0.14,-0.4919,0.0721,0.8677), -- Left Leg rot -9, 28, 27
+		["Neck"] = CFrame.new(0,0,0,0.6468,-0.7447,0.1645,0.7519,0.5866,-0.3009,0.1276,0.3183,0.9394), -- Head rot 18, 9, 49
+		["RootJoint"] = CFrame.new(0,-0.3567,-0.1849,0.2156,0.9714,-0.0991,-0.8913,0.1544,-0.4264,-0.3989,0.1802,0.8991), -- Torso rot 25, -6, -77
+	} },
+	{ dt = 0.0333, j = {
+		["Right Shoulder"] = CFrame.new(-0.9011,-0.0818,-0.3253,0.2031,-0.9547,-0.2176,0.5512,-0.0722,0.8312,-0.8093,-0.2888,0.5116), -- Right Arm rot -58, -13, 78
+		["Left Shoulder"] = CFrame.new(-0.5946,-0.19,0.3654,0.7462,0.6619,0.0714,-0.4326,0.4004,0.8078,0.5061,-0.6337,0.5851), -- Left Arm rot -54, 4, -42
+		["Right Hip"] = CFrame.new(0.6032,-0.3462,-0.1999,0.9803,-0.12,0.1571,0.1889,0.8025,-0.5659,-0.0582,0.5844,0.8094), -- Right Leg rot 35, 9, 7
+		["Left Hip"] = CFrame.new(0.1667,-0.0033,0.3214,0.6346,-0.6309,0.4464,0.5889,0.7688,0.2494,-0.5005,0.1047,0.8594), -- Left Leg rot -16, 27, 45
+		["Neck"] = CFrame.new(0,0,0,0.6353,-0.7517,0.177,0.7655,0.5826,-0.2733,0.1023,0.3091,0.9455), -- Head rot 16, 10, 50
+		["RootJoint"] = CFrame.new(0,-0.432,-0.2784,0.1591,0.9857,0.0546,-0.8754,0.1665,-0.4539,-0.4565,0.0244,0.8894), -- Torso rot 27, 3, -81
+	} },
+	{ dt = 0.0333, j = {
+		["Right Shoulder"] = CFrame.new(-0.99,-0.1146,-0.0672,0.2476,-0.9228,-0.2952,0.4434,-0.163,0.8814,-0.8614,-0.3492,0.3688), -- Right Arm rot -67, -17, 75
+		["Left Shoulder"] = CFrame.new(-0.5089,-0.1299,0.3524,0.7358,0.6769,0.0209,-0.3653,0.3708,0.8539,0.5702,-0.6359,0.5201), -- Left Arm rot -59, 1, -43
+		["Right Hip"] = CFrame.new(0.5872,-0.3893,-0.2322,0.9808,0.0967,0.1695,0.0249,0.7996,-0.6001,-0.1935,0.5927,0.7818), -- Right Leg rot 38, 10, -6
+		["Left Hip"] = CFrame.new(0.1667,-0.0033,0.3214,0.4349,-0.8131,0.3869,0.7487,0.5652,0.3464,-0.5003,0.1391,0.8546), -- Left Leg rot -22, 23, 62
+		["Neck"] = CFrame.new(0,0,0,0.6233,-0.7587,0.1891,0.7782,0.5782,-0.2453,0.0768,0.3001,0.9508), -- Head rot 14, 11, 51
+		["RootJoint"] = CFrame.new(0,-0.5073,-0.372,0.0938,0.9743,0.205,-0.8589,0.1833,-0.4783,-0.5036,-0.1312,0.8539), -- Torso rot 29, 12, -85
+	} },
+	{ dt = 0.0333, j = {
+		["Right Shoulder"] = CFrame.new(-0.883,-0.1954,0.5961,0.1153,-0.8807,-0.4594,0.3361,-0.4007,0.8524,-0.9347,-0.2527,0.2498), -- Right Arm rot -74, -27, 83
+		["Left Shoulder"] = CFrame.new(-0.3106,-0.15,0.3944,0.5865,0.8077,0.0604,-0.4555,0.2672,0.8492,0.6697,-0.5256,0.5246), -- Left Arm rot -58, 3, -54
+		["Right Hip"] = CFrame.new(0.5833,-0.3948,-0.2402,0.9615,0.2079,0.1795,-0.0633,0.8037,-0.5917,-0.2673,0.5575,0.7859), -- Right Leg rot 37, 10, -12
+		["Left Hip"] = CFrame.new(0.1321,-0.0177,0.329,0.3381,-0.8875,0.3132,0.7993,0.4465,0.4021,-0.4967,0.1144,0.8603), -- Left Leg rot -25, 18, 69
+		["Neck"] = CFrame.new(0,0,0,0.611,-0.7658,0.2008,0.79,0.5734,-0.217,0.051,0.2912,0.9553), -- Head rot 13, 12, 51
+		["RootJoint"] = CFrame.new(0,-0.5591,-0.3864,0.1537,0.9438,0.2925,-0.8364,0.2819,-0.4701,-0.5261,-0.1724,0.8328), -- Torso rot 29, 17, -81
+	} },
+	{ dt = 0.0667, j = {
+		["Right Shoulder"] = CFrame.new(-1.6248,0.2486,0.3512,0.0292,-0.9408,-0.3378,0.1556,-0.3295,0.9312,-0.9874,-0.0797,0.1367), -- Right Arm rot -82, -20, 88
+		["Left Shoulder"] = CFrame.new(0.0861,-0.1903,0.4784,0.2231,0.9659,0.1317,-0.5657,0.0183,0.8244,0.7939,-0.2584,0.5504), -- Left Arm rot -56, 8, -77
+		["Right Hip"] = CFrame.new(0.5996,-0.3305,-0.2078,0.9522,0.2211,0.2109,-0.0954,0.8709,-0.4821,-0.2902,0.4389,0.8504), -- Right Leg rot 30, 12, -13
+		["Left Hip"] = CFrame.new(-0.0066,-0.0753,0.3596,0.4083,-0.8963,0.1732,0.7715,0.4402,0.4594,-0.488,-0.0539,0.8712), -- Left Leg rot -28, 10, 66
+		["Neck"] = CFrame.new(0,0,0,0.585,-0.7798,0.2229,0.811,0.5629,-0.1595,-0.0011,0.274,0.9617), -- Head rot 9, 13, 53
+		["RootJoint"] = CFrame.new(0,-0.6159,-0.2569,0.5101,0.7941,0.3305,-0.6961,0.6068,-0.3837,-0.5052,-0.0344,0.8623), -- Torso rot 24, 19, -57
+	} },
+	{ dt = 0.0333, j = {
+		["Right Shoulder"] = CFrame.new(0.1578,1.0764,0.1467,-0.2784,-0.8117,-0.5135,0.2971,-0.5811,0.7577,-0.9134,0.0584,0.4029), -- Right Arm rot -62, -31, 109
+		["Left Shoulder"] = CFrame.new(0.4139,-0.1251,0.0567,0.5182,0.7525,0.4064,-0.3978,-0.2087,0.8934,0.7571,-0.6246,0.1912), -- Left Arm rot -78, 24, -55
+		["Right Hip"] = CFrame.new(0.7643,0.3069,0.1127,0.9394,-0.2703,0.2109,0.3405,0.8073,-0.4821,-0.0399,0.5246,0.8504), -- Right Leg rot 30, 12, 16
+		["Left Hip"] = CFrame.new(-0.0989,0.534,0.6603,0.7467,-0.3908,0.5382,0.3774,0.9153,0.141,-0.5477,0.0978,0.8309), -- Left Leg rot -10, 33, 28
+		["Neck"] = CFrame.new(0,0,0,0.7337,-0.6764,-0.0651,0.6715,0.7363,-0.0828,0.1039,0.017,0.9944), -- Head rot 5, -4, 43
+		["RootJoint"] = CFrame.new(0,-0.5977,-0.7176,0.711,0.7018,0.0433,-0.4657,0.5162,-0.7188,-0.5268,0.4909,0.6939), -- Torso rot 46, 2, -45
+	} },
+	{ dt = 0.0333, j = {
+		["Right Shoulder"] = CFrame.new(0.8034,-0.2017,0.677,0.229,-0.7771,0.5862,0.0552,0.6116,0.7892,-0.9719,-0.1484,0.1829), -- Right Arm rot -77, 36, 74
+		["Left Shoulder"] = CFrame.new(0.7417,-0.0599,-0.365,0.7757,0.3874,0.4982,-0.2963,-0.4734,0.8295,0.5572,-0.7911,-0.2524), -- Left Arm rot -107, 30, -27
+		["Right Hip"] = CFrame.new(-0.1467,0.0654,0.2485,0.4645,-0.2049,-0.8615,-0.521,0.7234,-0.453,0.7161,0.6593,0.2293), -- Right Leg rot 63, -59, 24
+		["Left Hip"] = CFrame.new(-0.559,1.454,0.9639,0.7737,0.3187,0.5476,-0.1339,0.927,-0.3503,-0.6192,0.1977,0.7599), -- Left Leg rot 25, 33, -22
+		["Neck"] = CFrame.new(0,0,0,0.6152,0.5073,-0.6034,-0.6023,0.7964,0.0554,0.5087,0.3293,0.7955), -- Head rot -4, -37, -40
+		["RootJoint"] = CFrame.new(0,-0.7509,-1.0602,0.6203,-0.5215,0.5859,0.7832,0.3713,-0.4987,0.0426,0.7682,0.6388), -- Torso rot 38, 36, 40
+	} },
+	{ dt = 0.0333, j = {
+		["Right Shoulder"] = CFrame.new(0.8034,-0.2017,0.677,0.229,-0.7771,0.5862,0.0552,0.6116,0.7892,-0.9719,-0.1484,0.1829), -- Right Arm rot -77, 36, 74
+		["Left Shoulder"] = CFrame.new(0.7417,-0.0599,-0.365,0.7757,0.3874,0.4982,-0.2963,-0.4734,0.8295,0.5572,-0.7911,-0.2524), -- Left Arm rot -107, 30, -27
+		["Right Hip"] = CFrame.new(-0.1467,0.0654,0.2485,0.4645,-0.2049,-0.8615,-0.521,0.7234,-0.453,0.7161,0.6593,0.2293), -- Right Leg rot 63, -59, 24
+		["Left Hip"] = CFrame.new(-0.5591,1.454,0.9639,0.7737,0.3187,0.5476,-0.1339,0.927,-0.3503,-0.6192,0.1977,0.7599), -- Left Leg rot 25, 33, -22
+		["Neck"] = CFrame.new(0,0,0,0.6152,0.5073,-0.6034,-0.6023,0.7964,0.0554,0.5087,0.3293,0.7955), -- Head rot -4, -37, -40
+		["RootJoint"] = CFrame.new(0,-0.7509,-1.0602,0.6203,-0.5215,0.5859,0.7832,0.3713,-0.4987,0.0426,0.7682,0.6388), -- Torso rot 38, 36, 40
+	} },
+	{ dt = 0.0333, j = {
+		["Right Shoulder"] = CFrame.new(0.8731,-0.3471,0.6418,0.3103,-0.7771,0.5475,0.1672,0.6116,0.7733,-0.9358,-0.1484,0.3198), -- Right Arm rot -68, 33, 68
+		["Left Shoulder"] = CFrame.new(0.7115,-0.0903,-0.3392,0.7757,0.4217,0.4695,-0.2963,-0.4133,0.861,0.5572,-0.807,-0.1957), -- Left Arm rot -103, 28, -29
+		["Right Hip"] = CFrame.new(-0.1446,0.0576,0.2467,0.4568,-0.2102,-0.8644,-0.5015,0.7417,-0.4454,0.7347,0.6369,0.2334), -- Right Leg rot 62, -60, 25
+		["Left Hip"] = CFrame.new(-0.5474,1.3647,0.9149,0.7818,0.3329,0.5273,-0.168,0.9268,-0.3359,-0.6005,0.174,0.7805), -- Left Leg rot 23, 32, -23
+		["Neck"] = CFrame.new(0,0,0,0.6216,0.5073,-0.5969,-0.6028,0.7964,0.049,0.5002,0.3293,0.8008), -- Head rot -4, -37, -39
+		["RootJoint"] = CFrame.new(0,-0.7509,-1.0747,0.6203,-0.542,0.567,0.7832,0.3888,-0.4852,0.0426,0.7451,0.6656), -- Torso rot 36, 35, 41
+	} },
+	{ dt = 0.0333, j = {
+		["Right Shoulder"] = CFrame.new(0.9217,-0.4748,0.5843,0.4048,-0.7719,0.4901,0.2844,0.6157,0.7349,-0.8691,-0.1581,0.4688), -- Right Arm rot -57, 29, 62
+		["Left Shoulder"] = CFrame.new(0.6512,-0.151,-0.2875,0.7757,0.484,0.405,-0.2963,-0.2873,0.9109,0.5572,-0.8266,-0.0794), -- Left Arm rot -95, 24, -32
+		["Right Hip"] = CFrame.new(-0.1403,0.042,0.243,0.4411,-0.2199,-0.8701,-0.4609,0.7764,-0.4298,0.7701,0.5906,0.2411), -- Right Leg rot 61, -60, 26
+		["Left Hip"] = CFrame.new(-0.524,1.186,0.817,0.7949,0.3625,0.4865,-0.2348,0.9232,-0.3042,-0.5594,0.1276,0.819), -- Left Leg rot 20, 29, -25
+		["Neck"] = CFrame.new(0,0,0,0.6342,0.5073,-0.5835,-0.6037,0.7964,0.0361,0.483,0.3293,0.8113), -- Head rot -3, -36, -39
+		["RootJoint"] = CFrame.new(0,-0.7509,-0.9342,0.6203,-0.5697,0.5391,0.7832,0.4126,-0.4652,0.0426,0.7108,0.7021), -- Torso rot 34, 33, 43
+	} },
+	{ dt = 0.1333, j = {
+		["Right Shoulder"] = CFrame.new(0.7536,-0.3328,0.4051,0.552,-0.723,0.4155,0.3448,0.6516,0.6757,-0.7592,-0.2297,0.609), -- Right Arm rot -48, 25, 53
+		["Left Shoulder"] = CFrame.new(0.4099,-0.3938,-0.0807,0.7757,0.6259,0.0809,-0.2963,0.248,0.9223,0.5572,-0.7394,0.3779), -- Left Arm rot -68, 5, -39
+		["Right Hip"] = CFrame.new(-0.1231,-0.0204,0.2285,0.3731,-0.2486,-0.8939,-0.2807,0.888,-0.3641,0.8843,0.3868,0.2616), -- Right Leg rot 54, -63, 34
+		["Left Hip"] = CFrame.new(-0.4307,0.4714,0.4252,0.8068,0.4929,0.3257,-0.4741,0.8691,-0.141,-0.3526,-0.0407,0.9349), -- Left Leg rot 9, 19, -31
+		["Neck"] = CFrame.new(0,0,0,0.6816,0.5073,-0.5274,-0.6046,0.7964,-0.0154,0.4122,0.3293,0.8495), -- Head rot 1, -32, -37
+		["RootJoint"] = CFrame.new(0,-0.7509,-0.3721,0.6203,-0.6657,0.4149,0.7832,0.497,-0.3737,0.0426,0.5567,0.8296), -- Torso rot 24, 25, 47
+	} },
+	{ dt = 0.0333, j = {
+		["Right Shoulder"] = CFrame.new(0.3683,-0.1191,-0.011,0.5709,-0.7771,0.265,0.5857,0.6116,0.5318,-0.5754,-0.1484,0.8043), -- Right Arm rot -33, 15, 54
+		["Left Shoulder"] = CFrame.new(0.3496,-0.4544,-0.029,0.7757,0.631,-0.0085,-0.2963,0.3761,0.8779,0.5572,-0.6785,0.4787), -- Left Arm rot -61, 0, -39
+		["Right Hip"] = CFrame.new(-0.1188,-0.0361,0.2249,0.3553,-0.253,-0.8999,-0.232,0.9087,-0.3471,0.9055,0.332,0.2641), -- Right Leg rot 53, -64, 35
+		["Left Hip"] = CFrame.new(-0.4073,0.2927,0.3273,0.7995,0.5274,0.2875,-0.525,0.8461,-0.0924,-0.292,-0.077,0.9533), -- Left Leg rot 6, 17, -33
+		["Neck"] = CFrame.new(0,0,0,0.6926,0.5073,-0.5128,-0.6041,0.7964,-0.0282,0.394,0.3293,0.8581), -- Head rot 2, -31, -36
+		["RootJoint"] = CFrame.new(0,-0.7509,-0.2315,0.6203,-0.6856,0.381,0.7832,0.5151,-0.3483,0.0426,0.5144,0.8565), -- Torso rot 22, 22, 48
+	} },
+	{ dt = 0.0667, j = {
+		["Right Shoulder"] = CFrame.new(-0.0621,-0.2522,0.0851,0.9343,-0.3424,0.0992,0.2889,0.8903,0.3519,-0.2088,-0.3001,0.9308), -- Right Arm rot -21, 6, 20
+		["Left Shoulder"] = CFrame.new(0.229,-0.5758,0.0744,0.7757,0.6033,-0.185,-0.2963,0.6071,0.7373,0.5572,-0.5171,0.6497), -- Left Arm rot -49, -11, -38
+		["Right Hip"] = CFrame.new(-0.1103,-0.0673,0.2176,0.3188,-0.2586,-0.9119,-0.1312,0.9407,-0.3127,0.9387,0.2194,0.266), -- Right Leg rot 50, -66, 39
+		["Left Hip"] = CFrame.new(-0.3607,-0.0646,0.1314,0.7727,0.5972,0.2151,-0.6135,0.7896,0.0116,-0.1629,-0.1409,0.9765), -- Left Leg rot -1, 12, -38
+		["Neck"] = CFrame.new(0,0,0,0.7138,0.5073,-0.4828,-0.6024,0.7964,-0.0539,0.3572,0.3293,0.8741), -- Head rot 4, -29, -35
+		["RootJoint"] = CFrame.new(0,0,0,0.7584,-0.5957,0.2646,0.6518,0.6931,-0.3079,0,0.406,0.9139), -- Torso rot 19, 15, 38
+	} },
+	{ dt = 0.1618, j = {
+		["Right Shoulder"] = CFrame.new(-0.0621,-0.2522,0.0851,0.9343,-0.3424,0.0992,0.2889,0.8903,0.3519,-0.2088,-0.3001,0.9308), -- Right Arm rot -21, 6, 20
+		["Left Shoulder"] = CFrame.new(0.229,-0.5758,0.0744,0.7757,0.6033,-0.185,-0.2963,0.6071,0.7373,0.5572,-0.5171,0.6497), -- Left Arm rot -49, -11, -38
+		["Right Hip"] = CFrame.new(-0.1103,-0.0673,0.2176,0.3188,-0.2586,-0.9119,-0.1312,0.9407,-0.3127,0.9387,0.2194,0.266), -- Right Leg rot 50, -66, 39
+		["Left Hip"] = CFrame.new(-0.3607,-0.0646,0.1314,0.7727,0.5972,0.2151,-0.6135,0.7896,0.0116,-0.1629,-0.1409,0.9765), -- Left Leg rot -1, 12, -38
+		["Neck"] = CFrame.new(0,0,0,0.7138,0.5073,-0.4828,-0.6024,0.7964,-0.0539,0.3572,0.3293,0.8741), -- Head rot 4, -29, -35
+		["RootJoint"] = CFrame.new(0,0,0,0.7584,-0.5957,0.2646,0.6518,0.6931,-0.3079,0,0.406,0.9139), -- Torso rot 19, 15, 38
+	} },
+},
+	}
+	-- CursedAir: Cursed Strikes usado no ar. Em loop (FallAnim): carrega (0-0.12), mergulha (0.12+) ate achar o chao;
+	-- impactFx roda quando bate no chao (os efeitos de 0.80 da anim)
+	ANIMS.CursedAir = {
+		length = 0.8, loop = true, blendIn = 0.05, blendOut = 0.3,
+		fx = {
+			{ t = 0, kind = "sfx", name = "Rush", dur = 0.794343, pos = true,
+				props = {
+					{"SoundId", "rbxassetid://3084314259"},
+					{"Volume", 2},
+					{"PlaybackSpeed", 1.1},
+					{"Looped", false},
+					{"TimePosition", 0.1},
+					{"RollOffMode", Enum.RollOffMode.Linear},
+					{"RollOffMinDistance", 10},
+					{"RollOffMaxDistance", 300},
+				} },
+			{ t = 0.1, kind = "sfx", name = "Spin", dur = 0.728148, pos = true,
+				props = {
+					{"SoundId", "rbxassetid://8120249833"},
+					{"Volume", 2},
+					{"PlaybackSpeed", 0.9},
+					{"Looped", false},
+					{"TimePosition", 0.15},
+					{"RollOffMode", Enum.RollOffMode.Linear},
+					{"RollOffMinDistance", 10},
+					{"RollOffMaxDistance", 300},
+				} },
+			{ t = 0.107133, kind = "vfx", class = "ParticleEmitter", name = "Ring", enabled = false, emit = 15, dur = 1,
+				mount = { part = nil, cf = CFrame.new(0,0,0,1,0,0,0,-0.342,-0.9397,0,0.9397,-0.342) },
+				props = {
+					{"Texture", "rbxassetid://9293225960"},
+					{"Rate", 50},
+					{"Lifetime", NumberRange.new(0.2,0.5)},
+					{"Speed", NumberRange.new(0.1,20)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(0.034602,3.14184,3.47677),NumberSequenceKeypoint.new(0.146602,6.48456,3.7846),NumberSequenceKeypoint.new(0.304602,9.21079,3.48412),NumberSequenceKeypoint.new(0.606602,11.5963,2.77942),NumberSequenceKeypoint.new(1,13.2263,2.75702)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(1,1,1)),ColorSequenceKeypoint.new(1,Color3.new(1,1,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0.9,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"Rotation", NumberRange.new(-360,360)},
+					{"RotSpeed", NumberRange.new(300,600)},
+					{"SpreadAngle", Vector2.new(10,10)},
+					{"Acceleration", Vector3.new(0,0,0)},
+					{"Drag", 0},
+					{"EmissionDirection", Enum.NormalId.Front},
+					{"LightEmission", 1},
+					{"LightInfluence", 1},
+					{"LockedToPart", false},
+					{"ZOffset", 2},
+					{"Orientation", Enum.ParticleOrientation.VelocityPerpendicular},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.Grid2x2},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.OneShot},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 1},
+				} },
+			{ t = 0.121771, kind = "vfx", class = "ParticleEmitter", name = "Dust", enabled = false, emit = 15, dur = 1,
+				mount = { part = nil, cf = CFrame.new(0,0,0,1,0,0,0,-0.342,-0.9397,0,0.9397,-0.342) },
+				props = {
+					{"Texture", "rbxassetid://13026594575"},
+					{"Rate", 10},
+					{"Lifetime", NumberRange.new(0.5,0.5)},
+					{"Speed", NumberRange.new(0.1,5)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(0.0828221,4.96183,0),NumberSequenceKeypoint.new(0.216258,8.3715,0),NumberSequenceKeypoint.new(0.456602,11.5306,0),NumberSequenceKeypoint.new(0.700602,12.9766,0),NumberSequenceKeypoint.new(1,13.9934,0)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(1,1,1)),ColorSequenceKeypoint.new(1,Color3.new(1,1,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(0.5,0,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"Rotation", NumberRange.new(-360,360)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(10,10)},
+					{"Acceleration", Vector3.new(0,0,0)},
+					{"Drag", 8},
+					{"EmissionDirection", Enum.NormalId.Front},
+					{"LightEmission", 0},
+					{"LightInfluence", 1},
+					{"LockedToPart", false},
+					{"ZOffset", 0},
+					{"Orientation", Enum.ParticleOrientation.VelocityPerpendicular},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.Grid8x8},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.Loop},
+					{"FlipbookFramerate", NumberRange.new(10,30)},
+					{"FlipbookStartRandom", true},
+					{"Brightness", 1},
+				} },
+			{ t = 0.134914, kind = "vfx", class = "ParticleEmitter", name = "Sparks", enabled = false, emit = 15, dur = 0.9,
+				mount = { part = nil, cf = CFrame.new(0,0,0,1,0,0,0,-0.342,-0.9397,0,0.9397,-0.342) },
+				props = {
+					{"Texture", "rbxassetid://179123233"},
+					{"Rate", 100},
+					{"Lifetime", NumberRange.new(0.2,0.4)},
+					{"Speed", NumberRange.new(40,70)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,0.5,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(1,1,1)),ColorSequenceKeypoint.new(1,Color3.new(1,1,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Rotation", NumberRange.new(0,0)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(80,80)},
+					{"Acceleration", Vector3.new(0,0,0)},
+					{"Drag", 10},
+					{"EmissionDirection", Enum.NormalId.Front},
+					{"LightEmission", 1},
+					{"LightInfluence", 0},
+					{"LockedToPart", false},
+					{"ZOffset", 0},
+					{"Orientation", Enum.ParticleOrientation.VelocityParallel},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,-1,0),NumberSequenceKeypoint.new(1,-1,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.None},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.Loop},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 5},
+				} },
+			{ t = 0.120000, kind = "vfx", class = "Trail", name = "Trail", enabled = true, dur = 0.69845,
+				mount = { part = nil, cf = CFrame.new(0.6359,0.2379,-1.1324,0.6784,0.1191,-0.7249,-0.6291,0.6039,-0.4895,0.3795,0.7881,0.4846) },
+				att0 = { part = nil, cf = CFrame.new(-0.1849,-0.2962,-1.868,0.6784,0.1191,-0.7249,-0.6291,0.6039,-0.4895,0.3795,0.7881,0.4846) },
+				att1 = { part = nil, cf = CFrame.new(0.54,0.1933,-2.3527,0.6784,0.1191,-0.7249,-0.6291,0.6039,-0.4895,0.3795,0.7881,0.4846) },
+				props = {
+					{"Texture", "rbxassetid://4480871448"},
+					{"TextureLength", 1},
+					{"TextureMode", Enum.TextureMode.Stretch},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(1,1,1)),ColorSequenceKeypoint.new(1,Color3.new(1,1,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,1,0),NumberSequenceKeypoint.new(0.2,0.5,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"LightEmission", 0},
+					{"LightInfluence", 1},
+					{"Lifetime", 0.1},
+					{"MinLength", 0.1},
+					{"MaxLength", 0},
+					{"WidthScale", NumberSequence.new({NumberSequenceKeypoint.new(0,1,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"FaceCamera", true},
+				} },
+		},
+		impactFx = {
+			{ t = 0.011878, kind = "obj", class = "MeshPart", name = "Shock", dur = 0.333924,
+				rel = CFrame.new(0,0,0,1,0,0,0,0.7071,-0.7071,0,0.7071,0.7071),
+				spec = { parts = {
+			{ cls = "MeshPart", name = "Shock", rel = CFrame.new(0,0,0,1,0,0,0,1,0,0,0,1), props = { {"Size", Vector3.new(3,5,3)}, {"Color", Color3.new(0.972549,0.972549,0.972549)}, {"Material", Enum.Material.Neon}, {"Transparency", 0}, {"Reflectance", 0}, {"MeshId", "rbxassetid://6026280813"}, {"TextureID", ""} }, kids = {  } },
+			} },
+				props = {
+				} },
+			{ t = 0.112871, kind = "obj", class = "MeshPart", name = "Shock", dur = 0.235155,
+				rel = CFrame.new(0,0,0,1,0,0,0,0.7071,-0.7071,0,0.7071,0.7071),
+				spec = { parts = {
+			{ cls = "MeshPart", name = "Shock", rel = CFrame.new(0,0,0,1,0,0,0,1,0,0,0,1), props = { {"Size", Vector3.new(3,5,3)}, {"Color", Color3.new(0.972549,0.972549,0.972549)}, {"Material", Enum.Material.Neon}, {"Transparency", 0}, {"Reflectance", 0}, {"MeshId", "rbxassetid://6026280813"}, {"TextureID", ""} }, kids = {  } },
+			} },
+				props = {
+				} },
+			{ t = 0.157879, kind = "vfx", class = "ParticleEmitter", name = "Sparks", enabled = false, emit = 10, dur = 0.9,
+				mount = { part = nil, cf = CFrame.new(-0.0009,-2.8138,-0.5773,0.1513,0,0.9885,0,1,0,-0.9885,0,0.1513) },
+				props = {
+					{"Texture", "rbxassetid://6660412891"},
+					{"Rate", 100},
+					{"Lifetime", NumberRange.new(0.2,0.4)},
+					{"Speed", NumberRange.new(20,80)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(0.165,3,0.239),NumberSequenceKeypoint.new(0.483,1,0.239),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(0.333333,1,1)),ColorSequenceKeypoint.new(1,Color3.new(0.333333,1,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(0.557745,0.18209,0),NumberSequenceKeypoint.new(0.894022,0.871642,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"Rotation", NumberRange.new(90,90)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(40,40)},
+					{"Acceleration", Vector3.new(0,0,0)},
+					{"Drag", 5},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", -10},
+					{"LightInfluence", 0},
+					{"LockedToPart", false},
+					{"ZOffset", 1},
+					{"Orientation", Enum.ParticleOrientation.VelocityParallel},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.None},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.Loop},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 5},
+				} },
+			{ t = 0.159899, kind = "sfx", name = "GroundImpact", dur = 0.9064, pos = true,
+				props = {
+					{"SoundId", "rbxassetid://7093763783"},
+					{"Volume", 1},
+					{"PlaybackSpeed", 1.25},
+					{"Looped", false},
+					{"TimePosition", 0},
+					{"RollOffMode", Enum.RollOffMode.Linear},
+					{"RollOffMinDistance", 10},
+					{"RollOffMaxDistance", 300},
+				} },
+			{ t = 0.191618, kind = "sfx", name = "Impact2", dur = 3, pos = true,
+				props = {
+					{"SoundId", "rbxassetid://9118615862"},
+					{"Volume", 1},
+					{"PlaybackSpeed", 1},
+					{"Looped", false},
+					{"TimePosition", 0},
+					{"RollOffMode", Enum.RollOffMode.Linear},
+					{"RollOffMinDistance", 10},
+					{"RollOffMaxDistance", 300},
+				} },
+			{ t = 0.207218, kind = "sfx", name = "Impact4", dur = 3, pos = true,
+				props = {
+					{"SoundId", "rbxassetid://9118616096"},
+					{"Volume", 1},
+					{"PlaybackSpeed", 1},
+					{"Looped", false},
+					{"TimePosition", 0},
+					{"RollOffMode", Enum.RollOffMode.Linear},
+					{"RollOffMinDistance", 10},
+					{"RollOffMaxDistance", 300},
+				} },
+			{ t = 0.219883, kind = "vfx", class = "ParticleEmitter", name = "Flames", enabled = false, emit = 0, dur = 1.2,
+				mount = { part = nil, cf = CFrame.new(-0.0009,-2.8138,-0.5773,0.1513,0,0.9885,0,1,0,-0.9885,0,0.1513) },
+				props = {
+					{"Texture", "rbxassetid://15269497616"},
+					{"Rate", 100},
+					{"Lifetime", NumberRange.new(0.3,0.7)},
+					{"Speed", NumberRange.new(0,30)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(0.131902,2.03562,1),NumberSequenceKeypoint.new(0.331288,4.07125,1.17059),NumberSequenceKeypoint.new(0.720859,5.29262,1.08727),NumberSequenceKeypoint.new(1,5.69975,0.992366)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(0.333333,1,1)),ColorSequenceKeypoint.new(1,Color3.new(0.333333,1,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Rotation", NumberRange.new(-360,360)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(60,60)},
+					{"Acceleration", Vector3.new(0,0,0)},
+					{"Drag", 15},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", -3},
+					{"LightInfluence", 0},
+					{"LockedToPart", false},
+					{"ZOffset", 0},
+					{"Orientation", Enum.ParticleOrientation.FacingCamera},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 0.8},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.Grid4x4},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.OneShot},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", true},
+					{"Brightness", 15},
+				} },
+			{ t = 0.234148, kind = "vfx", class = "ParticleEmitter", name = "Wind2", enabled = false, emit = 30, dur = 0.6,
+				mount = { part = nil, cf = CFrame.new(-0.0009,-2.8138,-0.5773,0.1513,0,0.9885,0,1,0,-0.9885,0,0.1513) },
+				props = {
+					{"Texture", "rbxassetid://1053548563"},
+					{"Rate", 100},
+					{"Lifetime", NumberRange.new(0.1,0.1)},
+					{"Speed", NumberRange.new(0.01,0.01)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,40,0),NumberSequenceKeypoint.new(1,40,0)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(0.333333,1,1)),ColorSequenceKeypoint.new(1,Color3.new(0.333333,1,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"Rotation", NumberRange.new(-360,360)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(10,10)},
+					{"Acceleration", Vector3.new(0,0,0)},
+					{"Drag", 0},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", 1},
+					{"LightInfluence", 0},
+					{"LockedToPart", false},
+					{"ZOffset", 0},
+					{"Orientation", Enum.ParticleOrientation.VelocityPerpendicular},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,-3,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.None},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.Loop},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 5},
+				} },
+			{ t = 0.247537, kind = "vfx", class = "ParticleEmitter", name = "Ring", enabled = false, emit = 0, dur = 1,
+				mount = { part = nil, cf = CFrame.new(-0.0009,-2.8138,-0.5773,0.1513,0,0.9885,0,1,0,-0.9885,0,0.1513) },
+				props = {
+					{"Texture", "rbxassetid://9293225960"},
+					{"Rate", 50},
+					{"Lifetime", NumberRange.new(0.2,0.5)},
+					{"Speed", NumberRange.new(0.1,0.1)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(0.032212,6.36031,3.47677),NumberSequenceKeypoint.new(0.130212,12.0437,3.7846),NumberSequenceKeypoint.new(0.374212,15.3005,3.48412),NumberSequenceKeypoint.new(0.648212,17.2163,2.77942),NumberSequenceKeypoint.new(1,17.779,2.75702)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(1,1,1)),ColorSequenceKeypoint.new(1,Color3.new(1,1,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0.9,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"Rotation", NumberRange.new(-360,360)},
+					{"RotSpeed", NumberRange.new(200,800)},
+					{"SpreadAngle", Vector2.new(10,10)},
+					{"Acceleration", Vector3.new(0,0,0)},
+					{"Drag", 0},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", 1},
+					{"LightInfluence", 1},
+					{"LockedToPart", false},
+					{"ZOffset", 2},
+					{"Orientation", Enum.ParticleOrientation.VelocityPerpendicular},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.Grid2x2},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.OneShot},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 1},
+				} },
+			{ t = 0.251150, kind = "vfx", class = "ParticleEmitter", name = "Glow", enabled = false, emit = 0, dur = 0.65,
+				mount = { part = nil, cf = CFrame.new(-0.0009,-2.8138,-0.5773,0.1513,0,0.9885,0,1,0,-0.9885,0,0.1513) },
+				props = {
+					{"Texture", "rbxassetid://14511831163"},
+					{"Rate", 1},
+					{"Lifetime", NumberRange.new(0.15,0.15)},
+					{"Speed", NumberRange.new(0,0)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(0.125767,3.96947,0),NumberSequenceKeypoint.new(0.340491,7.3028,0),NumberSequenceKeypoint.new(0.67638,8.85496,0),NumberSequenceKeypoint.new(1,9.59288,0)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(0.333333,1,1)),ColorSequenceKeypoint.new(1,Color3.new(0.333333,1,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"Rotation", NumberRange.new(0,0)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(0,0)},
+					{"Acceleration", Vector3.new(0,0,0)},
+					{"Drag", 0},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", 1},
+					{"LightInfluence", 0},
+					{"LockedToPart", false},
+					{"ZOffset", 0},
+					{"Orientation", Enum.ParticleOrientation.FacingCamera},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.None},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.Loop},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 5},
+				} },
+			{ t = 0.265334, kind = "vfx", class = "ParticleEmitter", name = "Sparks", enabled = false, emit = 10, dur = 0.9,
+				mount = { part = nil, cf = CFrame.new(-0.0009,-2.8138,-0.5773,0.1513,0,0.9885,0,1,0,-0.9885,0,0.1513) },
+				props = {
+					{"Texture", "rbxassetid://6660412891"},
+					{"Rate", 100},
+					{"Lifetime", NumberRange.new(0.2,0.4)},
+					{"Speed", NumberRange.new(20,80)},
+					{"Size", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(0.165,3,0.239),NumberSequenceKeypoint.new(0.483,1,0.239),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Color", ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.new(0.333333,1,1)),ColorSequenceKeypoint.new(1,Color3.new(0.333333,1,1))})},
+					{"Transparency", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(0.557745,0.18209,0),NumberSequenceKeypoint.new(0.894022,0.871642,0),NumberSequenceKeypoint.new(1,1,0)})},
+					{"Rotation", NumberRange.new(90,90)},
+					{"RotSpeed", NumberRange.new(0,0)},
+					{"SpreadAngle", Vector2.new(40,40)},
+					{"Acceleration", Vector3.new(0,0,0)},
+					{"Drag", 5},
+					{"EmissionDirection", Enum.NormalId.Top},
+					{"LightEmission", -10},
+					{"LightInfluence", 0},
+					{"LockedToPart", false},
+					{"ZOffset", 1},
+					{"Orientation", Enum.ParticleOrientation.VelocityParallel},
+					{"VelocityInheritance", 0},
+					{"TimeScale", 1},
+					{"Squash", NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})},
+					{"Shape", Enum.ParticleEmitterShape.Box},
+					{"ShapeInOut", Enum.ParticleEmitterShapeInOut.Outward},
+					{"ShapeStyle", Enum.ParticleEmitterShapeStyle.Volume},
+					{"ShapePartial", 1},
+					{"FlipbookLayout", Enum.ParticleFlipbookLayout.None},
+					{"FlipbookMode", Enum.ParticleFlipbookMode.Loop},
+					{"FlipbookFramerate", NumberRange.new(1,1)},
+					{"FlipbookStartRandom", false},
+					{"Brightness", 5},
+				} },
+			{ t = 0.279029, kind = "vfx", class = "PointLight", name = "PointLight", enabled = true, dur = 0.5,
+				mount = { part = nil, cf = CFrame.new(-0.0009,-2.8138,-0.5773,0.1513,0,0.9885,0,1,0,-0.9885,0,0.1513) },
+				props = {
+					{"Brightness", 20},
+					{"Color", Color3.new(0.666667,1,1)},
+					{"Range", 9},
+					{"Shadows", true},
+				} },
+		},
+		frames = {
+	{ dt = 0, j = {
+		["Right Shoulder"] = CFrame.new(-0.3375,-0.1222,0.6988,0.9883,0.1474,-0.0392,0.1525,-0.9551,0.2539,0,-0.2569,-0.9664), -- Right Arm rot -165, -2, -8
+		["Left Shoulder"] = CFrame.new(0.2789,-0.1956,0.6278,0.9632,-0.2601,0.0686,-0.269,-0.9313,0.2457,0,-0.2551,-0.9669), -- Left Arm rot -166, 4, 15
+		["Right Hip"] = CFrame.new(0.8458,0.453,0,0.6816,0.7317,0,-0.7317,0.6816,0,0,0,1), -- Right Leg rot 0, 0, -47
+		["Left Hip"] = CFrame.new(0,0,0,0.9594,0.2821,0,-0.2821,0.9594,0,0,0,1), -- Left Leg rot 0, 0, -16
+		["Neck"] = CFrame.new(0,0,0,1,0,0,0,0.8281,-0.5605,0,0.5605,0.8281), -- Head rot 34, 0, 0
+		["RootJoint"] = CFrame.new(0,0,0,1,0,0,0,0.9921,-0.1257,0,0.1257,0.9921), -- Torso rot 7, 0, 0
+	} },
+	{ dt = 0.064, j = {
+		["Right Shoulder"] = CFrame.new(-0.3375,-0.1222,0.6988,0.9883,0.1474,-0.0392,0.1525,-0.9551,0.2539,0,-0.2569,-0.9664), -- Right Arm rot -165, -2, -8
+		["Left Shoulder"] = CFrame.new(0.2789,-0.1956,0.6278,0.9632,-0.2601,0.0686,-0.269,-0.9313,0.2457,0,-0.2551,-0.9669), -- Left Arm rot -166, 4, 15
+		["Right Hip"] = CFrame.new(0.8458,0.453,0,0.6816,0.7317,0,-0.7317,0.6816,0,0,0,1), -- Right Leg rot 0, 0, -47
+		["Left Hip"] = CFrame.new(0,0,0,0.9594,0.2821,0,-0.2821,0.9594,0,0,0,1), -- Left Leg rot 0, 0, -16
+		["Neck"] = CFrame.new(0,0,0,1,0,0,0,0.8281,-0.5605,0,0.5605,0.8281), -- Head rot 34, 0, 0
+		["RootJoint"] = CFrame.new(0,0,0,1,0,0,0,0.9921,-0.1257,0,0.1257,0.9921), -- Torso rot 7, 0, 0
+	} },
+	{ dt = 0.128, j = {
+		["Right Shoulder"] = CFrame.new(-0.3496,-0.1166,0.7207,0.9981,0.0602,-0.016,0.0623,-0.9645,0.2565,0,-0.2569,-0.9664), -- Right Arm rot -165, -1, -3
+		["Left Shoulder"] = CFrame.new(0.2891,-0.2052,0.6338,0.9836,-0.1746,0.0461,-0.1805,-0.951,0.2509,0,-0.2551,-0.9669), -- Left Arm rot -165, 3, 10
+		["Right Hip"] = CFrame.new(0.9058,0.5183,0.001,0.6816,0.7317,0,-0.7317,0.6816,0,0,0,1), -- Right Leg rot 0, 0, -47
+		["Left Hip"] = CFrame.new(0.01,-0.0166,0.0088,0.9849,0.1729,0,-0.1729,0.9849,0,0,0,1), -- Left Leg rot 0, 0, -10
+		["Neck"] = CFrame.new(-0.0098,0.0087,-0.0024,1,0,0,0,0.8281,-0.5605,0,0.5605,0.8281), -- Head rot 34, 0, 0
+		["RootJoint"] = CFrame.new(-0.0039,0.0004,0.0187,1,0,0,0,0.9966,-0.0819,0,0.0819,0.9966), -- Torso rot 5, 0, 0
+	} },
+	{ dt = 0.032, j = {
+		["Right Shoulder"] = CFrame.new(-0.3539,-0.1342,0.6897,0.9999,0.0164,-0.0044,0.017,-0.9663,0.2569,0,-0.2569,-0.9664), -- Right Arm rot -165, 0, -1
+		["Left Shoulder"] = CFrame.new(0.287,-0.1799,0.6261,0.9907,-0.1312,0.0346,-0.1357,-0.958,0.2527,0,-0.2551,-0.9669), -- Left Arm rot -165, 2, 8
+		["Right Hip"] = CFrame.new(0.9556,0.5339,0.0078,0.6816,0.7317,0,-0.7317,0.6816,0,0,0,1), -- Right Leg rot 0, 0, -47
+		["Left Hip"] = CFrame.new(-0.0161,0.0216,-0.0156,0.9931,0.1174,0,-0.1174,0.9931,0,0,0,1), -- Left Leg rot 0, 0, -7
+		["Neck"] = CFrame.new(0,-0.0207,0.0096,1,0,0,0,0.8281,-0.5605,0,0.5605,0.8281), -- Head rot 34, 0, 0
+		["RootJoint"] = CFrame.new(0.0195,0.0024,-0.0107,1,0,0,0,0.9993,-0.0378,0,0.0378,0.9993), -- Torso rot 2, 0, 0
+	} },
+	{ dt = 0.16, j = {
+		["Right Shoulder"] = CFrame.new(-0.3212,-0.1274,0.6947,0.9973,-0.0712,0.0189,-0.0737,-0.9638,0.2563,0,-0.2569,-0.9664), -- Right Arm rot -165, 1, 4
+		["Left Shoulder"] = CFrame.new(0.2783,-0.1891,0.6113,0.999,-0.0439,0.0116,-0.0454,-0.9659,0.2548,0,-0.2551,-0.9669), -- Left Arm rot -165, 1, 3
+		["Right Hip"] = CFrame.new(1.0028,0.5886,0.0049,0.6816,0.7317,0,-0.7317,0.6816,0,0,0,1), -- Right Leg rot 0, 0, -47
+		["Left Hip"] = CFrame.new(0.001,0.0049,0.0107,1,0.0056,0,-0.0056,1,0,0,0,1), -- Left Leg rot 0, 0, 0
+		["Neck"] = CFrame.new(0.0078,-0.0133,0.004,1,0,0,0,0.8281,-0.5605,0,0.5605,0.8281), -- Head rot 34, 0, 0
+		["RootJoint"] = CFrame.new(0.0117,-0.0103,-0.0133,1,0,0,0,0.9993,0.0385,0,-0.0385,0.9993), -- Torso rot -2, 0, 0
+	} },
+	{ dt = 0.032, j = {
+		["Right Shoulder"] = CFrame.new(-0.3323,-0.1111,0.7009,0.9929,-0.1149,0.0305,-0.1189,-0.9596,0.2551,0,-0.2569,-0.9664), -- Right Arm rot -165, 2, 7
+		["Left Shoulder"] = CFrame.new(0.276,-0.1964,0.6387,1,0,0,0,-0.9669,0.2551,0,-0.2551,-0.9669), -- Left Arm rot -165, 0, 0
+		["Right Hip"] = CFrame.new(1.0347,0.6063,-0.0059,0.6816,0.7317,0,-0.7317,0.6816,0,0,0,1), -- Right Leg rot 0, 0, -47
+		["Left Hip"] = CFrame.new(0.0079,0.018,-0.0146,0.9987,-0.0505,0,0.0505,0.9987,0,0,0,1), -- Left Leg rot 0, 0, 3
+		["Neck"] = CFrame.new(-0.0176,0.003,-0.0097,1,0,0,0,0.8281,-0.5605,0,0.5605,0.8281), -- Head rot 34, 0, 0
+		["RootJoint"] = CFrame.new(0.0195,-0.0085,0.0053,1,0,0,0,0.9987,0.0503,0,-0.0503,0.9987), -- Torso rot -3, 0, 0
+	} },
+	{ dt = 0.352, j = {
+		["Right Shoulder"] = CFrame.new(-0.3261,-0.1092,0.712,0.9942,0.1039,-0.0276,0.1076,-0.9608,0.2555,0,-0.2569,-0.9664), -- Right Arm rot -165, -2, -6
+		["Left Shoulder"] = CFrame.new(0.2761,-0.1731,0.6162,0.9744,-0.2175,0.0574,-0.225,-0.9421,0.2486,0,-0.2551,-0.9669), -- Left Arm rot -166, 3, 13
+		["Right Hip"] = CFrame.new(0.8913,0.482,0.0039,0.6816,0.7317,0,-0.7317,0.6816,0,0,0,1), -- Right Leg rot 0, 0, -47
+		["Left Hip"] = CFrame.new(0.0148,-0.0055,-0.0195,0.9737,0.2279,0,-0.2279,0.9737,0,0,0,1), -- Left Leg rot 0, 0, -13
+		["Neck"] = CFrame.new(0,0.0165,0.0053,1,0,0,0,0.8281,-0.5605,0,0.5605,0.8281), -- Head rot 34, 0, 0
+		["RootJoint"] = CFrame.new(-0.0068,0.0018,0.0012,1,0,0,0,0.9935,-0.114,0,0.114,0.9935), -- Torso rot 7, 0, 0
+	} },
+	{ dt = 0.032, j = {
+		["Right Shoulder"] = CFrame.new(-0.3375,-0.1222,0.6988,0.9883,0.1474,-0.0392,0.1525,-0.9551,0.2539,0,-0.2569,-0.9664), -- Right Arm rot -165, -2, -8
+		["Left Shoulder"] = CFrame.new(0.2789,-0.1956,0.6278,0.9632,-0.2601,0.0686,-0.269,-0.9313,0.2457,0,-0.2551,-0.9669), -- Left Arm rot -166, 4, 15
+		["Right Hip"] = CFrame.new(0.8458,0.453,0,0.6816,0.7317,0,-0.7317,0.6816,0,0,0,1), -- Right Leg rot 0, 0, -47
+		["Left Hip"] = CFrame.new(0,0,0,0.9594,0.2821,0,-0.2821,0.9594,0,0,0,1), -- Left Leg rot 0, 0, -16
+		["Neck"] = CFrame.new(0,0,0,1,0,0,0,0.8281,-0.5605,0,0.5605,0.8281), -- Head rot 34, 0, 0
+		["RootJoint"] = CFrame.new(0,0,0,1,0,0,0,0.9921,-0.1257,0,0.1257,0.9921), -- Torso rot 7, 0, 0
+	} },
+},
+	}
 	-- Cursed Strikes usa as particulas do dash (fumaca) no comeco do avanco
 	do
 		local dashFx = {}
@@ -11408,6 +12913,14 @@ local overlay = { blocking = false, w = 0 } -- block: sobrepoe bracos/cabeca (pe
 local DASH_ANIMS = { Dash = true, DashLeft = true, DashRight = true, DashBack = true }
 local airborne = false
 local stateConn = nil
+
+-- hit-stop: segura a pose da anim por alguns centesimos quando o golpe ACERTA (da peso ao soco)
+state.hitStop = function(sec)
+	local cur = current
+	if cur and cur.layer == "action" then
+		cur.freezeUntil = math.max(cur.freezeUntil or 0, os.clock() + sec)
+	end
+end
 
 local function notify(text, dur)
 	pcall(function()
@@ -11622,6 +13135,7 @@ local function step(cur, dt)
 		return
 	end
 	removeAnimator(cur)
+	if cur.freezeUntil and os.clock() < cur.freezeUntil then return end -- hit-stop
 
 	local anim = cur.anim
 	local frames, times = anim.frames, anim.times
@@ -11671,8 +13185,22 @@ end
 
 local SoundService = game:GetService("SoundService")
 
-local function fxMount(char, root, m)
+local function fxMount(char, root, m, follow, groundPos)
 	local att = Instance.new("Attachment")
+	if groundPos then -- efeito de chao: nasce no ponto real da batida (parado, de pe)
+		local gp = Instance.new("Part")
+		gp.Anchored = true
+		gp.CanCollide = false
+		gp.CanQuery = false
+		gp.CanTouch = false
+		gp.Massless = true
+		gp.Transparency = 1
+		gp.Size = Vector3.new(0.2, 0.2, 0.2)
+		gp.CFrame = CFrame.new(groundPos)
+		gp.Parent = workspace
+		att.Parent = gp
+		return att, gp
+	end
 	local part = m and m.part and state.findPart(char, m.part)
 	if part and part:IsA("BasePart") then
 		att.CFrame = m.cf or CFrame.new()
@@ -11680,14 +13208,21 @@ local function fxMount(char, root, m)
 		return att, att
 	end
 	local p = Instance.new("Part")
-	p.Anchored = true
+	p.Anchored = not follow
 	p.CanCollide = false
 	p.CanQuery = false
 	p.CanTouch = false
+	p.Massless = true
 	p.Transparency = 1
 	p.Size = Vector3.new(0.2, 0.2, 0.2)
 	p.CFrame = root.CFrame * ((m and m.cf) or CFrame.new())
 	p.Parent = workspace
+	if follow then -- acompanha o personagem (variantes no ar)
+		local w = Instance.new("WeldConstraint")
+		w.Part0 = root
+		w.Part1 = p
+		w.Parent = p
+	end
 	att.Parent = p
 	return att, p
 end
@@ -11699,6 +13234,25 @@ local function fxSetProps(inst, props)
 end
 
 local function spawnFx(e, char, root)
+	if e.kind == "obj" then -- peca recriada (ex: Shock do impacto)
+		for _, d in ipairs((e.spec and e.spec.parts) or {}) do
+			pcall(function()
+				local o = Instance.new(d.cls)
+				for _, kv in ipairs(d.props) do pcall(function() o[kv[1]] = kv[2] end) end
+				if d.cls == "MeshPart" and (o.MeshId == nil or o.MeshId == "") then o:Destroy() return end
+				o.Name = d.name
+				o.Anchored = true
+				o.CanCollide = false
+				o.CanQuery = false
+				o.CanTouch = false
+				o.Massless = true
+				o.CFrame = root.CFrame * (e.rel or CFrame.new()) * d.rel
+				o.Parent = workspace
+				Debris:AddItem(o, (e.dur or 1) + 0.3)
+			end)
+		end
+		return
+	end
 	if e.kind == "sfx" then
 		local s = Instance.new("Sound")
 		fxSetProps(s, e.props)
@@ -11713,19 +13267,24 @@ local function spawnFx(e, char, root)
 	fx.Name = e.name or cls
 	fxSetProps(fx, e.props)
 	local life = (e.dur or 2) + 2
+	local gpos = nil
+	if e.ground and state.gfx then
+		local okg, v = pcall(state.gfx.groundPoint, char, root)
+		if okg then gpos = v end
+	end
 
 	if cls == "Highlight" then
 		fx.Adornee = char
 		fx.Parent = char
 	elseif cls == "Beam" or cls == "Trail" then
-		local a0, h0 = fxMount(char, root, e.att0 or e.mount)
-		local a1, h1 = fxMount(char, root, e.att1 or e.mount)
+		local a0, h0 = fxMount(char, root, e.att0 or e.mount, e.follow, gpos)
+		local a1, h1 = fxMount(char, root, e.att1 or e.mount, e.follow, gpos)
 		fx.Attachment0, fx.Attachment1 = a0, a1
 		fx.Parent = a0
 		Debris:AddItem(h0, life)
 		Debris:AddItem(h1, life)
 	else
-		local att, holder = fxMount(char, root, e.mount)
+		local att, holder = fxMount(char, root, e.mount, e.follow, gpos)
 		if cls == "Fire" or cls == "Smoke" or cls == "Sparkles" then
 			fx.Parent = att.Parent -- esses efeitos antigos precisam de uma BasePart
 		else
@@ -12372,56 +13931,162 @@ local function groundColor(r)
 	return Color3.fromRGB(125, 115, 100), Enum.Material.Pebble
 end
 
+-- ===== EFEITOS DE CHAO v2 =====
+-- poeira (cor do chao), onda de choque, pedras voando, cratera em camadas e rachaduras que "correm" pra fora
+state.gfx = {}
+do
+	local TweenService = game:GetService("TweenService")
+	local G = state.gfx
+
+	function G.NSeq(list)
+		local k = {}
+		for i, v in ipairs(list) do k[i] = NumberSequenceKeypoint.new(v[1], v[2]) end
+		return NumberSequence.new(k)
+	end
+
+	-- base do chao no ponto do impacto (Y = normal da superficie)
+	function G.base(r)
+		local n = r.Normal
+		if n.Magnitude < 0.5 then n = Vector3.new(0, 1, 0) end
+		n = n.Unit
+		local right = n:Cross(Vector3.new(0, 0, 1))
+		if right.Magnitude < 0.1 then right = n:Cross(Vector3.new(1, 0, 0)) end
+		right = right.Unit
+		return CFrame.fromMatrix(r.Position, right, n, right:Cross(n))
+	end
+
+	-- ponto do chao NA FRENTE do personagem (efeitos de chao das variantes no ar nascem aqui)
+	function G.groundPoint(char, root)
+		local params = RaycastParams.new()
+		params.FilterType = Enum.RaycastFilterType.Exclude
+		params.FilterDescendantsInstances = { char }
+		params.RespectCanCollide = true
+		local lk = root.CFrame.LookVector
+		local flat = Vector3.new(lk.X, 0, lk.Z)
+		flat = flat.Magnitude > 0.01 and flat.Unit or Vector3.new(0, 0, -1)
+		local r = workspace:Raycast(root.Position + flat * 4 + Vector3.new(0, 3, 0), Vector3.new(0, -30, 0), params)
+		if r then return r.Position + Vector3.new(0, 0.1, 0) end
+		return (root.CFrame * CFrame.new(0, -2.9, -4.2)).Position
+	end
+
+	function G.dust(base, col, s)
+		local holder = Instance.new("Part")
+		holder.Anchored = true
+		holder.CanCollide = false
+		holder.CanQuery = false
+		holder.CanTouch = false
+		holder.CastShadow = false
+		holder.Transparency = 1
+		holder.Size = Vector3.new(0.2, 0.2, 0.2)
+		holder.CFrame = base * CFrame.new(0, 0.3, 0)
+		holder.Parent = workspace
+		local att = Instance.new("Attachment")
+		att.Parent = holder
+		local dustCol = col:Lerp(Color3.fromRGB(200, 190, 175), 0.5)
+		local function puff(count, life, speed, spread, size0, size1, drag)
+			local e = Instance.new("ParticleEmitter")
+			e.Texture = "rbxassetid://13026594575"
+			e.FlipbookLayout = Enum.ParticleFlipbookLayout.Grid8x8
+			e.FlipbookMode = Enum.ParticleFlipbookMode.Loop
+			e.FlipbookFramerate = NumberRange.new(10, 30)
+			e.FlipbookStartRandom = true
+			e.Color = ColorSequence.new(dustCol)
+			e.LightInfluence = 1
+			e.Lifetime = NumberRange.new(life * 0.7, life)
+			e.Speed = NumberRange.new(speed * 0.5, speed)
+			e.SpreadAngle = Vector2.new(spread, spread)
+			e.Drag = drag
+			e.Rotation = NumberRange.new(-180, 180)
+			e.RotSpeed = NumberRange.new(-50, 50)
+			e.Size = G.NSeq({ { 0, size0 }, { 0.25, size1 * 0.8 }, { 1, size1 } })
+			e.Transparency = G.NSeq({ { 0, 0.25 }, { 0.5, 0.5 }, { 1, 1 } })
+			e.EmissionDirection = Enum.NormalId.Top
+			e.Enabled = false
+			e.Parent = att
+			e:Emit(count)
+		end
+		puff(math.floor(16 * s + 0.5), 0.85, 28 * math.sqrt(s), 84, 2.5 * s, 8 * s, 6) -- anel baixo de poeira
+		puff(math.floor(9 * s + 0.5), 1.1, 16, 28, 3 * s, 10 * s, 4)                     -- coluna de poeira
+		Debris:AddItem(holder, 3)
+	end
+
+	function G.shock(base, col, s)
+		local tint = col:Lerp(Color3.new(1, 1, 1), 0.6)
+		local function ring(d1, t, y, tr0)
+			local p = Instance.new("Part")
+			p.Shape = Enum.PartType.Cylinder
+			p.Anchored = true
+			p.CanCollide = false
+			p.CanQuery = false
+			p.CanTouch = false
+			p.CastShadow = false
+			p.Material = Enum.Material.SmoothPlastic
+			p.Color = tint
+			p.Transparency = tr0
+			p.Size = Vector3.new(0.1, 1.5, 1.5)
+			p.CFrame = base * CFrame.new(0, y, 0) * CFrame.Angles(0, 0, math.pi / 2)
+			p.Parent = workspace
+			TweenService:Create(p, TweenInfo.new(t, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+				{ Size = Vector3.new(0.05, d1, d1), Transparency = 1 }):Play()
+			Debris:AddItem(p, t + 0.3)
+		end
+		ring(16 * s, 0.32, 0.12, 0.5)
+		ring(26 * s, 0.5, 0.08, 0.78)
+	end
+end
+
 local function groundBurst(r, scale)
 	scale = scale or 1
 	kickCamera(1.5 * scale)
-	local n = math.floor((CONFIG.Pebbles or 0) * scale + 0.5)
-	if n <= 0 then return end
+	if (CONFIG.Pebbles or 0) <= 0 then return end
+	local s = math.clamp(scale, 0.3, 2.2)
 	local TweenService = game:GetService("TweenService")
 	local rng = Random.new()
 	local col, mat = groundColor(r)
-	for _ = 1, n do
-		local s = rng:NextNumber(0.2, 0.55)
+	local base = state.gfx.base(r)
+	pcall(state.gfx.dust, base, col, s)
+	pcall(state.gfx.shock, base, col, s)
+	local n = math.floor(CONFIG.Pebbles * s * 1.4 + 0.5)
+	for i = 1, n do
+		local big = (i % 5 == 0)
+		local sz = big and rng:NextNumber(0.7, 1.3) or rng:NextNumber(0.2, 0.55)
 		local p = Instance.new("Part")
-		p.Size = Vector3.new(s, s * rng:NextNumber(0.6, 1), s * rng:NextNumber(0.7, 1.1))
-		p.Color = col:Lerp(Color3.new(0, 0, 0), rng:NextNumber(0, 0.18))
+		p.Size = Vector3.new(sz, sz * rng:NextNumber(0.6, 1), sz * rng:NextNumber(0.7, 1.1))
+		p.Color = col:Lerp(Color3.new(0, 0, 0), rng:NextNumber(0, 0.25))
 		p.Material = mat
 		p.TopSurface = Enum.SurfaceType.Smooth
 		p.BottomSurface = Enum.SurfaceType.Smooth
 		p.CanQuery = false
 		p.CanTouch = false
-		p.CFrame = CFrame.new(r.Position + Vector3.new(rng:NextNumber(-0.8, 0.8), 0.4, rng:NextNumber(-0.8, 0.8)))
+		p.CFrame = CFrame.new(r.Position + Vector3.new(rng:NextNumber(-1.2, 1.2), 0.5, rng:NextNumber(-1.2, 1.2)))
 			* CFrame.Angles(rng:NextNumber(0, 6), rng:NextNumber(0, 6), rng:NextNumber(0, 6))
 		p.Parent = workspace
 		local a = rng:NextNumber(0, math.pi * 2)
-		local sp = rng:NextNumber(12, 30)
-		p.AssemblyLinearVelocity = Vector3.new(math.cos(a) * sp, rng:NextNumber(18, 38), math.sin(a) * sp)
-		p.AssemblyAngularVelocity = Vector3.new(rng:NextNumber(-12, 12), rng:NextNumber(-12, 12), rng:NextNumber(-12, 12))
-		Debris:AddItem(p, 1.8)
-		task.delay(1.2, function()
+		local sp = (big and rng:NextNumber(10, 20) or rng:NextNumber(14, 34)) * math.sqrt(s)
+		local up = big and rng:NextNumber(16, 30) or rng:NextNumber(20, 44)
+		p.AssemblyLinearVelocity = Vector3.new(math.cos(a) * sp, up, math.sin(a) * sp)
+		p.AssemblyAngularVelocity = Vector3.new(rng:NextNumber(-14, 14), rng:NextNumber(-14, 14), rng:NextNumber(-14, 14))
+		Debris:AddItem(p, 2.4)
+		task.delay(1.6, function()
 			if p.Parent then
-				pcall(function() TweenService:Create(p, TweenInfo.new(0.5), { Transparency = 1 }):Play() end)
+				pcall(function() TweenService:Create(p, TweenInfo.new(0.6), { Transparency = 1 }):Play() end)
 			end
 		end)
 	end
 end
 
--- chao quebrado: rachaduras + pedacos que saem do chao (parados, enterrados pela metade) -- somem depois
+-- chao quebrado: cratera em camadas, rachaduras ramificadas que correm pra fora, placas e pedras que brotam do chao
 local function breakGround(r, scale)
 	scale = scale or 1
+	local s = math.clamp(scale, 0.3, 2.2)
 	local TweenService = game:GetService("TweenService")
 	local rng = Random.new()
 	local col, mat = groundColor(r)
-	local n = r.Normal
-	if n.Magnitude < 0.5 then n = Vector3.new(0, 1, 0) end
-	n = n.Unit
-	local right = n:Cross(Vector3.new(0, 0, 1))
-	if right.Magnitude < 0.1 then right = n:Cross(Vector3.new(1, 0, 0)) end
-	right = right.Unit
-	local base = CFrame.fromMatrix(r.Position, right, n, right:Cross(n))
+	local base = state.gfx.base(r)
 	local made = {}
-	local function mk(size, cf, color, material)
+	local function mk(size, cf, color, material, tr, cyl)
 		local p = Instance.new("Part")
+		if cyl then p.Shape = Enum.PartType.Cylinder end
 		p.Size = size
 		p.Anchored = true
 		p.CanCollide = false
@@ -12430,6 +14095,7 @@ local function breakGround(r, scale)
 		p.CastShadow = false
 		p.Color = color
 		p.Material = material
+		p.Transparency = tr or 0
 		p.TopSurface = Enum.SurfaceType.Smooth
 		p.BottomSurface = Enum.SurfaceType.Smooth
 		p.CFrame = cf
@@ -12437,50 +14103,89 @@ local function breakGround(r, scale)
 		made[#made + 1] = p
 		return p
 	end
-	local dark = col:Lerp(Color3.new(0, 0, 0), 0.78)
-	-- marca escura no chao
-	local crater = mk(Vector3.new(0.08, 6.5 * scale, 6.5 * scale), base * CFrame.new(0, 0.03, 0) * CFrame.Angles(0, 0, math.pi / 2), dark, Enum.Material.Slate)
-	crater.Shape = Enum.PartType.Cylinder
-	crater.CFrame = base * CFrame.new(0, 0.03, 0) * CFrame.Angles(0, 0, math.pi / 2)
-	crater.Transparency = 0.25
-	-- rachaduras saindo do centro (3 segmentos tortos cada)
-	for _ = 1, math.floor(7 * scale + 0.5) do
-		local a = rng:NextNumber(0, math.pi * 2)
-		local px, pz = 0, 0
-		for _ = 1, 3 do
-			local ang = a + rng:NextNumber(-0.45, 0.45)
-			local len = rng:NextNumber(1.2, 2.6) * scale
+	local dark = col:Lerp(Color3.new(0, 0, 0), 0.8)
+	local mid = col:Lerp(Color3.new(0, 0, 0), 0.5)
+	local open = TweenInfo.new(0.14, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+
+	-- cratera: 3 discos (borda mais clara, miolo escuro) que abrem rapido
+	local function disc(d, y, color, tr)
+		local p = mk(Vector3.new(0.05, 0.5, 0.5), base * CFrame.new(0, y, 0) * CFrame.Angles(0, 0, math.pi / 2), color, Enum.Material.Slate, tr, true)
+		TweenService:Create(p, open, { Size = Vector3.new(0.05, d, d) }):Play()
+	end
+	disc(8.5 * s, 0.03, mid, 0.55)
+	disc(6 * s, 0.045, dark, 0.35)
+	disc(3 * s, 0.06, Color3.new(0.03, 0.03, 0.03), 0.15)
+
+	-- rachaduras tortas e ramificadas; aparecem de dentro pra fora (parece que a rachadura corre)
+	local crack
+	crack = function(x, z, ang, len, width, branch, delay)
+		local px, pz = x, z
+		local segs = rng:NextInteger(3, 5)
+		local seglen = len / segs
+		local travelled = 0
+		for i = 1, segs do
+			ang += rng:NextNumber(-0.5, 0.5)
+			local l = seglen * rng:NextNumber(0.85, 1.25)
+			local w = math.max(width * (1 - (i - 1) / segs * 0.75), 0.08)
 			local dx, dz = math.cos(ang), math.sin(ang)
-			mk(Vector3.new(rng:NextNumber(0.14, 0.3), 0.06, len),
-				base * CFrame.new(px + dx * len / 2, 0.05, pz + dz * len / 2) * CFrame.Angles(0, math.pi / 2 - ang, 0),
-				dark, Enum.Material.Slate)
-			px, pz = px + dx * len, pz + dz * len
-			a = ang
+			local c = mk(Vector3.new(w, 0.05, l),
+				base * CFrame.new(px + dx * l / 2, 0.05, pz + dz * l / 2) * CFrame.Angles(0, math.pi / 2 - ang, 0),
+				dark, Enum.Material.Slate, 1)
+			local d = delay + travelled / (22 * s)
+			task.delay(d, function()
+				if c.Parent then c.Transparency = 0 end
+			end)
+			travelled += l
+			px, pz = px + dx * l, pz + dz * l
+			if branch > 0 and i == 2 and rng:NextNumber() < 0.65 then
+				crack(px, pz, ang + (rng:NextNumber() < 0.5 and -1 or 1) * rng:NextNumber(0.5, 1.0), len * 0.5, width * 0.6, branch - 1, d)
+			end
 		end
 	end
-	-- placas quebradas empurradas pra cima (inclinadas) e pedras enterradas
-	for i = 1, math.floor(8 * scale + 0.5) do
-		local a = (i / 8) * math.pi * 2 + rng:NextNumber(-0.3, 0.3)
-		local d = rng:NextNumber(1.6, 3.8) * scale
-		local sx, sz = rng:NextNumber(1.2, 2.4), rng:NextNumber(1, 2)
-		mk(Vector3.new(sx, 0.4, sz),
-			base * CFrame.new(math.cos(a) * d, 0.1, math.sin(a) * d) * CFrame.Angles(0, math.pi / 2 - a, 0) * CFrame.Angles(rng:NextNumber(0.25, 0.65), rng:NextNumber(-0.3, 0.3), 0),
+	local nc = math.floor(7 * s + 0.5)
+	for i = 1, nc do
+		local a = (i / nc) * math.pi * 2 + rng:NextNumber(-0.35, 0.35)
+		crack(0, 0, a, rng:NextNumber(5, 8.5) * s, 0.38 * math.sqrt(s), 1, 0)
+	end
+
+	-- placas quebradas que brotam do chao em anel (inclinadas pra fora)
+	local pop = TweenInfo.new(0.16, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+	local ns = math.floor(9 * s + 0.5)
+	for i = 1, ns do
+		local a = (i / ns) * math.pi * 2 + rng:NextNumber(-0.3, 0.3)
+		local d = rng:NextNumber(1.8, 3.6) * s
+		local fin = base * CFrame.new(math.cos(a) * d, 0.18, math.sin(a) * d) * CFrame.Angles(0, math.pi / 2 - a, 0)
+			* CFrame.Angles(rng:NextNumber(0.3, 0.75), rng:NextNumber(-0.25, 0.25), 0)
+		local p = mk(Vector3.new(rng:NextNumber(1.2, 2.4) * math.sqrt(s), 0.45, rng:NextNumber(1.2, 2.2)), fin * CFrame.new(0, -1.2, 0),
 			col:Lerp(Color3.new(0, 0, 0), rng:NextNumber(0, 0.25)), mat)
+		task.delay(0.01 * i, function()
+			if p.Parent then TweenService:Create(p, pop, { CFrame = fin }):Play() end
+		end)
 	end
-	for _ = 1, math.floor(16 * scale + 0.5) do
+
+	-- pedras maiores e menores espalhadas, meio enterradas
+	local nr = math.floor(18 * s + 0.5)
+	for _ = 1, nr do
 		local a = rng:NextNumber(0, math.pi * 2)
-		local d = rng:NextNumber(0.8, 5.5) * scale
-		local s = rng:NextNumber(0.35, 1.1)
-		mk(Vector3.new(s * rng:NextNumber(0.8, 1.6), s * rng:NextNumber(0.6, 1.3), s * rng:NextNumber(0.8, 1.6)),
-			base * CFrame.new(math.cos(a) * d, s * 0.1, math.sin(a) * d)
-				* CFrame.Angles(rng:NextNumber(-0.7, 0.7), rng:NextNumber(0, 6.28), rng:NextNumber(-0.7, 0.7)),
-			col:Lerp(Color3.new(0, 0, 0), rng:NextNumber(0, 0.3)), mat)
+		local d = rng:NextNumber(0.8, 6.5) * math.sqrt(s)
+		local sz = rng:NextNumber(0.35, 1.3)
+		local fin = base * CFrame.new(math.cos(a) * d, sz * 0.15, math.sin(a) * d)
+			* CFrame.Angles(rng:NextNumber(-0.7, 0.7), rng:NextNumber(0, 6.28), rng:NextNumber(-0.7, 0.7))
+		local p = mk(Vector3.new(sz * rng:NextNumber(0.8, 1.6), sz * rng:NextNumber(0.6, 1.3), sz * rng:NextNumber(0.8, 1.6)),
+			fin * CFrame.new(0, -1, 0), col:Lerp(Color3.new(0, 0, 0), rng:NextNumber(0, 0.3)), mat)
+		task.delay(rng:NextNumber(0, 0.08), function()
+			if p.Parent then TweenService:Create(p, pop, { CFrame = fin }):Play() end
+		end)
 	end
-	for _, p in ipairs(made) do Debris:AddItem(p, 13) end
-	task.delay(9.5, function()
+
+	for _, p in ipairs(made) do Debris:AddItem(p, 11) end
+	-- some devagar: afunda no chao e some
+	task.delay(7.5, function()
 		for _, p in ipairs(made) do
 			if p.Parent then
-				pcall(function() TweenService:Create(p, TweenInfo.new(2.5), { Transparency = 1 }):Play() end)
+				pcall(function()
+					TweenService:Create(p, TweenInfo.new(2.5), { Transparency = 1, CFrame = p.CFrame * CFrame.new(0, -0.7, 0) }):Play()
+				end)
 			end
 		end
 	end)
@@ -12491,7 +14196,14 @@ local function slamNpc(model, hum, mroot, push, dead)
 	ragdollNpc(model, hum, mroot, Vector3.new(push.X * 4, 24, push.Z * 4), dead)
 	task.delay(0.14, function()
 		if not mroot.Parent then return end
-		if CONFIG.OwnershipTrick then boostSimulation() end
+		if CONFIG.OwnershipTrick then -- ownership trick: SimulationRadius + espera virar dono da fisica antes de jogar
+			boostSimulation()
+			local w0 = os.clock()
+			while mroot.Parent and not ownsPart(mroot) and os.clock() - w0 < 0.35 do
+				boostSimulation()
+				task.wait()
+			end
+		end
 		pcall(function()
 			mroot.AssemblyLinearVelocity = Vector3.new(push.X * 4, -CONFIG.SlamSpeed, push.Z * 4)
 		end)
@@ -12504,14 +14216,25 @@ local function slamNpc(model, hum, mroot, push, dead)
 			if not mroot.Parent then return end
 			local r = workspace:Raycast(mroot.Position, Vector3.new(0, -6, 0), params)
 			if r and mroot.Position.Y - r.Position.Y < 3.4 then
-				groundBurst(r)
+				groundBurst(r, 1)
+				pcall(breakGround, r, 0.6)
+				if PVP.boom then pcall(PVP.boom, r.Position, 0.6) end -- quem tem o script tambem ve a cratera
 				return
 			end
+			pcall(function() -- continua empurrando pra baixo ate bater no chao
+				local v = mroot.AssemblyLinearVelocity
+				if v.Y > -CONFIG.SlamSpeed * 0.5 then
+					mroot.AssemblyLinearVelocity = Vector3.new(v.X, -CONFIG.SlamSpeed, v.Z)
+				end
+			end)
 		end
 	end)
 end
 
 local function damageNpc(model, hum, mroot, root, dmg, kind, punchIdx)
+	if state.hitStop then
+		state.hitStop(kind == "BlackFlash" and 0.1 or ((kind == "AirM1" or punchIdx == 4) and 0.085 or 0.05))
+	end
 	if state.ultGain then -- the bar only grows when a hit LANDS on something
 		if kind == "BlackFlash" then
 			state.ultGain(CONFIG.BlackFlashUltGain)
@@ -12643,12 +14366,13 @@ local function pushLooseParts(root, range, cone, flatLook)
 	end
 end
 
-local function hitNpcs(root, kind, animName)
-	if PVP.send then pcall(PVP.send, root, kind, animName) end
-	local dmg = CONFIG.DamageValues[kind] or 10
+local function hitNpcs(root, kind, animName, opts)
+	opts = opts or {}
+	if PVP.send then pcall(PVP.send, root, kind, animName, opts.range, opts.cone) end
+	local dmg = opts.dmg or CONFIG.DamageValues[kind] or 10
 	local punchIdx = tonumber(string.match(animName or "", "^Punch(%d)$"))
-	local range = (kind == "BlackFlash") and CONFIG.BlackFlashRange or (kind == "DashM1" and CONFIG.DashHitRange or CONFIG.HitRange)
-	local cone = (kind == "DashM1") and CONFIG.DashHitCone or CONFIG.HitCone
+	local range = opts.range or ((kind == "BlackFlash") and CONFIG.BlackFlashRange or (kind == "DashM1" and CONFIG.DashHitRange or CONFIG.HitRange))
+	local cone = opts.cone or ((kind == "DashM1") and CONFIG.DashHitCone or CONFIG.HitCone)
 	local look = root.CFrame.LookVector
 	local flatLook = Vector3.new(look.X, 0, look.Z)
 	if flatLook.Magnitude < 0.01 then return end
@@ -12723,8 +14447,8 @@ local function punch(forced)
 	local animName = "Punch" .. idx
 	local _, hum = getRig()
 	local inAir = hum ~= nil and (airborne or hum.FloorMaterial == Enum.Material.Air)
-	if idx == 3 and inAir and ANIMS.AirSkill then
-		animName = "AirSkill" -- 3o soco no ar (ou pulando) vira o air move
+	if idx == 4 and inAir and ANIMS.AirSkill then
+		animName = "AirSkill" -- 4o soco no ar (ou pulando) vira o air move
 	end
 	local started = play(animName, function()
 		state.lastPunchEnd = os.clock()
@@ -13532,6 +15256,7 @@ local function crushingBlow()
 	if actionBusy() and not (current and DASH_ANIMS[current.name]) then return end
 	local char, hum, root = getRig()
 	if not hum then return end
+	if state.isAir and state.isAir(hum) and ANIMS.CrushingBlowAir then return state.crushAir(char, hum, root) end
 	local ptgt = PVP.crushPlayer and PVP.crushPlayer(root)
 	local tgt = (not ptgt) and crushTarget(root) or nil
 	if not tgt then tgt = { kind = "none" } end -- sem alvo: bate no chao 2x mesmo assim
@@ -13713,13 +15438,270 @@ local function runCursed(cur, root, tpart, tmodel, tplayer)
 	end)
 end
 
+---------------------------------------------------------------------
+-- VARIANTES NO AR
+--  Crushing Blow no ar: vai pra frente (descendo) e toca a anim CrushingBlowAir (1o paste)
+--  Cursed Strikes no ar: 0-0.12s carrega subindo e indo pra tras; a partir de 0.12 mergulha pra onde voce olha,
+--  inclinado, e FICA nessa fase ate achar o chao; ai bate no chao (efeitos de 0.80 da anim)
+---------------------------------------------------------------------
+do
+	for _, nm in ipairs({ "CrushingBlowAir", "CursedAir" }) do
+		for _, e in ipairs(ANIMS[nm].fx or {}) do e.follow = true end -- efeitos seguem voce
+	end
+
+	-- CrushingBlowAir: os efeitos foram gravados com o personagem de costas (z positivo = ATRAS) e 9.7 studs acima do chao,
+	-- por isso apareciam atras / embaixo da terra. Agora: os da mao grudam no braco direito (seguem o punho) e os do chao
+	-- nascem no ponto real da batida, na sua frente.
+	do
+		for _, e in ipairs(ANIMS.CrushingBlowAir.fx or {}) do
+			if e.kind == "vfx" then
+				local m = e.mount
+				if type(m) == "table" and m.part == nil and m.cf and m.cf.Position.Y < -4 then
+					e.ground = true
+				elseif e.class == "Trail" then
+					e.att0 = { part = "Right Arm", cf = CFrame.new(0, -1.2, 0) }
+					e.att1 = { part = "Right Arm", cf = CFrame.new(0, 0.7, 0) }
+				elseif type(m) == "table" and m.part == nil then
+					e.mount = { part = "Right Arm", cf = CFrame.new(0, -1.1, 0) }
+				end
+			end
+		end
+	end
+	state.isAir = function(hum)
+		return hum ~= nil and (airborne or hum.FloorMaterial == Enum.Material.Air)
+	end
+
+	local function flatLook(root)
+		local lk = root.CFrame.LookVector
+		local f = Vector3.new(lk.X, 0, lk.Z)
+		if f.Magnitude < 0.01 then return Vector3.new(0, 0, -1) end
+		return f.Unit
+	end
+
+	local function rayParams(char)
+		local p = RaycastParams.new()
+		p.FilterType = Enum.RaycastFilterType.Exclude
+		p.FilterDescendantsInstances = { char }
+		p.RespectCanCollide = true
+		return p
+	end
+
+	local function playImpactFx(anim, root)
+		for _, e in ipairs(anim.impactFx or {}) do
+			task.delay(e.t or 0, function()
+				if not root.Parent then return end
+				if e.kind == "sfx" then
+					if not CONFIG.Sounds then return end
+				elseif not CONFIG.Effects then
+					return
+				end
+				pcall(spawnFx, e, root.Parent, root)
+			end)
+		end
+	end
+
+	state.crushAir = function(char, hum, root)
+		local now = os.clock()
+		crush.lockedUntil = now + CONFIG.CrushCooldown
+		overlay.blocking = false
+		boostFor(6)
+		stopVault()
+		stopDash()
+		state.combo = 1
+		if not play("CrushingBlowAir", function() refreshAir() end, "action") then
+			crush.lockedUntil = 0
+			return
+		end
+		local cur = current
+		local total = ANIMS.CrushingBlowAir.total or 0.96
+		speedState.frozenUntil = now + total + 0.2
+		local look = flatLook(root)
+		local P0 = root.Position
+		local params = rayParams(char)
+		local g = workspace:Raycast(P0, Vector3.new(0, -150, 0), params)
+		local drop = g and math.clamp(P0.Y - (g.Position.Y + 3), 0, 70) or 10
+		local T1, T2 = CONFIG.CrushAirSlam1, CONFIG.CrushAirSlam2
+		local prevRot = hum.AutoRotate
+		pcall(function() hum.AutoRotate = false end)
+		local t0 = os.clock()
+		local done1, done2 = false, false
+		local conn
+		local function slam(scale)
+			local r = workspace:Raycast(root.Position + look * 4 + Vector3.new(0, 3, 0), Vector3.new(0, -14, 0), params)
+			if r then
+				groundBurst(r, scale)
+				pcall(breakGround, r, scale)
+				if PVP.boom then pcall(PVP.boom, r.Position, scale) end -- quem tem o script ve a cratera
+			end
+			kickCamera(1.6)
+			state.shake(1.6, 0.25)
+			boostFor(5) -- ownership trick: SimulationRadius pra jogar NPC / partes soltas no chao
+			if CONFIG.Damage then -- NPC e jogador com o script tomam o golpe e sao jogados no chao (kind AirM1)
+				hitNpcs(root, "AirM1", nil, { range = CONFIG.CrushAirRange, cone = -0.3, dmg = CONFIG.DamageValues.Crush or 30 })
+			end
+			if state.ultGain then state.ultGain(5) end
+		end
+		local function finish()
+			if conn then conn:Disconnect() conn = nil end
+			pcall(function() hum.AutoRotate = prevRot end)
+			if current == cur then endCurrent(true) end
+		end
+		conn = RunService.Heartbeat:Connect(function(dt)
+			local t = os.clock() - t0
+			if current ~= cur or not root.Parent or hum.Health <= 0 or t >= total + 0.6 then
+				finish()
+				return
+			end
+			pcall(function()
+				root.CFrame = CFrame.lookAt(root.Position, root.Position + look)
+				root.AssemblyAngularVelocity = Vector3.zero
+				if t < T1 then
+					local a = t / T1
+					local e = 1 - (1 - a) * (1 - a) -- ease out: chega rapido e desacelera na batida
+					local want = P0 + look * CONFIG.CrushAirForward * e - Vector3.new(0, drop * e, 0)
+					local v = (want - root.Position) / math.max(dt, 1 / 120)
+					if v.Magnitude > 260 then v = v.Unit * 260 end
+					root.AssemblyLinearVelocity = v
+				else
+					root.AssemblyLinearVelocity = Vector3.new(0, math.min(root.AssemblyLinearVelocity.Y, 0), 0)
+				end
+			end)
+			if not done1 and t >= T1 then done1 = true slam(1.2) end
+			if not done2 and t >= T2 then done2 = true slam(0.8) end
+		end)
+	end
+
+	state.cursedAir = function(char, hum, root)
+		local now = os.clock()
+		CS.lockedUntil = now + CONFIG.CursedCooldown
+		overlay.blocking = false
+		boostFor(8)
+		stopVault()
+		stopDash()
+		state.combo = 1
+		if not play("CursedAir", function() refreshAir() end, "action") then
+			CS.lockedUntil = 0
+			return
+		end
+		local cur = current
+		local anim = ANIMS.CursedAir
+		local params = rayParams(char)
+		local cam = workspace.CurrentCamera
+		local minAng = math.rad(CONFIG.CursedAirDiveAngle)
+		local maxAng = math.max(minAng, math.rad(CONFIG.CursedAirMaxDiveAngle or 75))
+		local tilt = math.rad(CONFIG.CursedAirTilt)
+		local speed = CONFIG.CursedAirSpeed
+		local chargeT = CONFIG.CursedAirChargeTime or 0.12
+		local spinT = math.max(CONFIG.CursedAirSpinTime or 0.08, 0.01)
+		local spinRad = math.rad(CONFIG.CursedAirSpinDeg or 360)
+		local turn = CONFIG.CursedAirTurn or 14
+		local look = flatLook(root) -- direcao horizontal atual (vai virando pra onde a camera olha)
+		local ang = minAng          -- angulo de mergulho atual (so pra baixo)
+		speedState.frozenUntil = now + CONFIG.CursedAirMaxTime
+		pcall(function() hum.PlatformStand = true end)
+		local t0 = os.clock()
+		local conn
+
+		-- segue a camera: horizontal = pra onde voce olha; vertical so DESCE (nunca sobe)
+		local function aim(dt)
+			local cl = cam and cam.CFrame.LookVector or root.CFrame.LookVector
+			local k = 1 - math.exp(-turn * dt)
+			local flat = Vector3.new(cl.X, 0, cl.Z)
+			if flat.Magnitude > 0.05 then
+				local nl = look:Lerp(flat.Unit, k)
+				look = (nl.Magnitude > 0.05) and nl.Unit or flat.Unit
+			end
+			local pitch = math.asin(math.clamp(-cl.Y, -1, 1)) -- positivo = olhando pra baixo
+			ang += (math.clamp(pitch, minAng, maxAng) - ang) * k
+			return (look * math.cos(ang) + Vector3.new(0, -math.sin(ang), 0)).Unit
+		end
+
+		local function finish(r)
+			if conn then conn:Disconnect() conn = nil end
+			pcall(function() hum.PlatformStand = false end)
+			speedState.frozenUntil = os.clock() + 0.35
+			if r then
+				local hp, n = r.Position, r.Normal
+				local base = hp + n * ((n.Y >= 0.5) and 3 or 2.5)
+				pcall(function()
+					root.CFrame = CFrame.lookAt(base, base + look) -- levanta em pe no ponto de impacto
+					root.AssemblyLinearVelocity = Vector3.zero
+					root.AssemblyAngularVelocity = Vector3.zero
+				end)
+				groundBurst(r, 1.4)
+				pcall(breakGround, r, 1.3)
+				kickCamera(2)
+				state.shake(2.2, 0.45)
+				playImpactFx(anim, root)
+				if PVP.boom then pcall(PVP.boom, r.Position, 1.3) end            -- cratera pra quem tem o script
+				if PVP.impact then pcall(PVP.impact, "CursedAir") end            -- particulas/sons do impacto pra quem tem o script
+				boostFor(5) -- ownership trick antes de jogar NPC / partes soltas no chao
+				if CONFIG.Damage then -- NPC e jogador com o script tomam o golpe e sao jogados no chao (kind AirM1)
+					hitNpcs(root, "AirM1", nil, { range = CONFIG.CursedAirRange, cone = -1, dmg = CONFIG.CursedAirDamage })
+				end
+				if state.ultGain then state.ultGain(5) end
+				task.delay(0.35, function()
+					if current == cur then endCurrent(true) end
+				end)
+			else
+				pcall(function()
+					root.CFrame = CFrame.lookAt(root.Position, root.Position + look) -- volta em pe
+					root.AssemblyAngularVelocity = Vector3.zero
+				end)
+				if current == cur then endCurrent(true) end
+			end
+		end
+
+		conn = RunService.Heartbeat:Connect(function(dt)
+			local t = os.clock() - t0
+			if current ~= cur or not root.Parent or hum.Health <= 0 or t > CONFIG.CursedAirMaxTime then
+				finish(nil)
+				return
+			end
+			local pos = root.Position
+			local diveDir = aim(dt)
+			if t < chargeT then
+				-- carregando: sobe e vai um pouco pra tras. Nos primeiros 0.08s da um giro rapido (pronto pra descer)
+				local spin = 0
+				if t < spinT then
+					local a = t / spinT
+					spin = spinRad * (1 - (1 - a) * (1 - a)) -- sai rapido e desacelera
+				end
+				pcall(function()
+					root.AssemblyLinearVelocity = Vector3.new(0, CONFIG.CursedAirUp, 0) - look * CONFIG.CursedAirBack
+					root.CFrame = CFrame.lookAt(pos, pos + look) * CFrame.Angles(0, spin, 0) * CFrame.Angles(math.rad(12), 0, 0)
+					root.AssemblyAngularVelocity = Vector3.zero
+				end)
+			else
+				-- mergulha pra onde a camera olha (so pra baixo). Continua ate achar o chao
+				local r = workspace:Raycast(pos, diveDir * (speed * dt + 3.4), params)
+					or workspace:Raycast(pos, Vector3.new(0, -3.4, 0), params)
+				if r then
+					finish(r)
+					return
+				end
+				pcall(function()
+					root.AssemblyLinearVelocity = diveDir * speed
+					-- pernas apontando pro lugar pra onde vai: o "pra baixo" do corpo = direcao do mergulho
+					local up = -diveDir
+					local fwd = (look - up * look:Dot(up))
+					fwd = fwd.Magnitude > 0.01 and fwd.Unit or Vector3.new(0, 0, -1)
+					root.CFrame = CFrame.fromMatrix(pos, fwd:Cross(up), up)
+					root.AssemblyAngularVelocity = Vector3.zero
+				end)
+			end
+		end)
+	end
+end
+
 local function cursedStrikes()
 	if state.ultOn then return end
 	local now = os.clock()
 	if now < CS.lockedUntil then return end
 	if actionBusy() and not (current and DASH_ANIMS[current.name]) then return end
-	local _, hum, root = getRig()
+	local char0, hum, root = getRig()
 	if not hum then return end
+	if state.isAir and state.isAir(hum) and ANIMS.CursedAir then return state.cursedAir(char0, hum, root) end
 	local ptgt = PVP.cursedPlayer and PVP.cursedPlayer(root)
 	local npc = (not ptgt) and nearestNpc(root, CONFIG.CursedRange, CONFIG.AimCone) or nil
 	overlay.blocking = false
@@ -14822,6 +16804,37 @@ local function setupButton(action, title)
 	ContextActionService:SetTitle(action, title)
 end
 
+-- visual dos botoes copiado do jogo: circulo (6256840888) + icone a 50% (escudo = block, corredor = dash, punho = M1)
+state.btnStyle = {
+	[ACTION_M1] = { 13050670424, 0.7, 0.6 },
+	[ACTION_DASH] = { 9657060536, 0.7, 0.7 },
+	[ACTION_BLOCK] = { 7461510428, 0.7, 0.7 },
+}
+state.styleButton = function(action, b)
+	local st = state.btnStyle[action]
+	if not st or not b or b:FindFirstChild("YujiIcon") then return end
+	pcall(function()
+		b.Image = "rbxassetid://6256840888"
+		b.ImageRectOffset = Vector2.zero
+		b.ImageRectSize = Vector2.zero
+		b.ImageTransparency = 0
+		b.BackgroundTransparency = 1
+		for _, c in ipairs(b:GetChildren()) do
+			if c:IsA("TextLabel") or c:IsA("ImageLabel") then c.Visible = false end
+		end
+		local ic = Instance.new("ImageLabel")
+		ic.Name = "YujiIcon"
+		ic.AnchorPoint = Vector2.new(0.5, 0.5)
+		ic.Position = UDim2.fromScale(0.5, 0.5)
+		ic.Size = UDim2.fromScale(st[2], st[3])
+		ic.BackgroundTransparency = 1
+		ic.Image = "rbxassetid://" .. st[1]
+		ic.ImageTransparency = 0.5
+		ic.ZIndex = (b.ZIndex or 1) + 1
+		ic.Parent = b
+	end)
+end
+
 -- Black Flash e uma Tool: o nome mostra o cooldown (segundos que faltam)
 local controlsOn = false
 local flashTool = nil
@@ -14927,52 +16940,88 @@ track(RunService.Heartbeat:Connect(function()
 	end
 end))
 
--- botoes mobile: maiores e sempre longe do botao de pulo
+-- botoes mobile PROPRIOS (ScreenGui nosso, nao sao botoes do ContextActionService)
+state.destroyBtns = function()
+	if state.btnGui then pcall(function() state.btnGui:Destroy() end) end
+	state.btnGui, state.btns = nil, nil
+end
 local function layoutButtons()
-	local btns = {}
-	for _, a in ipairs({ ACTION_M1, ACTION_DASH, ACTION_BLOCK }) do
-		local b = ContextActionService:GetButton(a)
-		if not b then return end
-		btns[#btns + 1] = b
-	end
-	local sg = btns[1]:FindFirstAncestorOfClass("ScreenGui")
-	local parent = btns[1].Parent
-	if not sg or not parent then return end
-	local size = CONFIG.ButtonSize
-	local sgPos, sgSize = sg.AbsolutePosition, sg.AbsoluteSize
-	local jx, jy, jw, jh
+	if not UserInputService.TouchEnabled then return end
 	local pg = lp:FindFirstChildOfClass("PlayerGui")
-	local tg = pg and pg:FindFirstChild("TouchGui")
+	if not pg then return end
+	if not state.btnGui or not state.btnGui.Parent then
+		local sg = Instance.new("ScreenGui")
+		sg.Name = "YujiButtons"
+		sg.ResetOnSpawn = false
+		sg.IgnoreGuiInset = true
+		sg.DisplayOrder = 20
+		sg.Parent = pg
+		state.btnGui, state.btns = sg, {}
+		for _, d in ipairs({
+			{ ACTION_M1, onM1, 13050670424, 0.7, 0.6 },
+			{ ACTION_DASH, onDash, 9657060536, 0.7, 0.7 },
+			{ ACTION_BLOCK, onBlock, 7461510428, 0.7, 0.7 },
+		}) do
+			local b = Instance.new("ImageButton")
+			b.Name = tostring(d[1])
+			b.AnchorPoint = Vector2.new(1, 1)
+			b.BackgroundTransparency = 1
+			b.AutoButtonColor = false
+			b.Image = "rbxassetid://6256840888"
+			b.Parent = sg
+			local ic = Instance.new("ImageLabel")
+			ic.AnchorPoint = Vector2.new(0.5, 0.5)
+			ic.Position = UDim2.fromScale(0.5, 0.5)
+			ic.Size = UDim2.fromScale(d[4], d[5])
+			ic.BackgroundTransparency = 1
+			ic.Image = "rbxassetid://" .. d[3]
+			ic.ImageTransparency = 0.5
+			ic.Parent = b
+			b.InputBegan:Connect(function(inp)
+				if inp.UserInputType == Enum.UserInputType.Touch or inp.UserInputType == Enum.UserInputType.MouseButton1 then
+					b.ImageTransparency = 0.25
+					pcall(d[2], d[1], Enum.UserInputState.Begin, inp)
+				end
+			end)
+			b.InputEnded:Connect(function(inp)
+				if inp.UserInputType == Enum.UserInputType.Touch or inp.UserInputType == Enum.UserInputType.MouseButton1 then
+					b.ImageTransparency = 0
+				end
+			end)
+			state.btns[#state.btns + 1] = b
+		end
+	end
+	local size = CONFIG.ButtonSize
+	local sgPos, sgSize = Vector2.zero, state.btnGui.AbsoluteSize
+	local jx, jy, jw, jh
+	local tg = pg:FindFirstChild("TouchGui")
 	local jump = tg and tg:FindFirstChild("JumpButton", true)
 	if jump and jump:IsA("GuiObject") and jump.AbsoluteSize.X > 0 then
 		jx, jy = jump.AbsolutePosition.X, jump.AbsolutePosition.Y
 		jw, jh = jump.AbsoluteSize.X, jump.AbsoluteSize.Y
 	else
 		jw, jh = 110, 110
-		jx = sgPos.X + sgSize.X - 25 - jw
-		jy = sgPos.Y + sgSize.Y - 25 - jh
+		jx = sgSize.X - 25 - jw
+		jy = sgSize.Y - 25 - jh
 	end
-	local right = jx - CONFIG.ButtonJumpGap -- tudo fica a esquerda do pulo, com folga
-	local bottom = jy + jh
-	local gap = 16
+	local gap = 14
+	local colR = jx + jw / 2 + size / 2
+	local dashBottom = jy - gap
 	local spots = {
-		{ right, bottom },                  -- M1
-		{ right - size - gap, bottom },     -- DASH
-		{ right, bottom - size - gap },     -- BLOCK
+		{ colR - size - gap, dashBottom + 49 }, -- M1 (punho)
+		{ colR, dashBottom },                   -- DASH (corredor)
+		{ colR, dashBottom - size - gap },      -- BLOCK (escudo)
 	}
-	local pAbs = parent.AbsolutePosition
-	for i, b in ipairs(btns) do
-		local x = math.max(spots[i][1], sgPos.X + size + 8)
-		local y = math.max(spots[i][2], sgPos.Y + size + 8)
-		b.AnchorPoint = Vector2.new(1, 1)
+	for i, b in ipairs(state.btns) do
 		b.Size = UDim2.fromOffset(size, size)
-		b.Position = UDim2.fromOffset(x - pAbs.X, y - pAbs.Y)
+		b.Position = UDim2.fromOffset(math.max(spots[i][1], size + 8), math.max(spots[i][2], size + 8))
 	end
 end
 
 -- tudo (botoes, teclas, tool) so existe em R6
 local layoutToken = 0
 local function unbindControls()
+	if state.destroyBtns then state.destroyBtns() end
 	for _, a in ipairs({ ACTION_M1, ACTION_DASH, ACTION_STOP, ACTION_BLOCK }) do
 		pcall(function() ContextActionService:UnbindAction(a) end)
 	end
@@ -14981,13 +17030,10 @@ local function setControls(on)
 	if on then
 		if not controlsOn then
 			controlsOn = true
-			ContextActionService:BindAction(ACTION_M1, onM1, true, Enum.UserInputType.MouseButton2) -- PC: botao direito
-			ContextActionService:BindAction(ACTION_DASH, onDash, true, Enum.KeyCode.Q)
+			ContextActionService:BindAction(ACTION_M1, onM1, false, Enum.UserInputType.MouseButton2) -- PC: botao direito
+			ContextActionService:BindAction(ACTION_DASH, onDash, false, Enum.KeyCode.Q)
 			ContextActionService:BindAction(ACTION_STOP, onStop, false, Enum.KeyCode.X) -- cancela tudo (so PC)
-			ContextActionService:BindAction(ACTION_BLOCK, onBlock, true, Enum.KeyCode.F)
-			setupButton(ACTION_M1, "M1")
-			setupButton(ACTION_DASH, "DASH")
-			setupButton(ACTION_BLOCK, "BLOCK")
+			ContextActionService:BindAction(ACTION_BLOCK, onBlock, false, Enum.KeyCode.F)
 			layoutToken += 1
 			local tok = layoutToken
 			task.spawn(function()
@@ -15029,6 +17075,7 @@ if lp.Character then
 end
 
 genv.YujiMovesetCleanup = function()
+	if state.destroyBtns then state.destroyBtns() end
 	if genv.YujiPvpStop then pcall(genv.YujiPvpStop) end
 	if genv.YujiHudDestroy then pcall(genv.YujiHudDestroy) end
 	cancelAll()
@@ -15231,11 +17278,11 @@ do
 	end
 
 	-- ---------- lado de quem ataca ----------
-	PVP.send = function(root, kind, animName)
+	PVP.send = function(root, kind, animName, rng, cn)
 		if not peerNear() then return end
 		local lk = root.CFrame.LookVector
 		post({
-			t = "hit", kind = kind,
+			t = "hit", kind = kind, r = rng, c = cn,
 			idx = tonumber(string.match(animName or "", "^Punch(%d)$")),
 			p = { root.Position.X, root.Position.Y, root.Position.Z },
 			l = { lk.X, lk.Y, lk.Z },
@@ -15252,6 +17299,9 @@ do
 			state.lastLoopName = nil
 		end
 		post({ t = "anim", name = name })
+	end
+	PVP.impact = function(name) -- impacto de uma variante no ar: os outros veem as particulas/sons do impacto
+		if peerNear() then post({ t = "impact", name = name }) end
 	end
 	PVP.animStop = function() -- nothing playing anymore: others go back to the normal pose
 		state.lastLoopName = nil
@@ -15465,6 +17515,8 @@ do
 		local range = (kind == "BlackFlash") and CONFIG.BlackFlashRange
 			or (kind == "DashM1" and CONFIG.DashHitRange or CONFIG.HitRange)
 		local cone = (kind == "DashM1") and -1 or CONFIG.HitCone
+		if type(ev.r) == "number" then range = math.clamp(ev.r, 1, 20) end -- golpe em area (variantes no ar)
+		if type(ev.c) == "number" then cone = math.clamp(ev.c, -1, 1) end
 		local to = root.Position - ap
 		local flat = Vector3.new(to.X, 0, to.Z)
 		local lee = CONFIG.PvpLeeway + ((kind == "DashM1") and 10 or 0)
@@ -15512,7 +17564,9 @@ do
 						if not root.Parent then return end
 						local r = workspace:Raycast(root.Position, Vector3.new(0, -6, 0), params)
 						if r and root.Position.Y - r.Position.Y < 3.4 then
-							groundBurst(r)
+							groundBurst(r, 1)
+							pcall(breakGround, r, 0.6)
+							if PVP.boom then pcall(PVP.boom, r.Position, 0.6) end
 							return
 						end
 					end
@@ -15817,6 +17871,9 @@ do
 	-- resultado do meu golpe: efeito no personagem do outro (so voce ve, igual o resto do script)
 	local function onRes(ev)
 		local _, vchar, vroot = plrChar(ev.from)
+		if not ev.blocked and state.hitStop then
+			state.hitStop(ev.kind == "BlackFlash" and 0.1 or ((ev.kind == "AirM1" or ev.idx == 4) and 0.085 or 0.05))
+		end
 		if not ev.blocked and state.ultGain then -- mesmo ganho de quando o golpe acerta um NPC
 			if ev.kind == "BlackFlash" then
 				state.ultGain(CONFIG.BlackFlashUltGain)
@@ -15840,6 +17897,24 @@ do
 			if ev.kind ~= "AirM1" and ev.kind ~= "BlackFlash" then
 				task.delay(0.1, impact, vchar, vroot, big and 0.7 or 0.45)
 			end
+		end
+	end
+
+	-- impacto das variantes no ar do outro jogador (CursedAir): particulas e sons do impacto no personagem dele
+	local function onImpact(ev)
+		local _, c, aroot = plrChar(ev.from)
+		local a = ANIMS[ev.name]
+		if not c or not aroot or not a then return end
+		for _, e in ipairs(a.impactFx or {}) do
+			task.delay(e.t or 0, function()
+				if not aroot.Parent then return end
+				if e.kind == "sfx" then
+					if not CONFIG.Sounds then return end
+				elseif not CONFIG.Effects then
+					return
+				end
+				pcall(spawnFx, e, c, aroot)
+			end)
 		end
 	end
 
@@ -16056,6 +18131,7 @@ do
 		elseif ev.t == "manji" then onManji(ev)
 		elseif ev.t == "crush" then onCrush(ev)
 		elseif ev.t == "cursed" then onCursed(ev)
+		elseif ev.t == "impact" then onImpact(ev)
 		elseif ev.t == "fuga" then onFuga(ev)
 		elseif ev.t == "rush" then onRush(ev)
 		elseif ev.t == "animstop" then state.net.animstop(ev)
@@ -16208,7 +18284,7 @@ do
 	genv.YujiPvpStop = function()
 		alive = false
 		PVP.send, PVP.anim, PVP.crush, PVP.crushPlayer, PVP.cursed, PVP.cursedPlayer = nil, nil, nil, nil, nil, nil
-		PVP.fuga, PVP.rush, PVP.isPeer, PVP.aura, PVP.boom, PVP.fugaFx = nil, nil, nil, nil, nil, nil
+		PVP.fuga, PVP.rush, PVP.isPeer, PVP.aura, PVP.boom, PVP.fugaFx, PVP.impact = nil, nil, nil, nil, nil, nil, nil
 		state.npcOut, state.npcAnimOut, state.npcRagOut = nil, nil, nil
 		genv.YujiPvpStop = nil
 	end
