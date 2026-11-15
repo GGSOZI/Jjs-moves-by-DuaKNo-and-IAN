@@ -9204,7 +9204,7 @@ local CONFIG = {
 	CrushStandDelay = 2.5,   -- segundos que o NPC fica caido (ragdoll) antes de levantar
 	ComboWindow = 1.5,       -- segundos pra apertar M1 de novo e continuar o combo (senao volta pro soco 1)
 	ComboEndCooldown = 0.9,  -- cooldown depois do soco 4
-	DashCooldown = 1.5,
+	DashCooldown = 1.5,      -- cooldown do dash (Q / botao DASH)
 	BlackFlashCooldown = 5,  -- cooldown do Black Flash (o nome da tool mostra os segundos que faltam)
 	DashSpeed = 75,          -- studs/s
 	DashTime = 0.3,          -- quanto tempo o impulso dura
@@ -9271,7 +9271,7 @@ local CONFIG = {
 	AimCone = 0.75,          -- Crushing Blow / Cursed Strikes / Rush only pick targets in front of you (1 = dead ahead). They no longer go to the nearest one by themselves
 	CursedSpeed = 1.2,       -- Cursed Strikes plays this much faster (anim, dash, hits, hold)
 	CursedDashDelay = 0.5,   -- the dash starts this many seconds after you press it
-	CursedDashTime = 0.12,    -- duracao do dash
+	CursedDashTime = 0.17,    -- duracao do dash (mais longo = mais suave, menos teleporte)
 	CursedDashMax = 28,       -- maximo de studs do dash
 	CursedHoldDist = 3.2,    -- o alvo fica a essa distancia na sua frente
 	CursedGrabAt = 0.64,     -- segundo em que agarra
@@ -11356,6 +11356,49 @@ local state = {
 	vaultLockedUntil = 0,
 	vaultIndex = 1,
 }
+state.savedAnimator = setmetatable({}, { __mode = "k" }) -- humanoid -> Animator original
+
+-- registro de CanCollide: quando 2 efeitos (Crush / Rush / Fuga) pegam o mesmo personagem ao mesmo tempo,
+-- o 2o lia "false" como valor original e o personagem ficava sem colisao pra sempre (caia no chao).
+-- Agora o valor original e guardado UMA vez e so volta quando o ultimo efeito solta.
+do
+	local reg = setmetatable({}, { __mode = "k" })
+	local released = setmetatable({}, { __mode = "k" })
+	state.ncCount = 0
+	state.ncHold = function(model)
+		local map = {}
+		for _, d in ipairs(model:GetDescendants()) do
+			if d:IsA("BasePart") then
+				local r = reg[d]
+				if r then
+					r.n += 1
+				else
+					r = { orig = d.CanCollide, n = 1 }
+					reg[d] = r
+					state.ncCount += 1
+				end
+				map[d] = r.orig
+			end
+		end
+		return map
+	end
+	state.ncRelease = function(map)
+		if not map or released[map] then return end
+		released[map] = true
+		for p in pairs(map) do
+			local r = reg[p]
+			if r then
+				r.n -= 1
+				if r.n <= 0 then
+					reg[p] = nil
+					state.ncCount = math.max(0, state.ncCount - 1)
+					if p.Parent then pcall(function() p.CanCollide = r.orig end) end
+				end
+			end
+		end
+	end
+end
+
 local current = nil   -- animacao tocando agora
 local donor = nil     -- animacao que acabou de terminar e pode passar o estado base adiante
 local dashObjects = nil
@@ -11502,18 +11545,31 @@ function restoreBase(cur)
 		fades[motor] = nil
 		pcall(function() motor.Transform = CFrame.new() end)
 	end
-	if cur.removedAnimator and cur.hum.Parent and not cur.hum:FindFirstChildOfClass("Animator") then
-		Instance.new("Animator").Parent = cur.hum
+	if cur.removedAnimator and cur.hum.Parent then
+		local orig = state.savedAnimator[cur.hum]
+		local other = cur.hum:FindFirstChildOfClass("Animator")
+		if orig and not orig.Parent then
+			if other and other ~= orig then pcall(function() other:Destroy() end) end
+			orig.Parent = cur.hum
+		elseif not other then
+			Instance.new("Animator").Parent = cur.hum
+		end
 	end
 	if cur.animate and cur.animate.Parent then
 		cur.animate.Disabled = cur.animateWasDisabled
 	end
 end
 
+-- tira o Animator ORIGINAL (o que replica pros outros) sem destruir: depois volta o mesmo objeto.
+-- Antes ele era destruido e recriado so no seu cliente -> o idle/walk (Animate ou idle custom) parava de replicar.
 local function removeAnimator(cur)
 	local animator = cur.hum:FindFirstChildOfClass("Animator")
 	if animator then
-		animator:Destroy()
+		state.savedAnimator[cur.hum] = animator
+		pcall(function()
+			for _, tr in ipairs(animator:GetPlayingAnimationTracks()) do tr:Stop(0) end
+		end)
+		animator.Parent = nil
 		cur.removedAnimator = true
 	end
 end
@@ -13494,6 +13550,13 @@ local function crushingBlow()
 	speedState.frozenUntil = now + (ANIMS.CrushingBlow.total or 1.3) -- parado enquanto bate
 	if ptgt and PVP.crush then pcall(PVP.crush, ptgt) end
 	local cur = current
+	if ptgt then -- jogador agarrado: cada batida no chao enche a barra (igual no NPC)
+		for _, st in ipairs({ CONFIG.CrushSlam1, CONFIG.CrushSlam2 }) do
+			task.delay(st, function()
+				if current == cur and state.ultGain then state.ultGain(5) end
+			end)
+		end
+	end
 	task.spawn(runCrush, cur, tgt, root, char)
 end
 
@@ -13779,10 +13842,10 @@ do
 		end
 		if PVP.isPeer then
 			for _, p in ipairs(Players:GetPlayers()) do
-				if p ~= lp and p.Character and PVP.isPeer(p) then
-					local h = p.Character:FindFirstChildOfClass("Humanoid")
-					local r = bodyOf(p.Character)
-					if h and r and h.Health > 0 and state.inFront(root, r, CONFIG.AimCone) then
+				if p ~= lp and p.Character and PVP.isPeer(p) and (not PVP.peerOk or PVP.peerOk(p)) then
+					local h = state.stubHum(p.Character)
+					local r = PVP.peerBody and PVP.peerBody(p.Character) or bodyOf(p.Character)
+					if h and r and state.inFront(root, r, CONFIG.AimCone) then
 						local d = (r.Position - root.Position).Magnitude
 						if d <= CONFIG.RushRange and (not bd or d < bd) then
 							best, bd = { kind = "player", model = p.Character, hum = h, part = r, plr = p }, d
@@ -14171,8 +14234,8 @@ do
 		for _, p in ipairs(Players:GetPlayers()) do
 			if p ~= lp and p.Character and PVP.isPeer and PVP.isPeer(p) then -- so jogadores com este script
 				local h = state.stubHum(p.Character)
-				local r = bodyOf(p.Character)
-				if h and r and h.Health > 0 then consider("player", p.Character, h, r, p) end
+				local r = (not PVP.peerOk or PVP.peerOk(p)) and (PVP.peerBody and PVP.peerBody(p.Character) or bodyOf(p.Character)) or nil
+				if h and r then consider("player", p.Character, h, r, p) end
 			end
 		end
 		table.sort(list, function(a, b) return a.d < b.d end)
@@ -14969,6 +15032,23 @@ genv.YujiMovesetCleanup = function()
 	if genv.YujiPvpStop then pcall(genv.YujiPvpStop) end
 	if genv.YujiHudDestroy then pcall(genv.YujiHudDestroy) end
 	cancelAll()
+	task.delay(0.6, function() -- depois do fade: devolve Animator e Animate (senao o personagem fica sem nenhuma anim)
+		local c = lp.Character
+		local h = c and c:FindFirstChildOfClass("Humanoid")
+		if not h then return end
+		local orig = state.savedAnimator[h]
+		local other = h:FindFirstChildOfClass("Animator")
+		if orig and not orig.Parent then
+			if other and other ~= orig then pcall(function() other:Destroy() end) end
+			orig.Parent = h
+		elseif not other then
+			Instance.new("Animator").Parent = h
+		end
+		local an = c:FindFirstChild("Animate")
+		if an and an:IsA("LocalScript") and an.Disabled then
+			an.Disabled = false
+		end
+	end)
 	controlsOn = false
 	layoutToken += 1
 	destroyFlashTool()
@@ -15055,9 +15135,38 @@ do
 
 	-- quem roda este script: aparece no relay com "here" (so esses viram alvo do Cursed Strikes / Open / Rush)
 	local peers = {}
+	local peerAlive = {}
 	PVP.isPeer = function(plr)
 		local t = plr and peers[plr.UserId]
 		return t ~= nil and os.clock() - t < 12
+	end
+	-- o peer informa se o personagem DELE esta vivo. Quem usa reanimate tem o corpo original "morto" (Health 0 / sem Humanoid)
+	-- aqui no seu lado, mas o personagem real dele (o clone) esta vivo e e quem toma o golpe.
+	PVP.peerOk = function(plr)
+		return PVP.isPeer(plr) and peerAlive[plr.UserId] ~= false
+	end
+	local function localAlive()
+		local c = lp.Character
+		local h = c and c:FindFirstChildOfClass("Humanoid")
+		return h == nil or h.Health > 0
+	end
+	-- parte do corpo do outro jogador pra mirar. Normal: HumanoidRootPart/Torso. Reanimado (morto aqui): o root/torso
+	-- originais podem estar apagados/parados, entao prefere cabeca/membros/hats que o reanimate mantem alinhados.
+	PVP.peerBody = function(char)
+		if not char then return nil end
+		local h = char:FindFirstChildOfClass("Humanoid")
+		if h and h.Health > 0 then return bodyOf(char) end
+		for _, n in ipairs({ "Head", "Left Arm", "Right Arm", "Left Leg", "Right Leg", "Torso", "UpperTorso", "LowerTorso", "HumanoidRootPart" }) do
+			local p = char:FindFirstChild(n)
+			if p and p:IsA("BasePart") then return p end
+		end
+		for _, a in ipairs(char:GetChildren()) do
+			if a:IsA("Accessory") then
+				local hd = a:FindFirstChild("Handle")
+				if hd and hd:IsA("BasePart") then return hd end
+			end
+		end
+		return bodyOf(char)
 	end
 
 	local function peerNear()
@@ -15153,10 +15262,10 @@ do
 	PVP.crushPlayer = function(root)
 		local best, bd
 		for _, p in ipairs(Players:GetPlayers()) do
-			local r = p ~= lp and PVP.isPeer(p) and bodyPart(p.Character)
+			local r = p ~= lp and p.Character and PVP.peerOk(p) and PVP.peerBody(p.Character) or nil
 			if r and not state.inFront(root, r, CONFIG.AimCone) then r = nil end
 			local h = p.Character and state.stubHum(p.Character)
-			if r and h and h.Health > 0 then
+			if r and h then
 				local d = (r.Position - root.Position).Magnitude
 				if d <= CONFIG.CrushRange and (not bd or d < bd) then best, bd = { plr = p, root = r }, d end
 			end
@@ -15168,11 +15277,11 @@ do
 	PVP.cursedPlayer = function(root)
 		local best, bd
 		for _, p in ipairs(Players:GetPlayers()) do
-			if p ~= lp and p.Character and PVP.isPeer(p) then -- so quem usa este script
-				local r = bodyPart(p.Character)
+			if p ~= lp and p.Character and PVP.peerOk(p) then -- so quem usa este script (reanimado conta)
+				local r = PVP.peerBody(p.Character)
 				if r and not state.inFront(root, r, CONFIG.AimCone) then r = nil end
 				local h = state.stubHum(p.Character)
-				if r and h and h.Health > 0 then
+				if r and h then
 					local d = (r.Position - root.Position).Magnitude
 					if d <= CONFIG.CursedRange and (not bd or d < bd) then best, bd = { plr = p, root = r, char = p.Character }, d end
 				end
@@ -15195,6 +15304,30 @@ do
 	PVP.crush = function(tgt)
 		if CONFIG.PvpDebug then notify("PvP: crush sent to " .. tgt.plr.Name) end
 		post({ t = "crush", to = tgt.plr.UserId, rel = CONFIG.CrushRelease, s = { CONFIG.CrushSlam1, CONFIG.CrushSlam2 } })
+	end
+
+	-- segura o MEU personagem na frente do atacante. Nao usa Weld: o Weld funde minha peca com a assembly do atacante,
+	-- eu perco a simulacao do meu proprio root e ele fica parado no lugar (parecia ancorado). Aqui eu mesmo movo meu root
+	-- (replica pra todo mundo) com suavizacao, e nunca deixo ele abaixo do chao (noclip + queda = morrer).
+	local function holdFront(char, aroot, root, off, alpha)
+		local target = aroot.CFrame * off
+		local p = target.Position
+		local params = RaycastParams.new()
+		params.FilterType = Enum.RaycastFilterType.Exclude
+		local ign = { char }
+		local ach = aroot:FindFirstAncestorOfClass("Model")
+		if ach then ign[2] = ach end
+		params.FilterDescendantsInstances = ign
+		params.RespectCanCollide = true
+		local r = workspace:Raycast(Vector3.new(p.X, aroot.Position.Y + 4, p.Z), Vector3.new(0, -120, 0), params)
+		if r and p.Y < r.Position.Y + 3 then
+			target = CFrame.new(p.X, r.Position.Y + 3, p.Z) * target.Rotation
+		end
+		pcall(function()
+			root.CFrame = root.CFrame:Lerp(target, alpha or 0.7)
+			root.AssemblyLinearVelocity = Vector3.zero
+			root.AssemblyAngularVelocity = Vector3.zero
+		end)
 	end
 
 	-- ---------- lado de quem apanha ----------
@@ -15320,7 +15453,7 @@ do
 	local function onHit(ev)
 		local char = lp.Character
 		local root = bodyPart(char)
-		local hum = char and char:FindFirstChildOfClass("Humanoid")
+		local hum = char and (char:FindFirstChildOfClass("Humanoid") or state.stubHum(char))
 		if not root or not hum or hum.Health <= 0 then return end
 		local atkPlr, _, atkRoot = plrChar(ev.from)
 		if not atkPlr then return end -- so quem esta no mesmo servidor
@@ -15400,7 +15533,7 @@ do
 	local function onManji(ev)
 		local char = lp.Character
 		local root = bodyPart(char)
-		local hum = char and char:FindFirstChildOfClass("Humanoid")
+		local hum = char and (char:FindFirstChildOfClass("Humanoid") or state.stubHum(char))
 		if not root or not hum or hum.Health <= 0 or isDown(char) then return end
 		cancelAll()
 		local left = Vector3.new(ev.left[1], 0, ev.left[3])
@@ -15453,15 +15586,12 @@ do
 		local arm = ach and state.findPart(ach, "Right Arm")
 		local char = lp.Character
 		local root = bodyPart(char)
-		local hum = char and char:FindFirstChildOfClass("Humanoid")
+		local hum = char and (char:FindFirstChildOfClass("Humanoid") or state.stubHum(char))
 		if not aroot or not root or not hum or hum.Health <= 0 or isDown(char) then return end
 		cancelAll()
 		crushedBy[ev.from] = os.clock()
 		local restore = selfRagdoll(char, hum, root, Vector3.zero, false, true)
-		local saved = {}
-		for _, d in ipairs(char:GetDescendants()) do
-			if d:IsA("BasePart") then saved[d] = d.CanCollide end
-		end
+		local saved = state.ncHold(char)
 		local function noCollide()
 			for p in pairs(saved) do
 				if p.Parent then p.CanCollide = false end
@@ -15482,9 +15612,7 @@ do
 		local function finish()
 			if conn then conn:Disconnect() conn = nil end
 			if stepConn then stepConn:Disconnect() stepConn = nil end
-			for p, c in pairs(saved) do
-				if p.Parent then pcall(function() p.CanCollide = c end) end
-			end
+			state.ncRelease(saved)
 			pcall(function() root.AssemblyLinearVelocity = Vector3.new(0, -30, 0) end)
 			task.delay(CONFIG.CrushStandDelay, function()
 				if restore then restore() end
@@ -15521,19 +15649,27 @@ do
 		local _, _, aroot = plrChar(ev.from)
 		local char = lp.Character
 		local root = bodyPart(char)
-		local hum = char and char:FindFirstChildOfClass("Humanoid")
+		local hum = char and (char:FindFirstChildOfClass("Humanoid") or state.stubHum(char))
 		if not aroot or not root or not hum or hum.Health <= 0 or isDown(char) then return end
 		cancelAll()
 		crushedBy[ev.from] = os.clock()
 		local restore = selfRagdoll(char, hum, root, Vector3.zero, false, true, true)
 		if not restore then return end
 		local t0 = os.clock()
-		local weld, hitI = nil, 1
+		local hitI = 1
 		local hits, idxs = ev.hits or {}, ev.idx or {}
 		local conn
+		local nc = state.ncHold(char) -- sem colisao com o atacante enquanto seguro
+		local ncConn = RunService.Stepped:Connect(function()
+			for p in pairs(nc) do
+				if p.Parent then p.CanCollide = false end
+			end
+		end)
 		local function finish()
 			if conn then conn:Disconnect() conn = nil end
-			if weld then weld:Destroy() weld = nil end
+			if ncConn then ncConn:Disconnect() ncConn = nil end
+			holdFront(char, aroot, root, CFrame.new(0, 0, -(ev.hold or 3.2)) * CFrame.Angles(0, math.pi, 0), 1)
+			state.ncRelease(nc)
 			restore(aroot.Position - root.Position, 0.3)
 		end
 		conn = RunService.Heartbeat:Connect(function()
@@ -15542,13 +15678,8 @@ do
 				finish()
 				return
 			end
-			if el >= (ev.grab or 0.55) and not weld then
-				weld = Instance.new("Weld")
-				weld.Name = "YujiGrab"
-				weld.Part0 = aroot
-				weld.Part1 = root
-				weld.C0 = CFrame.new(0, 0, -(ev.hold or 3.2)) * CFrame.Angles(0, math.pi, 0)
-				weld.Parent = root
+			if el >= (ev.grab or 0.55) then
+				holdFront(char, aroot, root, CFrame.new(0, 0, -(ev.hold or 3.2)) * CFrame.Angles(0, math.pi, 0), 0.7)
 			end
 			while hits[hitI] and el >= hits[hitI] do
 				local idx = idxs[hitI]
@@ -15565,7 +15696,7 @@ do
 	local function onFuga(ev)
 		local char = lp.Character
 		local root = char and bodyPart(char)
-		local hum = char and char:FindFirstChildOfClass("Humanoid")
+		local hum = char and (char:FindFirstChildOfClass("Humanoid") or state.stubHum(char))
 		if not root or not hum or hum.Health <= 0 or isDown(char) then return end
 		cancelAll()
 		pcall(state.blacken, char, ev.dur or 7)
@@ -15575,17 +15706,12 @@ do
 		local rise, stay, height = ev.rise or 1.4, ev.stay or 0.6, ev.height or 35
 		local rel = captureRel(char, root)
 		local startCF = root.CFrame
-		local saved = {}
-		for _, d in ipairs(char:GetDescendants()) do
-			if d:IsA("BasePart") then saved[d] = d.CanCollide end
-		end
+		local saved = state.ncHold(char)
 		local t0 = os.clock()
 		local conn
 		local function finish()
 			if conn then conn:Disconnect() conn = nil end
-			for p, c in pairs(saved) do
-				if p.Parent then pcall(function() p.CanCollide = c end) end
-			end
+			state.ncRelease(saved)
 			restore(nil, 0)
 		end
 		conn = RunService.Heartbeat:Connect(function()
@@ -15608,7 +15734,7 @@ do
 		local _, ach, aroot = plrChar(ev.from)
 		local char = lp.Character
 		local root = bodyPart(char)
-		local hum = char and char:FindFirstChildOfClass("Humanoid")
+		local hum = char and (char:FindFirstChildOfClass("Humanoid") or state.stubHum(char))
 		if not aroot or not root or not hum or hum.Health <= 0 or isDown(char) then return end
 		local P = ev.P
 		if type(P) ~= "table" or not P.S or not P.d then return end
@@ -15623,10 +15749,7 @@ do
 		local restore = selfRagdoll(char, hum, root, Vector3.zero, false, true, true)
 		if not restore then return end
 		local c0 = os.clock() - ((P.tp or 0.5) + (ev.age or 0) / 1000)
-		local saved = {}
-		for _, d in ipairs(char:GetDescendants()) do
-			if d:IsA("BasePart") then saved[d] = d.CanCollide end
-		end
+		local saved = state.ncHold(char)
 		local function noCollide()
 			for p in pairs(saved) do
 				if p.Parent then p.CanCollide = false end
@@ -15653,9 +15776,7 @@ do
 			if conn then conn:Disconnect() conn = nil end
 			if stepConn then stepConn:Disconnect() stepConn = nil end
 			if weld then weld:Destroy() weld = nil end
-			for p, c in pairs(saved) do
-				if p.Parent then pcall(function() p.CanCollide = c end) end
-			end
+			state.ncRelease(saved)
 			restore(aroot.Position - root.Position, 0.3)
 		end
 		conn = RunService.Heartbeat:Connect(function()
@@ -15667,14 +15788,7 @@ do
 			if t < T.Kick then return end
 			local _, off = state.rushPath(S, dir, rd, t)
 			if not flags.impact then
-				if not weld then
-					weld = Instance.new("Weld") -- colado na frente do atacante
-					weld.Name = "YujiGrab"
-					weld.Part0 = aroot
-					weld.Part1 = root
-					weld.Parent = root
-				end
-				weld.C0 = CFrame.new(0, off, -CONFIG.RushHold) * CFrame.Angles(0, math.pi, 0)
+				holdFront(char, aroot, root, CFrame.new(0, off, -CONFIG.RushHold) * CFrame.Angles(0, math.pi, 0), 0.75)
 			end
 			once("kick", t >= T.Kick, function() hitAnim() hitFx() state.shake(0.9, 0.2) end)
 			once("up", t >= T.UpStart, function() hitAnim() hitFx() state.shake(0.8, 0.25) end)
@@ -15703,6 +15817,17 @@ do
 	-- resultado do meu golpe: efeito no personagem do outro (so voce ve, igual o resto do script)
 	local function onRes(ev)
 		local _, vchar, vroot = plrChar(ev.from)
+		if not ev.blocked and state.ultGain then -- mesmo ganho de quando o golpe acerta um NPC
+			if ev.kind == "BlackFlash" then
+				state.ultGain(CONFIG.BlackFlashUltGain)
+			elseif ev.kind == "AirM1" then
+				state.ultGain(2)
+			elseif ev.idx then
+				state.ultGain(ev.idx >= 3 and (1.5 + math.random() * 0.5) or (1 + math.random() * 0.5))
+			else
+				state.ultGain(1)
+			end
+		end
 		if not vroot then return end
 		if ev.blocked then
 			playSoundAt(vroot, BLOCK_SFX[math.random(#BLOCK_SFX)])
@@ -15912,6 +16037,7 @@ do
 	local function handle(ev)
 		if ev.from == me then return end
 		peers[ev.from] = os.clock()
+		if ev.t == "here" then peerAlive[ev.from] = (ev.al ~= false) end
 		if ev.t == "batch" then
 			for _, sub in ipairs(ev.list or {}) do
 				if type(sub) == "table" then
@@ -15962,7 +16088,10 @@ do
 				noAnimTicks += 1
 				if noAnimTicks >= 3 then
 					noAnimTicks = 0
-					pcall(function() Instance.new("Animator").Parent = hum end)
+					pcall(function()
+						local orig = state.savedAnimator[hum]
+						if orig and not orig.Parent then orig.Parent = hum else Instance.new("Animator").Parent = hum end
+					end)
 				end
 			else
 				noAnimTicks = 0
@@ -16041,7 +16170,7 @@ do
 				task.wait(CONFIG.PvpSend)
 				if os.clock() - lastHere > 2 and peerNear() then
 					lastHere = os.clock()
-					post({ t = "here" })
+					post({ t = "here", al = localAlive() })
 				end
 				if next(state.npcSend) then
 					local near = peerNear()
