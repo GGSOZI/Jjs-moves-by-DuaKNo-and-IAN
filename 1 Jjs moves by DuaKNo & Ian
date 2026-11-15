@@ -9197,7 +9197,7 @@ local CONFIG = {
 	RollMinFall = 22,        -- queda (studs) a partir da qual toca a anim Roll ao pousar
 	RollPush = 22,           -- empurraozinho pra frente no Roll
 	CrushCooldown = 8,       -- cooldown do Crushing Blow (nome da tool mostra os segundos)
-	CrushRange = 25,         -- alcance pra pegar um NPC / parte solta
+	CrushRange = 16,         -- alcance pra pegar um NPC / parte solta
 	CrushSlam1 = 0.39,       -- segundos da anim em que cada batida no chao acontece
 	CrushSlam2 = 1.04,
 	CrushRelease = 1.12,     -- solta o alvo
@@ -9219,8 +9219,8 @@ local CONFIG = {
 	-- dano em NPCs (nunca em jogadores): M1, M1 do dash, M1 no ar (3o soco) e Black Flash
 	Damage = true,
 	DamageValues = { M1 = 10, DashM1 = 18, AirM1 = 25, BlackFlash = 100, Manji = 40, Crush = 30, CursedHit = 10, Rush = 60 },
-	HitRange = 7,            -- alcance dos socos (studs)
-	BlackFlashRange = 11,    -- alcance do Black Flash
+	HitRange = 4.5,            -- alcance dos socos (studs)
+	BlackFlashRange = 7,    -- alcance do Black Flash
 	HitCone = 0.1,           -- 1 = so bem na frente, 0 = meia-lua, -1 = ao redor
 	Knockback = 45,
 	SlamSpeed = 110,         -- velocidade com que o M1 do ar joga o NPC no chao
@@ -9249,7 +9249,7 @@ local CONFIG = {
 	BlockSpeedMult = 0.5,    -- bloqueando = perde 50% da velocidade
 	BackwardSpeedMult = 0.85, -- andando de costas (olhando pra frente) = perde 15% e toca Walk
 	StrafeWalkOnly = false,  -- false = lado antigo: WalkRight/WalkLeft sempre com o corpo de frente pra camera. true = corpo so trava quando esta andando devagar
-	DashHitRange = 14,       -- alcance do M1 do dash (mais facil de acertar)
+	DashHitRange = 8,       -- alcance do M1 do dash (mais facil de acertar)
 	DashHitCone = -0.3,      -- cone do M1 do dash (-1 = ao redor)
 	KnockUnanchored = true,  -- golpes tambem empurram partes soltas (unanchored)
 
@@ -9267,7 +9267,9 @@ local CONFIG = {
 
 	-- Cursed Strikes (tool): sem alvo toca a anim parada; com alvo (NPC ou jogador) faz dash curto, agarra e bate
 	CursedCooldown = 10,
-	CursedRange = 30,        -- distancia pra achar o alvo
+	CursedRange = 20,        -- distancia pra achar o alvo
+	AimCone = 0.75,          -- Crushing Blow / Cursed Strikes / Rush only pick targets in front of you (1 = dead ahead). They no longer go to the nearest one by themselves
+	CursedSpeed = 1.2,       -- Cursed Strikes plays this much faster (anim, dash, hits, hold)
 	CursedDashDelay = 0.5,   -- the dash starts this many seconds after you press it
 	CursedDashTime = 0.12,    -- duracao do dash
 	CursedDashMax = 28,       -- maximo de studs do dash
@@ -9297,21 +9299,22 @@ local CONFIG = {
 	PvpKnockTime = 1.5,      -- segundos que voce fica caido (queda segura)
 
 	-- barra de ult: so sobe quando o golpe ACERTA (nao quando voce usa)
-	CursedUltMin = 10,       -- cada pancada do Cursed Strikes que acerta da entre Min e Max %
-	CursedUltMax = 12,
+	CursedUltMin = 1.2,       -- cada pancada do Cursed Strikes que acerta da entre Min e Max %
+	CursedUltMax = 1.6,
 	BlackFlashUltGain = 10,  -- no momento do Black Flash (hit)
 	ManjiUltGain = 3,        -- so quando o Manji Kick chuta (contra-ataque)
 	FugaDamagePct = 0.7,     -- Open(fuga) tira 70% da vida maxima do NPC
 	-- Rush (tool da ult)
 	RushCooldown = 6,
-	RushRange = 60,          -- distancia pra achar NPC / jogador
+	RushRange = 40,          -- distancia pra achar NPC / jogador
 	RushMissDash = 28,       -- sem alvo: studs que avanca
 	RushMissAt = 0.45,       -- sem alvo: segundo da anim em que o avanco comeca
 	RushMissTime = 0.35,
 	RushHold = 3.2,          -- distancia do alvo na sua frente durante o chute
 	RushRunDist = 25,        -- studs que voce corre ate ele depois do 1o chute
-	RushUpHeight = 34,       -- altura do chute pra cima
-	RushSlamTime = 0.45,     -- tempo da descida ate o chao
+	RushUpHeight = 48,       -- altura do chute pra cima
+	RushSlamTime = 0.45,
+	RushSlamForward = 7,     -- studs forward during the slam down     -- tempo da descida ate o chao
 }
 
 for i = 1, 4 do
@@ -11317,6 +11320,7 @@ F(0.1317, C(0.2484,-0.037,0.3587,0.492,-0.8687,-0.0579,0.1519,0.0202,0.9882,-0.8
 		for _, nm in ipairs({ "CursedIdle", "CursedStrikes" }) do
 			local a = ANIMS[nm]
 			if a then
+				a.speed = CONFIG.CursedSpeed
 				a.fx = a.fx or {}
 				for _, e in ipairs(dashFx) do
 					local c = {}
@@ -11493,6 +11497,7 @@ local function releaseBase(cur, dur)
 end
 
 function restoreBase(cur)
+	if PVP.animStop then pcall(PVP.animStop) end
 	for _, motor in pairs(cur.motors) do
 		fades[motor] = nil
 		pcall(function() motor.Transform = CFrame.new() end)
@@ -11798,7 +11803,7 @@ local function play(name, onDone, layer)
 
 	local motors, count = state.collectMotors(char, anim.joints)
 	if count == 0 then return false end
-	if layer == "action" and PVP.anim then pcall(PVP.anim, name) end
+	if PVP.anim then pcall(PVP.anim, name) end
 
 	-- pega o estado base da animacao anterior pra nao reativar o Animate entre transicoes
 	local inherited = nil
@@ -11906,11 +11911,11 @@ end
 -- sendo o dono da fisica, o knockback e o estado Dead do Humanoid replicam pro servidor.
 -- (a vida do NPC e controlada aqui: damos o dano numa vida virtual e matamos quando zera)
 local HIT_DEF = {
-	Punch1 = { t = 0.20, kind = "M1" },
-	Punch2 = { t = 0.25, kind = "M1" },
-	Punch3 = { t = 0.20, kind = "M1" },
-	Punch4 = { t = 0.22, kind = "M1" },
-	AirSkill = { t = 0.27, kind = "AirM1" },
+	Punch1 = { t = 0.12, kind = "M1" },
+	Punch2 = { t = 0.15, kind = "M1" },
+	Punch3 = { t = 0.12, kind = "M1" },
+	Punch4 = { t = 0.14, kind = "M1" },
+	AirSkill = { t = 0.18, kind = "AirM1" },
 	BlackFlash = { t = 2.0, kind = "BlackFlash" }, -- tempo da anim (o speed dela ja e aplicado)
 }
 local virtualHp = setmetatable({}, { __mode = "k" })
@@ -12216,7 +12221,11 @@ local function playNpcAnim(model, name, onDone)
 			conn:Disconnect() -- outra anim assumiu (ou o NPC sumiu)
 			return
 		end
-		if sampleAnim(anim, os.clock() - t0, motors) then
+		if sampleAnim(anim, (os.clock() - t0) * (anim.speed or 1), motors) then
+			if anim.loop then -- run / walk / block loop until another anim or a stop arrives
+				t0 = os.clock()
+				return
+			end
 			conn:Disconnect()
 			for _, m in pairs(motors) do pcall(function() m.Transform = CFrame.new() end) end
 			local animator = npcAnimator[model]
@@ -12225,6 +12234,18 @@ local function playNpcAnim(model, name, onDone)
 			if onDone then onDone() end
 		end
 	end)
+end
+
+-- para a anim que esta rodando num corpo (usado quando outro jogador para de andar / bloquear)
+state.stopAnim = function(model)
+	npcAnimToken[model] = (npcAnimToken[model] or 0) + 1
+	local all = { ["Right Shoulder"] = true, ["Left Shoulder"] = true, ["Right Hip"] = true, ["Left Hip"] = true, ["Neck"] = true, ["RootJoint"] = true }
+	local motors = state.collectMotors(model, all)
+	for _, m in pairs(motors) do pcall(function() m.Transform = CFrame.new() end) end
+	local animator = npcAnimator[model]
+	local hum = model:FindFirstChildOfClass("Humanoid")
+	if animator and hum and hum.Parent then animator.Parent = hum end
+	npcAnimator[model] = nil
 end
 
 -- ragdoll: troca os Motor6D por BallSocketConstraint (as partes soltam; com o ownership a fisica replica)
@@ -12435,6 +12456,17 @@ local function slamNpc(model, hum, mroot, push, dead)
 end
 
 local function damageNpc(model, hum, mroot, root, dmg, kind, punchIdx)
+	if state.ultGain then -- the bar only grows when a hit LANDS on something
+		if kind == "BlackFlash" then
+			state.ultGain(CONFIG.BlackFlashUltGain)
+		elseif kind == "AirM1" then
+			state.ultGain(2)
+		elseif punchIdx then
+			state.ultGain(punchIdx >= 3 and (1.5 + math.random() * 0.5) or (1 + math.random() * 0.5))
+		else
+			state.ultGain(1)
+		end
+	end
 	if CONFIG.OwnershipTrick then
 		ownershipUntil = os.clock() + 4
 		boostSimulation()
@@ -12557,7 +12589,6 @@ end
 
 local function hitNpcs(root, kind, animName)
 	if PVP.send then pcall(PVP.send, root, kind, animName) end
-	if kind == "BlackFlash" and state.ultGain then state.ultGain(CONFIG.BlackFlashUltGain) end -- sobe no hit do Black Flash
 	local dmg = CONFIG.DamageValues[kind] or 10
 	local punchIdx = tonumber(string.match(animName or "", "^Punch(%d)$"))
 	local range = (kind == "BlackFlash") and CONFIG.BlackFlashRange or (kind == "DashM1" and CONFIG.DashHitRange or CONFIG.HitRange)
@@ -12570,7 +12601,18 @@ local function hitNpcs(root, kind, animName)
 	params.FilterType = Enum.RaycastFilterType.Exclude
 	params.FilterDescendantsInstances = { lp.Character }
 	local seen = {}
-	for _, part in ipairs(workspace:GetPartBoundsInRadius(root.Position, range, params)) do
+	local cands, cseen = {}, {}
+	for _, bp in ipairs(lp.Character:GetChildren()) do -- o golpe sai do corpo todo, nao so do HumanoidRootPart
+		if bp:IsA("BasePart") then
+			for _, p2 in ipairs(workspace:GetPartBoundsInRadius(bp.Position, range, params)) do
+				if not cseen[p2] then
+					cseen[p2] = true
+					cands[#cands + 1] = p2
+				end
+			end
+		end
+	end
+	for _, part in ipairs(cands) do
 		local model = part:FindFirstAncestorOfClass("Model")
 		local hum = model and model:FindFirstChildOfClass("Humanoid")
 		if hum and not seen[hum] and hum.Health > 0 and not Players:GetPlayerFromCharacter(model) then
@@ -12637,7 +12679,6 @@ local function punch(forced)
 		refreshAir()
 	end, "action")
 	if started then
-		if state.ultGain then state.ultGain(idx >= 3 and (1.5 + math.random() * 0.5) or (1 + math.random() * 0.5)) end
 		state.combo = (idx % 4) + 1
 		if dashing and current then
 			current.hitKind = "DashM1"
@@ -13049,6 +13090,15 @@ state.ownerOf = function(model)
 	end
 	return nil
 end
+state.inFront = function(root, part, minDot)
+	local lk = root.CFrame.LookVector
+	local look = Vector3.new(lk.X, 0, lk.Z)
+	if look.Magnitude < 0.01 then return true end
+	look = look.Unit
+	local to = Vector3.new(part.Position.X - root.Position.X, 0, part.Position.Z - root.Position.Z)
+	if to.Magnitude < 4 then return true end
+	return to.Unit:Dot(look) >= minDot
+end
 state.scanBodies = function(root, range)
 	local out, seen = {}, {}
 	local params = OverlapParams.new()
@@ -13076,14 +13126,14 @@ state.scanBodies = function(root, range)
 	return out
 end
 end
-local function nearestNpc(root, range)
+local function nearestNpc(root, range, cone)
 	local best, bd
 	for h in pairs(npcHums) do
 		if h.Parent and h.Health > 0 then
 			local model = h.Parent
 			if model:IsA("Model") and model ~= lp.Character and not Players:GetPlayerFromCharacter(model) then
 				local mr = bodyOf(model)
-				if mr then
+				if mr and (not cone or state.inFront(root, mr, cone)) then
 					local d = (mr.Position - root.Position).Magnitude
 					if d <= range and (not bd or d < bd) then best, bd = { model, h, mr }, d end
 				end
@@ -13091,7 +13141,7 @@ local function nearestNpc(root, range)
 		end
 	end
 	for _, b in ipairs(state.scanBodies(root, range)) do
-		if not b.plr then
+		if not b.plr and (not cone or state.inFront(root, b.part, cone)) then
 			local d = (b.part.Position - root.Position).Magnitude
 			if d <= range and (not bd or d < bd) then best, bd = { b.model, b.hum, b.part }, d end
 		end
@@ -13257,14 +13307,14 @@ local crush = { lockedUntil = 0 }
 local crushTool = nil
 
 local function crushTarget(root)
-	local npc = nearestNpc(root, CONFIG.CrushRange)
+	local npc = nearestNpc(root, CONFIG.CrushRange, CONFIG.AimCone)
 	if npc then return { kind = "npc", model = npc[1], hum = npc[2], mroot = npc[3] } end
 	local params = OverlapParams.new()
 	params.FilterType = Enum.RaycastFilterType.Exclude
 	params.FilterDescendantsInstances = { lp.Character }
 	local best, bd
 	for _, p in ipairs(workspace:GetPartBoundsInRadius(root.Position, CONFIG.CrushRange, params)) do
-		if p:IsA("BasePart") and not p.Anchored and not p:IsA("Terrain") and p.Size.Magnitude < 40 then
+		if p:IsA("BasePart") and not p.Anchored and not p:IsA("Terrain") and p.Size.Magnitude < 40 and state.inFront(root, p, CONFIG.AimCone) then
 			local m = p:FindFirstAncestorOfClass("Model")
 			if not (m and m:FindFirstChildOfClass("Humanoid")) then
 				local d = (p.Position - root.Position).Magnitude
@@ -13299,7 +13349,6 @@ local function runCrush(cur, tgt, root, char)
 			task.delay(st, function()
 				if current ~= cur or not arm.Parent then return end
 				slamFx((arm.CFrame * CFrame.new(0, -1.4, 0)).Position)
-				if state.ultGain then state.ultGain(5) end
 			end)
 		end
 		return
@@ -13437,10 +13486,6 @@ local function crushingBlow()
 	stopDash()
 	state.combo = 1
 	local tpos = (ptgt and ptgt.root.Position) or ((tgt.kind == "npc") and tgt.mroot.Position or (tgt.kind == "part" and tgt.part.Position)) or nil
-	local flat = tpos and Vector3.new(tpos.X - root.Position.X, 0, tpos.Z - root.Position.Z) or Vector3.zero
-	if flat.Magnitude > 0.05 then
-		root.CFrame = CFrame.lookAt(root.Position, root.Position + flat.Unit)
-	end
 	local started = play("CrushingBlow", function() refreshAir() end, "action")
 	if not started then
 		crush.lockedUntil = 0
@@ -13501,10 +13546,11 @@ local function runCursed(cur, root, tpart, tmodel, tplayer)
 	local to = tpart.Position - root.Position
 	local flat = Vector3.new(to.X, 0, to.Z)
 	local lk = root.CFrame.LookVector
-	local dir = flat.Magnitude > 0.05 and flat.Unit or Vector3.new(lk.X, 0, lk.Z).Unit
-	local dashDist = math.clamp(flat.Magnitude - hold, 0, CONFIG.CursedDashMax)
+	local dir = Vector3.new(lk.X, 0, lk.Z).Unit -- vai pra onde voce olha
+	local dashDist = math.clamp(flat:Dot(dir) - hold, 0, CONFIG.CursedDashMax)
 	dashDist = math.min(dashDist, CS.clearAhead(root, dir, dashDist, { root.Parent, tmodel })) -- nao atravessa parede
-	local dashSpeed = dashDist / math.max(CONFIG.CursedDashTime, 0.05)
+	local SPD = CONFIG.CursedSpeed or 1
+	local dashSpeed = dashDist / math.max(CONFIG.CursedDashTime / SPD, 0.05)
 	local hum = tmodel:FindFirstChildOfClass("Humanoid")
 	-- jogador: avisa ele (o proprio personagem dele se segura e toma os golpes)
 	if tplayer and PVP.cursed then pcall(PVP.cursed, tplayer) end
@@ -13541,12 +13587,15 @@ local function runCursed(cur, root, tpart, tmodel, tplayer)
 		end
 	end
 	local conn, stepConn
+	local weldH
 	if not tplayer then stepConn = RunService.Stepped:Connect(noCollide) end
 	local startT = os.clock()
 	local nextHit = 1
 	local function finish()
 		if conn then conn:Disconnect() conn = nil end
 		if stepConn then stepConn:Disconnect() stepConn = nil end
+		state.unweld(weldH)
+		weldH = nil
 		for _, o in ipairs(dashObjs) do pcall(function() o:Destroy() end) end
 		if not tplayer then
 			for part, c in pairs(saved) do
@@ -13558,7 +13607,7 @@ local function runCursed(cur, root, tpart, tmodel, tplayer)
 		if current == cur then endCurrent(true) end -- acabou: libera pra fazer outra coisa
 	end
 	conn = RunService.Heartbeat:Connect(function()
-		local el = os.clock() - startT
+		local el = (os.clock() - startT) * SPD -- anim time
 		if current ~= cur or not root.Parent or not tpart.Parent or el >= CONFIG.CursedHoldTime then
 			finish()
 			return
@@ -13571,7 +13620,7 @@ local function runCursed(cur, root, tpart, tmodel, tplayer)
 			elseif el < CONFIG.CursedDashDelay + CONFIG.CursedDashTime then
 				v = dashSpeed
 			elseif el < CONFIG.CursedHoldTime - CONFIG.CursedAdvanceStop then
-				v = CONFIG.CursedAdvanceSpeed
+				v = CONFIG.CursedAdvanceSpeed * SPD
 				if CS.clearAhead(root, dir, hold + 2, rayIgnore) < hold + 0.8 then v = 0 end -- parede na frente
 			end
 			lv.VectorVelocity = dir * v
@@ -13579,12 +13628,10 @@ local function runCursed(cur, root, tpart, tmodel, tplayer)
 		-- NPC: agarra e segura na sua frente
 		if not tplayer and el >= CONFIG.CursedGrabAt then
 			if CONFIG.OwnershipTrick and not ownsPart(tpart) then boostSimulation() end
-			if not rel then
-				rel = captureRel(tmodel, tpart)
-				pcall(function() if hum then hum.PlatformStand = true end end)
+			if not weldH then
+				weldH = state.weldFront(root, tmodel, tpart, hold) -- colado na sua frente
 			end
-			local pos = (root.CFrame * CFrame.new(0, 0, -hold)).Position
-			moveRel(rel, CFrame.lookAt(pos, Vector3.new(root.Position.X, pos.Y, root.Position.Z)))
+			if state.npcOut then state.npcOut(tmodel, tpart.CFrame) end
 		end
 		-- golpes: so a anim de hit (o som ja vem junto da anim)
 		while CURSED_HITS[nextHit] and el >= CURSED_HITS[nextHit] do
@@ -13611,7 +13658,7 @@ local function cursedStrikes()
 	local _, hum, root = getRig()
 	if not hum then return end
 	local ptgt = PVP.cursedPlayer and PVP.cursedPlayer(root)
-	local npc = (not ptgt) and nearestNpc(root, CONFIG.CursedRange) or nil
+	local npc = (not ptgt) and nearestNpc(root, CONFIG.CursedRange, CONFIG.AimCone) or nil
 	overlay.blocking = false
 	boostFor(8)
 	stopVault()
@@ -13621,24 +13668,21 @@ local function cursedStrikes()
 		CS.lockedUntil = now + CONFIG.CursedCooldown * 0.4
 		if not play("CursedIdle", function() refreshAir() end, "action") then CS.lockedUntil = 0 return end
 		local idleCur = current
-		task.delay(CONFIG.CursedDashDelay, function()
+		local spd = CONFIG.CursedSpeed or 1
+		task.delay(CONFIG.CursedDashDelay / spd, function()
 			if current ~= idleCur or not root.Parent then return end
-			CS.forwardDash(root, CONFIG.CursedIdleDash, CONFIG.CursedIdleDashTime)
+			CS.forwardDash(root, CONFIG.CursedIdleDash, CONFIG.CursedIdleDashTime / spd)
 		end)
 		return
 	end
 	CS.lockedUntil = now + CONFIG.CursedCooldown
 	local tpart = ptgt and ptgt.root or npc[3]
 	local tmodel = ptgt and ptgt.char or npc[1]
-	local flat = Vector3.new(tpart.Position.X - root.Position.X, 0, tpart.Position.Z - root.Position.Z)
-	if flat.Magnitude > 0.05 then
-		root.CFrame = CFrame.lookAt(root.Position, root.Position + flat.Unit)
-	end
 	if not play("CursedStrikes", function() refreshAir() end, "action") then
 		CS.lockedUntil = 0
 		return
 	end
-	speedState.frozenUntil = now + CONFIG.CursedHoldTime
+	speedState.frozenUntil = now + CONFIG.CursedHoldTime / (CONFIG.CursedSpeed or 1)
 	local cur = current
 	task.spawn(runCursed, cur, root, tpart, tmodel, ptgt and ptgt.plr or nil)
 end
@@ -13649,8 +13693,8 @@ end
 -- com alvo (NPC ou jogador com este script): Rush (2o paste)
 --   0 - 1.09   dash ate o alvo
 --   1.10-1.50  chute: alvo toca NpcRush (4o paste) parado na sua frente
---   1.51-2.00  alvo foi lancado, voce corre RushRunDist studs ate ele
---   2.01-2.55  chute pra cima
+--   1.51-2.00  voce corre RushRunDist studs levando ele colado na sua frente (weld)
+--   2.01-2.55  chute pra cima (ele sobe na sua frente)
 --   2.56-3.00  voce sobe ate a altura dele
 --   3.01-3.90  voces dois descem juntos e ele bate no chao
 ---------------------------------------------------------------------
@@ -13666,44 +13710,79 @@ do
 	local function easeOut(a) a = math.clamp(a, 0, 1) return 1 - (1 - a) * (1 - a) end
 	local function easeIn(a) a = math.clamp(a, 0, 1) return a * a end
 
-	-- caminho dos dois (mesma conta no atacante e na vitima): S = onde voce para depois do dash,
-	-- dir = direcao do golpe, rd = distancia da corrida. Devolve posicao do root do atacante e do alvo.
+	-- weld: o alvo fica colado na sua frente (sem ficar setando a posicao todo frame)
+	state.weldFront = function(root, model, base, dist)
+		local hum = model:FindFirstChildOfClass("Humanoid")
+		if hum then pcall(function() hum.PlatformStand = true end) end
+		local C0 = CFrame.new(0, 0, -dist) * CFrame.Angles(0, math.pi, 0)
+		pcall(function()
+			base.CFrame = root.CFrame * C0
+			base.AssemblyLinearVelocity = Vector3.zero
+		end)
+		local w = Instance.new("Weld")
+		w.Name = "YujiGrab"
+		w.Part0 = root
+		w.Part1 = base
+		w.C0 = C0
+		w.Parent = base
+		local extra, intact = {}, false
+		for _, d in ipairs(model:GetDescendants()) do
+			if d:IsA("Motor6D") and d.Part1 then intact = true break end
+		end
+		if not intact then -- corpo solto (sem Motor6D): cola cada parte no base
+			for _, d in ipairs(model:GetDescendants()) do
+				if d:IsA("BasePart") and d ~= base then
+					local ew = Instance.new("Weld")
+					ew.Part0 = base
+					ew.Part1 = d
+					ew.C0 = base.CFrame:ToObjectSpace(d.CFrame)
+					ew.Parent = d
+					extra[#extra + 1] = ew
+				end
+			end
+		end
+		return { weld = w, extra = extra }
+	end
+	state.unweld = function(h)
+		if not h then return end
+		pcall(function() h.weld:Destroy() end)
+		for _, e in ipairs(h.extra) do pcall(function() e:Destroy() end) end
+	end
+
+	-- caminho do atacante (mesma conta no atacante e na vitima) + altura extra do alvo em relacao a voce.
+	-- S = onde voce para depois do dash, dir = direcao, rd = distancia da corrida
 	state.rushPath = function(S, dir, rd, t)
-		local H, UH = CONFIG.RushHold, CONFIG.RushUpHeight
-		local V0 = S + dir * H
-		local V1 = S + dir * (H + rd)
+		local UH = CONFIG.RushUpHeight
 		local A1 = S + dir * rd
-		local A, V
-		if t < T.RunStart then A = S
-		elseif t < T.RunEnd then A = S:Lerp(A1, easeOut((t - T.RunStart) / (T.RunEnd - T.RunStart)))
-		else A = A1 end
-		if t < T.Kick then V = nil
-		elseif t < T.KickEnd then V = V0
-		elseif t < T.KickEnd + 0.12 then V = V0:Lerp(V1, easeOut((t - T.KickEnd) / 0.12))
-		else V = V1 end
-		if t >= T.UpStart then V = V1 + UP * UH * easeOut((t - T.UpStart) / (T.UpEnd - T.UpStart)) end
-		if t >= T.FlyStart then A = A1 + UP * UH * easeOut((t - T.FlyStart) / (T.FlyEnd - T.FlyStart)) end
+		local A, off = S, 0
+		if t >= T.RunStart then A = S:Lerp(A1, easeOut((t - T.RunStart) / (T.RunEnd - T.RunStart))) end
+		if t >= T.UpStart then off = UH * easeOut((t - T.UpStart) / (T.UpEnd - T.UpStart)) end
+		if t >= T.FlyStart then
+			local k = easeOut((t - T.FlyStart) / (T.FlyEnd - T.FlyStart))
+			A = A1 + UP * UH * k
+			off = UH * (1 - k) -- ele fica la em cima enquanto voce sobe ate ele
+		end
 		if t >= T.Slam then
 			local e = easeIn((t - T.Slam) / CONFIG.RushSlamTime)
-			A = A1 + UP * UH * (1 - e)
-			V = V1 + UP * UH * (1 - e)
+			A = A1 + UP * UH * (1 - e) + dir * CONFIG.RushSlamForward * e
+			off = 0
 		end
-		return A, V
+		return A, off
 	end
 
 	-- alvo mais perto: NPC ou jogador que tambem roda este script
 	local function rushTarget(root)
 		local best, bd
-		local npc = nearestNpc(root, CONFIG.RushRange)
+		local npc = nearestNpc(root, CONFIG.RushRange, CONFIG.AimCone)
 		if npc then
 			best, bd = { kind = "npc", model = npc[1], hum = npc[2], part = npc[3] }, (npc[3].Position - root.Position).Magnitude
 		end
 		if PVP.isPeer then
 			for _, p in ipairs(Players:GetPlayers()) do
 				if p ~= lp and p.Character and PVP.isPeer(p) then
-					local h = state.stubHum(p.Character)
+					local h = p.Character:FindFirstChildOfClass("Humanoid")
 					local r = bodyOf(p.Character)
-					if h and r and h.Health > 0 then
+					if h and r and h.Health > 0 and state.inFront(root, r, CONFIG.AimCone) then
 						local d = (r.Position - root.Position).Magnitude
 						if d <= CONFIG.RushRange and (not bd or d < bd) then
 							best, bd = { kind = "player", model = p.Character, hum = h, part = r, plr = p }, d
@@ -13750,8 +13829,8 @@ do
 		local H = CONFIG.RushHold
 		local flat = Vector3.new(tpart.Position.X - root.Position.X, 0, tpart.Position.Z - root.Position.Z)
 		local lk = root.CFrame.LookVector
-		local dir = flat.Magnitude > 0.05 and flat.Unit or Vector3.new(lk.X, 0, lk.Z).Unit
-		local dashDist = math.max(flat.Magnitude - H, 0)
+		local dir = Vector3.new(lk.X, 0, lk.Z).Unit -- vai pra onde voce olha (nao escolhe o mais perto sozinho)
+		local dashDist = math.max(flat:Dot(dir) - H, 0)
 		local free = CS.clearAhead(root, dir, dashDist + H + CONFIG.RushRunDist + 2, { char, tmodel })
 		dashDist = math.min(dashDist, math.max(free - H - 3, 0))
 		local rd = math.clamp(free - dashDist - H, 4, CONFIG.RushRunDist)
@@ -13778,15 +13857,16 @@ do
 			end)
 		end
 
-		local rel, saved
+		local weldH, saved
 		local vStarted, vReleased = false, false
 		local flags = {}
 		local conn, stepConn
-		local rng = Random.new()
 
 		local function releaseVictim()
 			if vReleased or tplr then return end
 			vReleased = true
+			state.unweld(weldH)
+			weldH = nil
 			if stepConn then stepConn:Disconnect() stepConn = nil end
 			if saved then
 				for part, c in pairs(saved) do
@@ -13843,9 +13923,9 @@ do
 				root.AssemblyLinearVelocity = Vector3.zero
 				root.AssemblyAngularVelocity = Vector3.zero
 			end)
-			-- alvo
+			-- alvo (colado na sua frente)
 			if t >= T.Kick and tpart.Parent then
-				local _, V = state.rushPath(S, dir, rd, t)
+				local _, off = state.rushPath(S, dir, rd, t)
 				if not vStarted then
 					vStarted = true
 					if not tplr then
@@ -13853,8 +13933,7 @@ do
 						for _, d in ipairs(tmodel:GetDescendants()) do
 							if d:IsA("BasePart") then saved[d] = d.CanCollide end
 						end
-						rel = captureRel(tmodel, tpart)
-						pcall(function() thum.PlatformStand = true end)
+						weldH = state.weldFront(root, tmodel, tpart, H)
 						stepConn = RunService.Stepped:Connect(function()
 							for part in pairs(saved) do
 								if part.Parent then part.CanCollide = false end
@@ -13862,9 +13941,10 @@ do
 						end)
 					end
 				end
-				if not tplr and not flags.impact then
+				if weldH and not flags.impact then
+					weldH.weld.C0 = CFrame.new(0, off, -H) * CFrame.Angles(0, math.pi, 0)
 					if CONFIG.OwnershipTrick and not ownsPart(tpart) then boostSimulation() end
-					moveRel(rel, CFrame.lookAt(V, Vector3.new(A.X, V.Y, A.Z)))
+					if state.npcOut then state.npcOut(tmodel, tpart.CFrame) end
 				end
 			end
 			-- golpes
@@ -13873,7 +13953,6 @@ do
 				hitFx(tpart)
 				state.shake(0.9, 0.2)
 			end)
-			once("fling", t >= T.KickEnd, function() hitFx(tpart) state.shake(0.7, 0.2) end)
 			once("up", t >= T.UpStart, function()
 				victimAnim()
 				hitFx(tpart)
@@ -13895,7 +13974,6 @@ do
 				end
 				kickCamera(1.8)
 				state.shake(2.2, 0.5)
-				if PVP.boom then pcall(PVP.boom, tpart.Position, 1.3) end
 				if CONFIG.Effects then
 					for _, e in ipairs(ANIMS.Rush.impactFx or {}) do
 						pcall(spawnFx, e, char, root)
@@ -13910,6 +13988,7 @@ do
 		end)
 	end
 end
+
 
 ---------------------------------------------------------------------
 -- HUD: barra de ultimate (copiada do jogo) com o titulo "King of Curses" em Finger Paint
@@ -14101,20 +14180,46 @@ do
 	end
 	local function findFugaTarget(root) return findFugaTargets(root)[1] end
 
+	local burned = setmetatable({}, { __mode = "k" })
 	local function blacken(model, secs)
-		local hl = Instance.new("Highlight")
-		hl.Name = "FugaBurn"
-		hl.FillColor = Color3.new(0, 0, 0)
-		hl.FillTransparency = 0
-		hl.OutlineColor = Color3.new(0.25, 0.03, 0)
-		hl.OutlineTransparency = 0.3
-		hl.DepthMode = Enum.HighlightDepthMode.Occluded
-		hl.Adornee = model
-		hl.Parent = model
-		Debris:AddItem(hl, secs)
+		if burned[model] then return end
+		burned[model] = true
+		local saved, removed = {}, {}
+		local BLACK = Color3.fromRGB(8, 8, 8)
+		for _, d in ipairs(model:GetDescendants()) do
+			if d:IsA("BasePart") then
+				local r = { Color = d.Color, Material = d.Material, Reflectance = d.Reflectance }
+				if d:IsA("MeshPart") then
+					r.TextureID = d.TextureID
+					pcall(function() d.TextureID = "" end)
+				end
+				saved[d] = r
+				d.Color = BLACK
+				d.Material = Enum.Material.Slate -- charred rock texture
+				d.Reflectance = 0
+			elseif d:IsA("SpecialMesh") then
+				saved[d] = { TextureId = d.TextureId }
+				pcall(function() d.TextureId = "" end)
+			elseif d:IsA("Decal") or d:IsA("Texture") then
+				saved[d] = { Transparency = d.Transparency }
+				d.Transparency = 1
+			elseif d:IsA("Shirt") or d:IsA("Pants") or d:IsA("ShirtGraphic") or d:IsA("SurfaceAppearance") then
+				removed[d] = d.Parent
+				d.Parent = nil
+			end
+		end
+		task.delay(secs, function()
+			burned[model] = nil
+			for d, r in pairs(saved) do
+				if d.Parent then
+					for k, v in pairs(r) do pcall(function() d[k] = v end) end
+				end
+			end
+			for d, parent in pairs(removed) do
+				if parent and parent.Parent then pcall(function() d.Parent = parent end) end
+			end
+		end)
 	end
-
-	-- coluna de fogo subindo do chao embaixo do alvo
 	local function beamColumn(base, height, life)
 		local layers = {}
 		for i, def in ipairs({ { 5, Color3.fromRGB(255, 120, 20), 0.2 }, { 2.2, Color3.fromRGB(255, 240, 200), 0.05 } }) do
@@ -14221,14 +14326,6 @@ do
 		stopVault()
 		stopDash()
 		state.combo = 1
-		local tgt = findFugaTarget(root)
-		if tgt then
-			local to = tgt.part.Position - root.Position
-			local flat = Vector3.new(to.X, 0, to.Z)
-			if flat.Magnitude > 0.05 then
-				root.CFrame = CFrame.lookAt(root.Position, root.Position + flat.Unit)
-			end
-		end
 		if not play("Fuga", function() refreshAir() end, "action") then
 			ult.fugaLockedUntil = 0
 			return
@@ -14375,8 +14472,8 @@ do
 	-- barra copiada do jogo (Bar + Touch) com o titulo "King of Curses" em cima
 	---------------------------------------------------------------------
 	local function buildUlt(parent)
-		local pos = CONFIG.UltPos
-		local bar = new("Frame", { Name = "Bar", AnchorPoint = Vector2.new(0, 0), BackgroundColor3 = WHITE3, BackgroundTransparency = 0.5,
+		local pos = UDim2.new(0.5, 0, 1, -104) -- bottom center, right above the hotbar (works on any screen size)
+		local bar = new("Frame", { Name = "Bar", AnchorPoint = Vector2.new(0.5, 1), BackgroundColor3 = WHITE3, BackgroundTransparency = 0.5,
 			BorderColor3 = BLACK3, BorderSizePixel = 2, Position = pos, Size = UDim2.new(0, 300, 0, 20) }, parent)
 		local fill = new("Frame", { Name = "Fill", BackgroundColor3 = Color3.fromRGB(255, 0, 0), BorderColor3 = BLACK3,
 			BorderMode = Enum.BorderMode.Inset, BorderSizePixel = 0, Size = UDim2.new(0, 0, 1, 0) }, bar)
@@ -14399,8 +14496,8 @@ do
 		local tbtn = new("ImageButton", { Name = "Touch", BackgroundColor3 = WHITE3, BackgroundTransparency = 1, BorderColor3 = BLACK3,
 			BorderSizePixel = 0, Size = UDim2.new(1, 0, 1, 0), ZIndex = 12 }, bar)
 		tbtn.Activated:Connect(tryActivate)
-		local title = new("TextLabel", { Name = "Title", AnchorPoint = Vector2.new(0, 1), BackgroundTransparency = 1, BorderSizePixel = 0,
-			Position = UDim2.new(pos.X.Scale, pos.X.Offset, pos.Y.Scale, pos.Y.Offset - 4), Size = UDim2.new(0, 300, 0, 24),
+		local title = new("TextLabel", { Name = "Title", AnchorPoint = Vector2.new(0.5, 1), BackgroundTransparency = 1, BorderSizePixel = 0,
+			Position = UDim2.new(0.5, 0, 1, -104 - 20 - 4), Size = UDim2.new(0, 300, 0, 24),
 			Text = CONFIG.UltName, TextColor3 = WHITE3, TextScaled = true }, parent)
 		fingerPaint(title)
 		new("UIStroke", { Color = BLACK3, Thickness = 1.5 }, title)
@@ -14457,6 +14554,7 @@ do
 		for _, c in ipairs(conns) do pcall(function() c:Disconnect() end) end
 		conns = {}
 		if gui then pcall(function() gui:Destroy() end) gui = nil end
+		if state.numGui then pcall(function() state.numGui:Destroy() end) state.numGui = nil end
 		state.ultGain = nil
 		state.ultOn = false
 		genv.YujiHudDestroy = nil
@@ -14464,11 +14562,16 @@ do
 	end
 
 	if CONFIG.UltBar then
-		gui = new("ScreenGui", { Name = "YujiHud", ResetOnSpawn = false, DisplayOrder = 20, IgnoreGuiInset = false,
+		gui = new("ScreenGui", { Name = "YujiHud", ResetOnSpawn = false, DisplayOrder = -10, IgnoreGuiInset = false,
 			ZIndexBehavior = Enum.ZIndexBehavior.Sibling }, nil)
+		do
+			local cam = workspace.CurrentCamera
+			local vx = cam and cam.ViewportSize.X or 1280
+			new("UIScale", { Scale = math.clamp(vx / 900, 0.55, 1) }, gui)
+		end
 		local okU, resU = pcall(buildUlt, gui)
 		if okU then ultUi = resU else warn("[Yuji HUD] bar failed:", resU) end
-		gui.Parent = (gethui and gethui()) or lp:FindFirstChildOfClass("PlayerGui")
+		gui.Parent = lp:FindFirstChildOfClass("PlayerGui") or (gethui and gethui())
 		updateInputKind()
 		conns[#conns + 1] = UIS.LastInputTypeChanged:Connect(updateInputKind)
 		conns[#conns + 1] = RunService.Heartbeat:Connect(update)
@@ -14476,6 +14579,70 @@ do
 			if gp then return end
 			if input.KeyCode == CONFIG.UltKey or input.KeyCode == Enum.KeyCode.DPadRight then tryActivate() end
 		end)
+		-- numbers (Finger Paint) centered on the top edge of each hotbar slot: 1 2 3 4 normally, 1 2 during the ult
+		do
+			local numGui = new("ScreenGui", { Name = "YujiNumbers", ResetOnSpawn = false, DisplayOrder = 100, IgnoreGuiInset = true,
+				ZIndexBehavior = Enum.ZIndexBehavior.Sibling }, nil)
+			numGui.Parent = (gethui and gethui()) or lp:FindFirstChildOfClass("PlayerGui") -- above the hotbar so the number sits on its top line
+			state.numGui = numGui
+			local labels = {}
+			local off = { x = 0, y = 56 } -- fixed position offset (set with the panel)
+			local function slotRects()
+				local rects = {}
+				local okH, hb = pcall(function() return game:GetService("CoreGui").RobloxGui.Backpack.Hotbar end)
+				if okH and hb then
+					local slots = {}
+					for _, c in ipairs(hb:GetChildren()) do
+						if c:IsA("GuiObject") and tonumber(c.Name) and c.Visible and c.AbsoluteSize.X > 4 then
+							local tn = c:FindFirstChild("ToolName", true)
+							if tn and tn.Text ~= "" then slots[#slots + 1] = c end
+						end
+					end
+					table.sort(slots, function(a, b) return a.AbsolutePosition.X < b.AbsolutePosition.X end)
+					for _, c in ipairs(slots) do
+						-- the slot frame can be taller than the visible square (mobile), so use the bottom edge minus the square size
+						local side = math.min(c.AbsoluteSize.X, c.AbsoluteSize.Y)
+						rects[#rects + 1] = { x = c.AbsolutePosition.X + c.AbsoluteSize.X / 2, y = c.AbsolutePosition.Y + c.AbsoluteSize.Y - side }
+					end
+					return rects
+				end
+				-- fallback when CoreGui can't be read: estimate the default hotbar position
+				local n = 0
+				for _, container in ipairs({ lp:FindFirstChild("Backpack"), lp.Character }) do
+					if container then
+						for _, t in ipairs(container:GetChildren()) do
+							if t:IsA("Tool") then n += 1 end
+						end
+					end
+				end
+				local cam = workspace.CurrentCamera
+				if not cam or n == 0 then return rects end
+				local vp = cam.ViewportSize
+				local size, gap = 60, 5
+				local x0 = vp.X / 2 - (n * size + (n - 1) * gap) / 2
+				for i = 1, n do
+					rects[i] = { x = x0 + (i - 1) * (size + gap) + size / 2, y = vp.Y - 70 }
+				end
+				return rects
+			end
+			conns[#conns + 1] = RunService.Heartbeat:Connect(function()
+				local rects = slotRects()
+				for i, r in ipairs(rects) do
+					local l = labels[i]
+					if not l then
+						l = new("TextLabel", { Name = "Num" .. i, AnchorPoint = Vector2.new(0.5, 0.5), BackgroundTransparency = 1,
+							Size = UDim2.fromOffset(47, 40), TextSize = 36, TextColor3 = WHITE3 }, numGui)
+						fingerPaint(l)
+						new("UIStroke", { Color = BLACK3, Thickness = 1.5 }, l)
+						labels[i] = l
+					end
+					l.Text = tostring(i)
+					l.Visible = true
+					l.Position = UDim2.fromOffset(r.x + off.x, r.y + off.y) -- centered on the slot's top line (+ your manual offset)
+				end
+				for i = #rects + 1, #labels do labels[i].Visible = false end
+			end)
+		end
 		genv.YujiHudDestroy = destroy
 		genv.YujiUlt = api
 	end
@@ -14828,6 +14995,43 @@ genv.YujiMovesetCleanup = function()
 	genv.YujiMovesetCleanup = nil
 end
 
+-- chat: tells you how to remove everything; typing !clear removes the system and the buttons
+do
+	local TextChatService = game:GetService("TextChatService")
+	local function sysMessage(text)
+		pcall(function()
+			if TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
+				local tc = TextChatService:FindFirstChild("TextChannels")
+				local ch = tc and tc:FindFirstChild("RBXGeneral")
+				if ch then
+					ch:DisplaySystemMessage(text)
+					return
+				end
+			end
+			StarterGui:SetCore("ChatMakeSystemMessage", { Text = text, Color = Color3.fromRGB(255, 90, 90) })
+		end)
+	end
+	local clearing = false
+	local function onChat(text)
+		if clearing then return end
+		if string.lower((string.gsub(text or "", "%s", ""))) ~= "!clear" then return end
+		clearing = true
+		task.defer(function()
+			if genv.YujiMovesetCleanup then pcall(genv.YujiMovesetCleanup) end
+			sysMessage("System and buttons removed.")
+		end)
+	end
+	track(lp.Chatted:Connect(onChat))
+	pcall(function()
+		track(TextChatService.MessageReceived:Connect(function(msg)
+			if msg.TextSource and msg.TextSource.UserId == lp.UserId then onChat(msg.Text) end
+		end))
+	end)
+	task.delay(1.5, function()
+		if genv.YujiMovesetCleanup then sysMessage("Type !clear to remove the system and buttons") end
+	end)
+end
+
 
 ---------------------------------------------------------------------
 -- PVP (2 jogadores com este script) via Firebase Realtime Database (REST)
@@ -14845,8 +15049,6 @@ do
 	-- TODA anim de acao e mandada pros outros (so as de quem apanha / andar nao)
 	local ANIM_SKIP = {
 		NpcHit1 = true, NpcHit2 = true, NpcHit3 = true, NpcHit4 = true, NpcRush = true,
-		Run = true, Walk = true, WalkLeft = true, WalkRight = true, Jump = true, Fall = true, Land = true,
-		BlockHit1 = true, BlockHit2 = true,
 	}
 
 	local bodyPart = bodyOf
@@ -14932,7 +15134,19 @@ do
 	end
 
 	PVP.anim = function(name)
-		if ANIMS[name] and not ANIM_SKIP[name] and peerNear() then post({ t = "anim", name = name }) end
+		local a = ANIMS[name]
+		if not a or ANIM_SKIP[name] or not peerNear() then return end
+		if a.loop then -- run / walk / block / fall: only re-send when it changes (or every second so late joiners catch up)
+			if state.lastLoopName == name and os.clock() - (state.lastLoopT or 0) < 1 then return end
+			state.lastLoopName, state.lastLoopT = name, os.clock()
+		else
+			state.lastLoopName = nil
+		end
+		post({ t = "anim", name = name })
+	end
+	PVP.animStop = function() -- nothing playing anymore: others go back to the normal pose
+		state.lastLoopName = nil
+		if peerNear() then post({ t = "animstop" }) end
 	end
 
 	-- Crushing Blow: jogador mais perto dentro do alcance vira o alvo
@@ -14940,6 +15154,7 @@ do
 		local best, bd
 		for _, p in ipairs(Players:GetPlayers()) do
 			local r = p ~= lp and PVP.isPeer(p) and bodyPart(p.Character)
+			if r and not state.inFront(root, r, CONFIG.AimCone) then r = nil end
 			local h = p.Character and state.stubHum(p.Character)
 			if r and h and h.Health > 0 then
 				local d = (r.Position - root.Position).Magnitude
@@ -14955,6 +15170,7 @@ do
 		for _, p in ipairs(Players:GetPlayers()) do
 			if p ~= lp and p.Character and PVP.isPeer(p) then -- so quem usa este script
 				local r = bodyPart(p.Character)
+				if r and not state.inFront(root, r, CONFIG.AimCone) then r = nil end
 				local h = state.stubHum(p.Character)
 				if r and h and h.Health > 0 then
 					local d = (r.Position - root.Position).Magnitude
@@ -14965,7 +15181,10 @@ do
 		return best
 	end
 	PVP.cursed = function(plr)
-		post({ t = "cursed", to = plr.UserId, hold = CONFIG.CursedHoldDist, grab = CONFIG.CursedGrabAt, dur = CONFIG.CursedHoldTime, hits = CURSED_HITS, idx = CURSED_IDX })
+		local spd = CONFIG.CursedSpeed or 1
+		local hits = {}
+		for i, h in ipairs(CURSED_HITS) do hits[i] = h / spd end
+		post({ t = "cursed", to = plr.UserId, hold = CONFIG.CursedHoldDist, grab = CONFIG.CursedGrabAt / spd, dur = CONFIG.CursedHoldTime / spd, hits = hits, idx = CURSED_IDX })
 	end
 	PVP.fuga = function(plr)
 		post({ t = "fuga", to = plr.UserId, dur = CONFIG.FugaBlackTime, rise = CONFIG.FugaRise, stay = CONFIG.FugaStay, height = CONFIG.FugaHeight })
@@ -15309,11 +15528,12 @@ do
 		local restore = selfRagdoll(char, hum, root, Vector3.zero, false, true, true)
 		if not restore then return end
 		local t0 = os.clock()
-		local rel, hitI = nil, 1
+		local weld, hitI = nil, 1
 		local hits, idxs = ev.hits or {}, ev.idx or {}
 		local conn
 		local function finish()
 			if conn then conn:Disconnect() conn = nil end
+			if weld then weld:Destroy() weld = nil end
 			restore(aroot.Position - root.Position, 0.3)
 		end
 		conn = RunService.Heartbeat:Connect(function()
@@ -15322,10 +15542,13 @@ do
 				finish()
 				return
 			end
-			if el >= (ev.grab or 0.55) then
-				local pos = (aroot.CFrame * CFrame.new(0, 0, -(ev.hold or 3.2))).Position
-				if not rel then rel = captureRel(char, root) end
-				pcall(moveRel, rel, CFrame.lookAt(pos, Vector3.new(aroot.Position.X, pos.Y, aroot.Position.Z)))
+			if el >= (ev.grab or 0.55) and not weld then
+				weld = Instance.new("Weld")
+				weld.Name = "YujiGrab"
+				weld.Part0 = aroot
+				weld.Part1 = root
+				weld.C0 = CFrame.new(0, 0, -(ev.hold or 3.2)) * CFrame.Angles(0, math.pi, 0)
+				weld.Parent = root
 			end
 			while hits[hitI] and el >= hits[hitI] do
 				local idx = idxs[hitI]
@@ -15345,15 +15568,7 @@ do
 		local hum = char and char:FindFirstChildOfClass("Humanoid")
 		if not root or not hum or hum.Health <= 0 or isDown(char) then return end
 		cancelAll()
-		local hl = Instance.new("Highlight")
-		hl.Name = "FugaBurn"
-		hl.FillColor = Color3.new(0, 0, 0)
-		hl.FillTransparency = 0
-		hl.OutlineColor = Color3.new(0.25, 0.03, 0)
-		hl.OutlineTransparency = 0.3
-		hl.Adornee = char
-		hl.Parent = char
-		Debris:AddItem(hl, ev.dur or 7)
+		pcall(state.blacken, char, ev.dur or 7)
 		state.shake(2.4, 1.0)
 		local restore = selfRagdoll(char, hum, root, Vector3.zero, false, true, true)
 		if not restore then return end
@@ -15418,7 +15633,7 @@ do
 			end
 		end
 		local stepConn = RunService.Stepped:Connect(noCollide)
-		local rel
+		local weld
 		local flags = {}
 		local conn
 		local function hitAnim()
@@ -15437,6 +15652,7 @@ do
 		local function finish()
 			if conn then conn:Disconnect() conn = nil end
 			if stepConn then stepConn:Disconnect() stepConn = nil end
+			if weld then weld:Destroy() weld = nil end
 			for p, c in pairs(saved) do
 				if p.Parent then pcall(function() p.CanCollide = c end) end
 			end
@@ -15449,13 +15665,18 @@ do
 				return
 			end
 			if t < T.Kick then return end
-			local A, V = state.rushPath(S, dir, rd, t)
+			local _, off = state.rushPath(S, dir, rd, t)
 			if not flags.impact then
-				if not rel then rel = captureRel(char, root) end
-				pcall(moveRel, rel, CFrame.lookAt(V, Vector3.new(A.X, V.Y, A.Z)))
+				if not weld then
+					weld = Instance.new("Weld") -- colado na frente do atacante
+					weld.Name = "YujiGrab"
+					weld.Part0 = aroot
+					weld.Part1 = root
+					weld.Parent = root
+				end
+				weld.C0 = CFrame.new(0, off, -CONFIG.RushHold) * CFrame.Angles(0, math.pi, 0)
 			end
 			once("kick", t >= T.Kick, function() hitAnim() hitFx() state.shake(0.9, 0.2) end)
-			once("fling", t >= T.KickEnd, function() hitFx() state.shake(0.7, 0.2) end)
 			once("up", t >= T.UpStart, function() hitAnim() hitFx() state.shake(0.8, 0.25) end)
 			once("slam", t >= T.Slam, function() hitAnim() hitFx() end)
 			once("impact", t >= T.Slam + CONFIG.RushSlamTime, function()
@@ -15681,7 +15902,11 @@ do
 			if plr and plr.Character then pcall(state.blacken, plr.Character, CONFIG.FugaBlackTime) end
 		end
 	end
-	state.net = { npc = N.onNpc, npcend = N.onNpcEnd, npcanim = N.onNpcAnim, npcrag = N.onNpcRag, aura = N.onAura, boom = N.onBoom, fugafx = N.onFugaFx }
+	function N.onAnimStop(ev)
+		local _, c = plrChar(ev.from)
+		if c then pcall(state.stopAnim, c) end
+	end
+	state.net = { animstop = N.onAnimStop, npc = N.onNpc, npcend = N.onNpcEnd, npcanim = N.onNpcAnim, npcrag = N.onNpcRag, aura = N.onAura, boom = N.onBoom, fugafx = N.onFugaFx }
 	end
 
 	local function handle(ev)
@@ -15707,6 +15932,7 @@ do
 		elseif ev.t == "cursed" then onCursed(ev)
 		elseif ev.t == "fuga" then onFuga(ev)
 		elseif ev.t == "rush" then onRush(ev)
+		elseif ev.t == "animstop" then state.net.animstop(ev)
 		elseif ev.t == "npc" then state.net.npc(ev)
 		elseif ev.t == "npcend" then state.net.npcend(ev)
 		elseif ev.t == "npcanim" then state.net.npcanim(ev)
