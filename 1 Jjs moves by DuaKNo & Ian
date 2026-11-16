@@ -9237,6 +9237,9 @@ local CONFIG = {
 	-- dano em NPCs (nunca em jogadores): M1, M1 do dash, M1 no ar (3o soco) e Black Flash
 	Damage = true,
 	DamageValues = { M1 = 10, DashM1 = 18, AirM1 = 25, BlackFlash = 100, Manji = 40, Crush = 30, CursedHit = 10, Rush = 60 },
+	DomainDuration = 19, DomainRadius = 40, DomainPullRange = 70, DomainHitsPerSec = 6, DomainDamage = 20 / 6, DomainCooldown = 25,
+	DomainShatterAt = 17, DomainShrineAt = 4.5, DomainShrineRise = 7, DomainBlack = true, DomainSlashScale = 0.6,
+	DomainShrineMesh = "", DomainShrineTexture = "", UltAuraDensity = 0.3,
 	HitRange = 4.5,            -- alcance dos socos (studs)
 	BlackFlashRange = 7,    -- alcance do Black Flash
 	HitCone = 0.1,           -- 1 = so bem na frente, 0 = meia-lua, -1 = ao redor
@@ -12838,6 +12841,27 @@ F(0.1317, C(0.2484,-0.037,0.3587,0.492,-0.8687,-0.0579,0.1519,0.0202,0.9882,-0.8
 	end
 end
 
+do
+	local C = CFrame.new
+	local function JF(a, b, c, d, e, f) return { ["Right Shoulder"] = a, ["Left Shoulder"] = b, ["Right Hip"] = c, ["Left Hip"] = d, ["Neck"] = e, ["RootJoint"] = f } end
+	ANIMS.Domain = { length = 5, loop = false, blendIn = 0.06, blendOut = 0.3, fx = {}, frames = {
+		{ dt = 0, j = JF(C(0,0,0,1,0,0,0,1,0,0,0,1), C(0,0,0,1,0,0,0,1,0,0,0,1), C(0,0,0,1,0,0,0,1,0,0,0,1), C(0,0,0,1,0,0,0,1,0,0,0,1), C(0,0,0,1,0,0,0,1,0,0,0,1), C(0,0,0,1,0,0,0,1,0,0,0,1)) },
+		{ dt = 0.0667, j = JF(C(0.0426,-0.0295,0.0137,0.9889,-0.1352,0.0616,0.1366,0.9904,-0.0193,-0.0584,0.0275,0.9979), C(-0.0426,-0.0295,0.0137,0.9887,0.1363,-0.0617,-0.1404,0.9877,-0.0685,0.0516,0.0764,0.9957), C(0,0,0,0.9994,0.034,0,-0.034,0.9994,0,0,0,1), C(-0.0617,0.1141,-0.0042,0.9991,-0.0411,-0.0018,0.0411,0.999,0.0184,0.001,-0.0184,0.9998), C(0,0,0,1,0,0,0,0.9979,-0.0645,0,0.0645,0.9979), C(0,0.0428,-0.0182,1,0,0,0,0.999,0.0444,0,-0.0444,0.999)) },
+		{ dt = 0.1667, j = JF(C(0.149,-0.1032,0.0478,0.8692,-0.4928,0.0404,0.412,0.767,0.4918,-0.2734,-0.4109,0.8698), C(-0.149,-0.1032,0.0478,0.8686,0.4948,0.0244,-0.415,0.6997,0.5816,0.2707,-0.5153,0.8131), C(0,0,0,0.9929,0.1188,0,-0.1188,0.9929,0,0,0,1), C(-0.2158,0.3994,-0.0146,0.9897,-0.1431,-0.0096,0.1434,0.9876,0.0637,0.0003,-0.0645,0.9979), C(0,0,0,1,0,0,0,0.9823,-0.1874,0,0.1874,0.9823), C(0,0.1496,-0.0636,1,0,0,0,0.9879,0.1549,0,-0.1549,0.9879)) },
+		{ dt = 0.0333, j = JF(C(0.1804,-0.1249,0.0578,0.7987,-0.6017,0.0044,0.4877,0.6517,0.5809,-0.3524,-0.4618,0.814), C(-0.1804,-0.1249,0.0578,0.7974,0.5987,0.076,-0.4843,0.5596,0.6725,0.3601,-0.5731,0.7362), C(0,0,0,0.995,0.0997,0,-0.0997,0.995,0,0,0,1), C(-0.2324,0.3929,-0.0144,0.9853,-0.1702,-0.0133,0.1707,0.9826,0.0735,0.0005,-0.0747,0.9972), C(0,0,0,1,0,0,0,0.9797,-0.2006,0,0.2006,0.9797), C(0,0.1919,-0.0702,1,0,0,0,0.9871,0.1603,0,-0.1603,0.9871)) },
+		{ dt = 0.1, j = JF(C(0.3046,-0.2108,0.0976,0.372,-0.9015,-0.2211,0.655,0.0861,0.7507,-0.6577,-0.424,0.6226), C(-0.3046,-0.2108,0.0976,0.3618,0.8709,0.3327,-0.613,-0.0467,0.7887,0.7024,-0.4893,0.517), C(0,0,0,0.9997,-0.0263,0,0.0263,0.9997,0,0,0,1), C(-0.2392,0.1825,-0.0065,0.9622,-0.2704,-0.0313,0.2722,0.9566,0.1043,0.0017,-0.1089,0.9941), C(0,0,0,1,0,0,0,0.9707,-0.2401,0,0.2401,0.9707), C(0,0.3663,-0.0838,1,0,0,0,0.9892,0.1464,0,-0.1464,0.9892)) },
+		{ dt = 0.0333, j = JF(C(0.346,-0.2395,0.1109,0.166,-0.9561,-0.2415,0.6358,-0.0834,0.7674,-0.7538,-0.2809,0.594), C(-0.346,-0.2395,0.1109,0.1819,0.9148,0.3607,-0.5788,-0.1969,0.7913,0.7949,-0.3527,0.4937), C(0,0,0,1,-0.0018,0,0.0018,1,0,0,0,1), C(-0.2415,0.1124,-0.0039,0.9522,-0.3031,-0.038,0.3055,0.9453,0.1141,0.0013,-0.1203,0.9927), C(0,0,0,1,0,0,0,0.9674,-0.2532,0,0.2532,0.9674), C(0,0.3986,-0.0909,1,0,0,0,0.9847,0.1744,0,-0.1744,0.9847)) },
+		{ dt = 0.0667, j = JF(C(0.4288,-0.2968,0.1375,-0.3476,-0.9271,-0.1402,0.4965,-0.3088,0.8112,-0.7954,0.2124,0.5677), C(-0.4288,-0.2968,0.1375,-0.2266,0.9373,0.2648,-0.4552,-0.3423,0.822,0.8611,0.0657,0.5042), C(0.0208,0.0245,0,0.9996,0.0267,-0.0001,-0.0267,0.9996,0.0094,0.0003,-0.0094,1), C(-0.2351,0.0086,-0.0003,0.9407,-0.3359,-0.0473,0.3393,0.9314,0.1317,-0.0002,-0.14,0.9902), C(0,0,0,1,0,0,0,0.9704,-0.2417,0,0.2417,0.9704), C(0,0.4472,-0.0927,1,0,0,0,0.9776,0.2103,0,-0.2103,0.9776)) },
+		{ dt = 0.1, j = JF(C(0.553,-0.3828,0.1773,-0.9127,-0.4037,-0.0632,0.1281,-0.4297,0.8939,-0.388,0.8077,0.4439), C(-0.553,-0.3828,0.1773,-0.7587,0.6353,0.1439,-0.1879,-0.425,0.8855,0.6237,0.6448,0.4419), C(0.1453,0.1711,0,0.9997,-0.0234,-0.0021,0.0234,0.9976,0.066,0.0005,-0.066,0.9978), C(-0.1762,0.0175,-0.0021,0.9694,-0.2423,-0.038,0.2453,0.9575,0.1517,-0.0003,-0.1564,0.9877), C(0,0,0,1,0,0,0,0.9954,-0.0957,0,0.0957,0.9954), C(0,0.4474,-0.0387,1,0,0,0,0.9846,0.1749,0,-0.1749,0.9846)) },
+		{ dt = 0.0333, j = JF(C(0.6409,-0.4437,0.2055,-0.946,-0.3187,-0.0588,0.085,-0.4191,0.9039,-0.3127,0.8501,0.4236), C(-0.6409,-0.4437,0.2055,-0.8541,0.5068,0.1172,-0.1286,-0.4241,0.8964,0.504,0.7505,0.4274), C(0.1869,0.2201,0,0.9992,-0.04,-0.0034,0.0401,0.9956,0.0847,0,-0.0848,0.9964), C(-0.1566,0.0204,-0.0027,0.977,-0.2105,-0.0345,0.2134,0.9641,0.1581,0,-0.1619,0.9868), C(0,0,0,1,0,0,0,0.9981,-0.0615,0,0.0615,0.9981), C(0,0.4475,-0.0207,1,0,0,0,0.9866,0.163,0,-0.163,0.9866)) },
+		{ dt = 0.1, j = JF(C(0.9049,-0.6264,0.2901,-0.997,-0.05,-0.0583,-0.0362,-0.363,0.9311,-0.0677,0.9304,0.3602), C(-0.9049,-0.6264,0.2901,-0.997,0.05,0.0583,0.0362,-0.363,0.9311,0.0677,0.9304,0.3602), C(0.0267,0.0314,0,0.977,0.0439,-0.2087,-0.0281,0.9966,0.0779,0.2114,-0.0702,0.9749), C(-0.1917,-0.03,0.001,0.949,-0.3132,-0.0347,0.3149,0.9387,0.1405,-0.0115,-0.1443,0.9895), C(0,0,0,1,0,0,0,1,0.0041,0,-0.0041,1), C(0,0.2235,-0.0137,1,0,0,0,0.9936,0.1133,0,-0.1133,0.9936)) },
+		{ dt = 0.0333, j = JF(C(0.9244,-0.7992,0.0949,-0.997,-0.0379,-0.0668,-0.0362,-0.5354,0.8438,-0.0677,0.8438,0.5324), C(-0.9177,-0.7688,0.1767,-0.997,0.0425,0.064,0.0362,-0.4747,0.8794,0.0677,0.8791,0.4717), C(0,0,0,0.9735,0.0255,-0.2273,-0.006,0.9963,0.0856,0.2287,-0.082,0.97), C(-0.1624,-0.0318,0.0012,0.9591,-0.2815,-0.031,0.2831,0.9503,0.1297,-0.0071,-0.1331,0.9911), C(0,0,0,1,0,0,0,0.9999,0.0156,0,-0.0156,0.9999), C(0,0.1615,-0.0129,1,0,0,0,0.9963,0.0864,0,-0.0864,0.9963)) },
+		{ dt = 0.0333, j = JF(C(0.9368,-0.909,-0.029,-0.997,-0.0294,-0.071,-0.0362,-0.6349,0.7718,-0.0677,0.7721,0.6319), C(-0.9259,-0.8593,0.1047,-0.997,0.0373,0.0671,0.0362,-0.542,0.8396,0.0677,0.8396,0.539), C(0,0,0,0.9783,-0.0206,-0.2063,0.0414,0.9944,0.0972,0.2031,-0.1036,0.9737), C(-0.1124,-0.0225,0.0007,0.9771,-0.2109,-0.0267,0.2126,0.97,0.118,0.001,-0.121,0.9926), C(0,0,0,1,0,0,0,0.9997,0.023,0,-0.023,0.9997), C(0,0.1263,-0.0133,1,0,0,0,0.9982,0.0599,0,-0.0599,0.9982)) },
+		{ dt = 0.1, j = JF(C(0.951,-1.0346,-0.1708,-0.997,-0.0191,-0.0744,-0.0362,-0.7368,0.6751,-0.0677,0.6758,0.7339), C(-0.9353,-0.9627,0.0223,-0.997,0.0312,0.0702,0.0362,-0.6148,0.7878,0.0677,0.788,0.6119), C(0,0,0,0.9804,-0.0738,-0.1828,0.0952,0.9892,0.1116,0.1725,-0.1268,0.9768), C(-0.0551,-0.0118,0.0001,0.9914,-0.1288,-0.0228,0.1305,0.9859,0.1044,0.009,-0.1065,0.9943), C(0,0,0,1,0,0,0,0.9997,0.026,0,-0.026,0.9997), C(0,0.0862,-0.0139,1,0,0,0,0.9996,0.0295,0,-0.0295,0.9996)) },
+		{ dt = 4.1333, j = JF(C(0.9529,-1.0514,-0.1897,-0.997,-0.0177,-0.0747,-0.0362,-0.7493,0.6612,-0.0677,0.6619,0.7465), C(-0.9365,-0.9765,0.0114,-0.997,0.0304,0.0706,0.0362,-0.6242,0.7804,0.0677,0.7807,0.6212), C(0,0,0,0.9804,-0.0809,-0.1797,0.1023,0.9882,0.1136,0.1684,-0.1297,0.9772), C(-0.0474,-0.0103,0,0.9928,-0.1178,-0.0224,0.1195,0.9875,0.1025,0.01,-0.1045,0.9945), C(0,0,0,1,0,0,0,1,0,0,0,1), C(0,0.0808,-0.0139,1,0,0,0,0.9997,0.0255,0,-0.0255,0.9997)) },
+	} }
+end
+
 for _, anim in pairs(ANIMS) do
 	local times, joints, t = {}, {}, 0
 	for i, frame in ipairs(anim.frames) do
@@ -13053,7 +13077,8 @@ local function releaseBase(cur, dur)
 end
 
 function restoreBase(cur)
-	if PVP.animStop then pcall(PVP.animStop) end
+	local P = state.PVP
+	if P and P.animStop then pcall(P.animStop) end
 	for _, motor in pairs(cur.motors) do
 		fades[motor] = nil
 		pcall(function() motor.Transform = CFrame.new() end)
@@ -13402,6 +13427,7 @@ end
 end
 
 local PVP = {} -- ganchos do PvP (preenchido no fim do script)
+state.PVP = PVP
 
 -- layers: "action" (soco/dash) > "air" (pulo/queda/pouso) > "move" (correr)
 -- uma layer mais forte interrompe a mais fraca, o contrario nao acontece
@@ -14011,27 +14037,48 @@ do
 	end
 
 	function G.shock(base, col, s)
-		local tint = col:Lerp(Color3.new(1, 1, 1), 0.6)
-		local function ring(d1, t, y, tr0)
+		local rng = Random.new()
+		local tint = col:Lerp(Color3.new(1, 1, 1), 0.55)
+		local function solid(shape, material, color, tr)
 			local p = Instance.new("Part")
-			p.Shape = Enum.PartType.Cylinder
+			if shape then p.Shape = shape end
 			p.Anchored = true
 			p.CanCollide = false
 			p.CanQuery = false
 			p.CanTouch = false
 			p.CastShadow = false
-			p.Material = Enum.Material.SmoothPlastic
-			p.Color = tint
-			p.Transparency = tr0
-			p.Size = Vector3.new(0.1, 1.5, 1.5)
-			p.CFrame = base * CFrame.new(0, y, 0) * CFrame.Angles(0, 0, math.pi / 2)
-			p.Parent = workspace
-			TweenService:Create(p, TweenInfo.new(t, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-				{ Size = Vector3.new(0.05, d1, d1), Transparency = 1 }):Play()
-			Debris:AddItem(p, t + 0.3)
+			p.Material = material
+			p.Color = color
+			p.Transparency = tr
+			return p
 		end
-		ring(16 * s, 0.32, 0.12, 0.5)
-		ring(26 * s, 0.5, 0.08, 0.78)
+		-- flash do impacto
+		local f = solid(Enum.PartType.Ball, Enum.Material.Neon, Color3.new(1, 1, 1), 0.3)
+		f.Size = Vector3.new(1.5, 1.5, 1.5) * s
+		f.CFrame = base * CFrame.new(0, 0.6, 0)
+		f.Parent = workspace
+		TweenService:Create(f, TweenInfo.new(0.16, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+			{ Size = Vector3.new(9, 9, 9) * s, Transparency = 1 }):Play()
+		Debris:AddItem(f, 0.5)
+		-- anel de blocos que corre pra fora e sobe (onda de choque de verdade, nao um disco chapado)
+		local n = math.max(10, math.floor(22 * s + 0.5))
+		local off = rng:NextNumber(0, math.pi * 2)
+		for i = 1, n do
+			local a = off + (i / n) * math.pi * 2
+			local r0 = 1.2 * s
+			local r1 = (10 + rng:NextNumber(0, 4)) * s
+			local rot = CFrame.Angles(0, math.pi / 2 - a, 0)
+			local p = solid(nil, Enum.Material.Slate, tint:Lerp(Color3.new(0, 0, 0), rng:NextNumber(0, 0.25)), 0.3)
+			p.Size = Vector3.new(2 * s, 0.9 * s, 0.7 * s)
+			p.CFrame = base * CFrame.new(math.cos(a) * r0, 0.5, math.sin(a) * r0) * rot
+			p.Parent = workspace
+			TweenService:Create(p, TweenInfo.new(0.42, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+				CFrame = base * CFrame.new(math.cos(a) * r1, 1.4 * s, math.sin(a) * r1) * rot * CFrame.Angles(rng:NextNumber(-0.5, 0.5), 0, 0),
+				Size = Vector3.new(3.2 * s, 0.3, 0.7 * s),
+				Transparency = 1,
+			}):Play()
+			Debris:AddItem(p, 0.7)
+		end
 	end
 end
 
@@ -14075,7 +14122,7 @@ local function groundBurst(r, scale)
 	end
 end
 
--- chao quebrado: cratera em camadas, rachaduras ramificadas que correm pra fora, placas e pedras que brotam do chao
+-- chao quebrado v4: so pedacos de chao de verdade (sem ancora, com fisica) que sobem, ficam flutuando e caem
 local function breakGround(r, scale)
 	scale = scale or 1
 	local s = math.clamp(scale, 0.3, 2.2)
@@ -14083,112 +14130,60 @@ local function breakGround(r, scale)
 	local rng = Random.new()
 	local col, mat = groundColor(r)
 	local base = state.gfx.base(r)
-	local made = {}
-	local function mk(size, cf, color, material, tr, cyl)
+	local up = base.UpVector
+	local n = math.floor(14 * s + 0.5)
+	for i = 1, n do
+		local big = (i % 3 == 0)
+		local sz = (big and rng:NextNumber(1.1, 2.2) or rng:NextNumber(0.45, 1.0)) * math.sqrt(s)
+		local a = rng:NextNumber(0, math.pi * 2)
+		local d = rng:NextNumber(0.8, 5) * math.sqrt(s)
+		local out = Vector3.new(math.cos(a), 0, math.sin(a))
 		local p = Instance.new("Part")
-		if cyl then p.Shape = Enum.PartType.Cylinder end
-		p.Size = size
-		p.Anchored = true
-		p.CanCollide = false
-		p.CanQuery = false
-		p.CanTouch = false
-		p.CastShadow = false
-		p.Color = color
-		p.Material = material
-		p.Transparency = tr or 0
+		p.Size = Vector3.new(sz * rng:NextNumber(0.8, 1.5), sz * rng:NextNumber(0.6, 1.2), sz * rng:NextNumber(0.8, 1.5))
+		p.Color = col:Lerp(Color3.new(0, 0, 0), rng:NextNumber(0, 0.2))
+		p.Material = mat
 		p.TopSurface = Enum.SurfaceType.Smooth
 		p.BottomSurface = Enum.SurfaceType.Smooth
-		p.CFrame = cf
+		p.CanCollide = false -- liga so quando solta (cai)
+		p.CanQuery = false
+		p.CanTouch = false
+		p.CFrame = CFrame.new((base * CFrame.new(math.cos(a) * d, 0.5, math.sin(a) * d)).Position)
+			* CFrame.Angles(rng:NextNumber(0, 6), rng:NextNumber(0, 6), rng:NextNumber(0, 6))
 		p.Parent = workspace
-		made[#made + 1] = p
-		return p
-	end
-	local dark = col:Lerp(Color3.new(0, 0, 0), 0.8)
-	local mid = col:Lerp(Color3.new(0, 0, 0), 0.5)
-	local open = TweenInfo.new(0.14, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-
-	-- cratera: 3 discos (borda mais clara, miolo escuro) que abrem rapido
-	local function disc(d, y, color, tr)
-		local p = mk(Vector3.new(0.05, 0.5, 0.5), base * CFrame.new(0, y, 0) * CFrame.Angles(0, 0, math.pi / 2), color, Enum.Material.Slate, tr, true)
-		TweenService:Create(p, open, { Size = Vector3.new(0.05, d, d) }):Play()
-	end
-	disc(8.5 * s, 0.03, mid, 0.55)
-	disc(6 * s, 0.045, dark, 0.35)
-	disc(3 * s, 0.06, Color3.new(0.03, 0.03, 0.03), 0.15)
-
-	-- rachaduras tortas e ramificadas; aparecem de dentro pra fora (parece que a rachadura corre)
-	local crack
-	crack = function(x, z, ang, len, width, branch, delay)
-		local px, pz = x, z
-		local segs = rng:NextInteger(3, 5)
-		local seglen = len / segs
-		local travelled = 0
-		for i = 1, segs do
-			ang += rng:NextNumber(-0.5, 0.5)
-			local l = seglen * rng:NextNumber(0.85, 1.25)
-			local w = math.max(width * (1 - (i - 1) / segs * 0.75), 0.08)
-			local dx, dz = math.cos(ang), math.sin(ang)
-			local c = mk(Vector3.new(w, 0.05, l),
-				base * CFrame.new(px + dx * l / 2, 0.05, pz + dz * l / 2) * CFrame.Angles(0, math.pi / 2 - ang, 0),
-				dark, Enum.Material.Slate, 1)
-			local d = delay + travelled / (22 * s)
-			task.delay(d, function()
-				if c.Parent then c.Transparency = 0 end
-			end)
-			travelled += l
-			px, pz = px + dx * l, pz + dz * l
-			if branch > 0 and i == 2 and rng:NextNumber() < 0.65 then
-				crack(px, pz, ang + (rng:NextNumber() < 0.5 and -1 or 1) * rng:NextNumber(0.5, 1.0), len * 0.5, width * 0.6, branch - 1, d)
-			end
-		end
-	end
-	local nc = math.floor(7 * s + 0.5)
-	for i = 1, nc do
-		local a = (i / nc) * math.pi * 2 + rng:NextNumber(-0.35, 0.35)
-		crack(0, 0, a, rng:NextNumber(5, 8.5) * s, 0.38 * math.sqrt(s), 1, 0)
-	end
-
-	-- placas quebradas que brotam do chao em anel (inclinadas pra fora)
-	local pop = TweenInfo.new(0.16, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
-	local ns = math.floor(9 * s + 0.5)
-	for i = 1, ns do
-		local a = (i / ns) * math.pi * 2 + rng:NextNumber(-0.3, 0.3)
-		local d = rng:NextNumber(1.8, 3.6) * s
-		local fin = base * CFrame.new(math.cos(a) * d, 0.18, math.sin(a) * d) * CFrame.Angles(0, math.pi / 2 - a, 0)
-			* CFrame.Angles(rng:NextNumber(0.3, 0.75), rng:NextNumber(-0.25, 0.25), 0)
-		local p = mk(Vector3.new(rng:NextNumber(1.2, 2.4) * math.sqrt(s), 0.45, rng:NextNumber(1.2, 2.2)), fin * CFrame.new(0, -1.2, 0),
-			col:Lerp(Color3.new(0, 0, 0), rng:NextNumber(0, 0.25)), mat)
-		task.delay(0.01 * i, function()
-			if p.Parent then TweenService:Create(p, pop, { CFrame = fin }):Play() end
-		end)
-	end
-
-	-- pedras maiores e menores espalhadas, meio enterradas
-	local nr = math.floor(18 * s + 0.5)
-	for _ = 1, nr do
-		local a = rng:NextNumber(0, math.pi * 2)
-		local d = rng:NextNumber(0.8, 6.5) * math.sqrt(s)
-		local sz = rng:NextNumber(0.35, 1.3)
-		local fin = base * CFrame.new(math.cos(a) * d, sz * 0.15, math.sin(a) * d)
-			* CFrame.Angles(rng:NextNumber(-0.7, 0.7), rng:NextNumber(0, 6.28), rng:NextNumber(-0.7, 0.7))
-		local p = mk(Vector3.new(sz * rng:NextNumber(0.8, 1.6), sz * rng:NextNumber(0.6, 1.3), sz * rng:NextNumber(0.8, 1.6)),
-			fin * CFrame.new(0, -1, 0), col:Lerp(Color3.new(0, 0, 0), rng:NextNumber(0, 0.3)), mat)
-		task.delay(rng:NextNumber(0, 0.08), function()
-			if p.Parent then TweenService:Create(p, pop, { CFrame = fin }):Play() end
-		end)
-	end
-
-	for _, p in ipairs(made) do Debris:AddItem(p, 11) end
-	-- some devagar: afunda no chao e some
-	task.delay(7.5, function()
-		for _, p in ipairs(made) do
-			if p.Parent then
+		local att = Instance.new("Attachment")
+		att.Parent = p
+		local vf = Instance.new("VectorForce")
+		vf.Attachment0 = att
+		vf.RelativeTo = Enum.ActuatorRelativeTo.World
+		vf.ApplyAtCenterOfMass = true
+		vf.Force = Vector3.new(0, workspace.Gravity * p.AssemblyMass, 0) -- anula a gravidade enquanto flutua
+		vf.Parent = p
+		p.AssemblyLinearVelocity = up * rng:NextNumber(14, 30) + out * rng:NextNumber(1, 5)
+		p.AssemblyAngularVelocity = Vector3.new(rng:NextNumber(-3, 3), rng:NextNumber(-3, 3), rng:NextNumber(-3, 3))
+		local hang = rng:NextNumber(1.2, 2.6)
+		Debris:AddItem(p, hang + 4)
+		task.spawn(function()
+			local t0 = os.clock()
+			while p.Parent and os.clock() - t0 < hang do
+				local dt = RunService.Heartbeat:Wait()
+				local damp = math.exp(-4 * dt) -- freia a subida ate ficar parado no ar
 				pcall(function()
-					TweenService:Create(p, TweenInfo.new(2.5), { Transparency = 1, CFrame = p.CFrame * CFrame.new(0, -0.7, 0) }):Play()
+					p.AssemblyLinearVelocity = p.AssemblyLinearVelocity * damp
+					p.AssemblyAngularVelocity = p.AssemblyAngularVelocity * math.exp(-1.2 * dt)
 				end)
 			end
-		end
-	end)
+			if not p.Parent then return end
+			pcall(function()
+				vf.Enabled = false
+				p.CanCollide = true
+			end)
+			task.delay(1.8, function()
+				if p.Parent then
+					pcall(function() TweenService:Create(p, TweenInfo.new(0.8), { Transparency = 1 }):Play() end)
+				end
+			end)
+		end)
+	end
 end
 
 -- M1 do ar: NPC sobe um tiquinho e e jogado no chao, pedrinhas voam
@@ -16162,7 +16157,7 @@ do
 			if d:IsA("BasePart") and d.Name ~= "HumanoidRootPart" then parts[#parts + 1] = d end
 		end
 		if #parts == 0 then parts[1] = root end
-		local rate = math.clamp(math.floor(480 / #parts), 30, 100)
+		local rate = math.max(4, math.floor(math.clamp(math.floor(480 / #parts), 30, 100) * (CONFIG.UltAuraDensity or 0.3)))
 		for _, p in ipairs(parts) do
 			local props = {}
 			for _, kv in ipairs(AURA.props) do
@@ -16385,6 +16380,845 @@ do
 		end)
 	end
 
+	state.buildDomain = function()
+		if _G.YujiDomainStop then pcall(_G.YujiDomainStop) _G.YujiDomainStop = nil end
+		local DSFX = { id = "rbxassetid://935843979", vol = 1, speed = 2, dur = 0.35265 }
+		local stopCur = nil
+		local function NS(...)
+			local a, k = { ... }, {}
+			for i = 1, #a, 2 do k[#k + 1] = NumberSequenceKeypoint.new(a[i], a[i + 1]) end
+			return NumberSequence.new(k)
+		end
+		local function CSq(...)
+			local a, k = { ... }, {}
+			for i = 1, #a, 2 do k[#k + 1] = ColorSequenceKeypoint.new(a[i], a[i + 1]) end
+			return ColorSequence.new(k)
+		end
+		local function emitter(parent, p, count, on)
+			local e = Instance.new("ParticleEmitter")
+			for k, v in pairs(p) do pcall(function() e[k] = v end) end
+			e.Enabled = on == true
+			e.Parent = parent
+			if count and count > 0 then e:Emit(count) end
+			return e
+		end
+		local GR = Enum.ParticleFlipbookLayout.Grid4x4
+		local FM = Enum.ParticleFlipbookMode
+		local VP = Enum.ParticleOrientation.VelocityPerpendicular
+		local VL = Enum.ParticleOrientation.VelocityParallel
+		local SPH = Enum.ParticleEmitterShape.Sphere
+		local SURF = Enum.ParticleEmitterShapeStyle.Surface
+		local function pSpark()
+			return { Texture = "rbxassetid://12156297119", Rate = 1, Lifetime = NumberRange.new(0.4), Speed = NumberRange.new(0), Size = NS(0, 15, 1, 15), Transparency = NS(0, 0, 1, 1), LightEmission = 1, LightInfluence = 1, ZOffset = -5, FlipbookLayout = GR, FlipbookMode = FM.OneShot, FlipbookFramerate = NumberRange.new(1) }
+		end
+		local function pShatter(c)
+			return { Texture = "rbxassetid://13069495837", Rate = 400, Lifetime = NumberRange.new(0.5, 2), Speed = NumberRange.new(0, 25), Size = NS(0, 8.89, 1, 0), Color = ColorSequence.new(c), RotSpeed = NumberRange.new(-100, 100), SpreadAngle = Vector2.new(30, 30), Acceleration = Vector3.new(0, -20, 0), EmissionDirection = Enum.NormalId.Front, LockedToPart = true, Orientation = VL, Shape = SPH, ShapeStyle = SURF, Brightness = 5 }
+		end
+		local function pSurround(c)
+			return { Texture = "rbxassetid://12360893247", Rate = 400, Lifetime = NumberRange.new(1), Speed = NumberRange.new(0.1), Size = NS(0, 0, 0.11, 7.8, 0.41, 12.4, 1, 14.15), Color = ColorSequence.new(c), Rotation = NumberRange.new(-360, 360), Orientation = VP, TimeScale = 0.5, Shape = Enum.ParticleEmitterShape.Disc, ShapePartial = 0, FlipbookLayout = GR, FlipbookMode = FM.Loop, FlipbookFramerate = NumberRange.new(24), LockedToPart = true, Brightness = 5 }
+		end
+		local function pRing(c)
+			return { Texture = "rbxassetid://12360893247", Rate = 400, Lifetime = NumberRange.new(1.5), Speed = NumberRange.new(0.1), Size = NS(0, 0, 0.05, 11.89, 0.15, 18.09, 0.5, 20.5, 0.7, 20.04, 0.876, 19.09, 0.952, 15.46, 1, 0), Color = ColorSequence.new(c), Rotation = NumberRange.new(-360, 360), EmissionDirection = Enum.NormalId.Back, Orientation = VP, Shape = SPH, ShapeStyle = SURF, ShapePartial = 0.047, FlipbookLayout = GR, FlipbookMode = FM.Loop, FlipbookFramerate = NumberRange.new(24), LockedToPart = true, Brightness = 5 }
+		end
+		local function pSplash()
+			return { Texture = "rbxassetid://16144040679", Rate = 400, Lifetime = NumberRange.new(0.5, 1.5), Speed = NumberRange.new(100, 300), Size = NS(0, 50, 1, 50), Transparency = NS(0, 0, 1, 1), Rotation = NumberRange.new(90), SpreadAngle = Vector2.new(40, 40), Acceleration = Vector3.new(0, -40, 0), LightEmission = 1, Orientation = VL, Squash = NS(0, 1, 1, -1), FlipbookLayout = GR, FlipbookMode = FM.OneShot, FlipbookFramerate = NumberRange.new(1) }
+		end
+		local function pRipple()
+			return { Texture = "rbxassetid://9872919636", Rate = 2, Lifetime = NumberRange.new(5, 8), Speed = NumberRange.new(0.1), Size = NS(0, 0, 1, 300), Color = ColorSequence.new(Color3.new(1, 0, 0)), Transparency = NS(0, 0.9, 1, 1), Rotation = NumberRange.new(0, 360), Orientation = VP, Shape = SPH, ShapePartial = 0, FlipbookLayout = GR, FlipbookMode = FM.OneShot, FlipbookFramerate = NumberRange.new(1) }
+		end
+		local function snd(parent, id, vol, speed, dur, tp, loop)
+			if not CONFIG.Sounds then return end
+			local s = Instance.new("Sound")
+			s.SoundId = "rbxassetid://" .. id
+			s.Volume = vol
+			s.PlaybackSpeed = speed or 1
+			s.TimePosition = tp or 0
+			s.RollOffMode = Enum.RollOffMode.Linear
+			s.RollOffMinDistance = 10
+			s.RollOffMaxDistance = 300
+			s.Looped = loop == true
+			s.Parent = parent
+			s:Play()
+			Debris:AddItem(s, dur + 0.5)
+			return s
+		end
+		local function guiParent()
+			local okH, hui = pcall(function() return gethui() end)
+			return (okH and hui) or lp:WaitForChild("PlayerGui")
+		end
+		local function isChar(p)
+			local m = p:FindFirstAncestorOfClass("Model")
+			while m do
+				if m:FindFirstChildOfClass("Humanoid") or Players:GetPlayerFromCharacter(m) or m:FindFirstChild("HumanoidRootPart") or m:FindFirstChild("Torso") or m:FindFirstChild("UpperTorso") then return true end
+				m = m.Parent and m.Parent:FindFirstAncestorOfClass("Model")
+			end
+			return false
+		end
+		local function blackout(center, rad, excl)
+			local out = {}
+			local op = OverlapParams.new()
+			op.FilterType = Enum.RaycastFilterType.Exclude
+			op.FilterDescendantsInstances = excl
+			local ok, parts = pcall(function() return workspace:GetPartBoundsInRadius(center, rad, op) end)
+			if not ok then return out end
+			for _, p in ipairs(parts) do
+				pcall(function()
+					if not out[p] and not p:IsA("Terrain") and p.Size.Magnitude < rad * 3 and not p:GetAttribute("_Replay") and not isChar(p) then
+						out[p] = { p.Color, p:IsA("MeshPart") and p.TextureID or false }
+						p.Color = Color3.new(0, 0, 0)
+						if p:IsA("MeshPart") then p.TextureID = "" end
+						for _, c in ipairs(p:GetChildren()) do
+							if (c:IsA("Decal") or c:IsA("Texture")) and not out[c] then
+								out[c] = c.Transparency
+								c.Transparency = 1
+							end
+						end
+					end
+				end)
+			end
+			return out
+		end
+		local function victims(center, rad, selfChar)
+			local out, seen = {}, {}
+			local function add(m, h, part, plr, npc)
+				if seen[m] or not part or not part.Parent then return end
+				if plr and not (PVP.isPeer and PVP.isPeer(plr)) then return end
+				if (part.Position - center).Magnitude > rad then return end
+				seen[m] = true
+				out[#out + 1] = { model = m, hum = h, part = part, plr = plr, npc = npc }
+			end
+			for h in pairs(npcHums) do
+				local m = h.Parent
+				if m and h.Health > 0 and m:IsA("Model") and m ~= lp.Character and m ~= selfChar then
+					local plr = Players:GetPlayerFromCharacter(m)
+					add(m, h, bodyOf(m), plr, plr == nil)
+				end
+			end
+			for _, b in ipairs(state.scanBodies({ Position = center }, rad)) do
+				if b.model ~= selfChar then add(b.model, b.hum, b.part, b.plr, b.plr == nil) end
+			end
+			return out
+		end
+		local function attachSlash(part)
+			local a = Instance.new("Attachment")
+			a.Parent = part
+			local s = CONFIG.DomainSlashScale or 0.6
+			local base = { Rate = 200, Speed = NumberRange.new(0.1), Size = NS(0, 75.3287 * s, 1, 0), SpreadAngle = Vector2.new(360, 360), Orientation = VL, Squash = NS(0, 10, 1, 10), Shape = SPH, Brightness = 1000 }
+			local p1, p2 = {}, {}
+			for k, v in pairs(base) do p1[k], p2[k] = v, v end
+			p1.Texture, p1.Lifetime = "rbxassetid://15407518755", NumberRange.new(0.1)
+			p2.Texture, p2.Lifetime = "rbxassetid://995724625", NumberRange.new(0.05)
+			emitter(a, p1, 0, true)
+			emitter(a, p2, 0, true)
+			return a
+		end
+		local function buildShrine(parent)
+			local red = Color3.fromRGB(196, 40, 28)
+			local dark = Color3.fromRGB(27, 42, 53)
+			local green = Color3.fromRGB(65, 109, 86)
+			local orange = Color3.fromRGB(213, 115, 61)
+			local BRICK = Enum.Material.Brick
+			local H = 3 -- height of the stepped base
+			local PLASTIC = Enum.Material.Plastic
+			-- { name, size, offset from the ground pivot, color, material, turned 180 degrees }
+			local spec = {
+				{ "Shrine", Vector3.new(11, 15, 11), Vector3.new(0, 7.5, 0), dark, PLASTIC },
+				{ "Roof1", Vector3.new(17, 2, 17), Vector3.new(0, 14, 0), red, PLASTIC },
+				{ "Roof2", Vector3.new(13, 1, 13), Vector3.new(0, 12.5, 0), red, PLASTIC },
+				{ "Pillar1", Vector3.new(2, 15, 2), Vector3.new(6.5, 7.5, 6.5), red, PLASTIC },
+				{ "Pillar2", Vector3.new(2, 15, 2), Vector3.new(-6.5, 7.5, -6.5), red, PLASTIC },
+				{ "Pillar3", Vector3.new(2, 15, 2), Vector3.new(-6.5, 7.5, 6.5), red, PLASTIC },
+				{ "Pillar4", Vector3.new(2, 15, 2), Vector3.new(6.5, 7.5, -6.5), red, PLASTIC },
+				{ "SidePillarL", Vector3.new(2, 15, 2), Vector3.new(-11, 7.5, 0), red, PLASTIC },
+				{ "SidePillarR", Vector3.new(2, 15, 2), Vector3.new(11, 7.5, 0), red, PLASTIC },
+				{ "CornerPillar1", Vector3.new(2, 15, 2), Vector3.new(11, 7.5, 11), red, PLASTIC },
+				{ "CornerPillar2", Vector3.new(2, 15, 2), Vector3.new(-11, 7.5, 11), red, PLASTIC },
+				{ "CornerPillar3", Vector3.new(2, 15, 2), Vector3.new(11, 7.5, -11), red, PLASTIC },
+				{ "CornerPillar4", Vector3.new(2, 15, 2), Vector3.new(-11, 7.5, -11), red, PLASTIC },
+				{ "Eave1", Vector3.new(25, 1, 25), Vector3.new(0, 15.5, 0), orange, BRICK },
+				{ "Eave2", Vector3.new(26, 1, 26), Vector3.new(0, 16.5, 0), green, BRICK },
+				{ "Post1", Vector3.new(2, 10, 2), Vector3.new(-11, 21, 0), dark, PLASTIC },
+				{ "Post2", Vector3.new(2, 10, 2), Vector3.new(-6, 25, 0), dark, PLASTIC },
+				{ "Post3", Vector3.new(2, 10, 2), Vector3.new(11, 21, 0), dark, PLASTIC, true },
+				{ "Post4", Vector3.new(2, 10, 2), Vector3.new(6, 25, 0), dark, PLASTIC, true },
+			}
+			local model = Instance.new("Model")
+			model.Name = "Shrine"
+			local list = {}
+			local function finish(p, rel)
+				p.Anchored = true
+				p.CanCollide = false
+				p.CanQuery = false
+				p.CanTouch = false
+				p.CastShadow = false
+				p.Massless = true
+				p.TopSurface = Enum.SurfaceType.Smooth
+				p.BottomSurface = Enum.SurfaceType.Smooth
+				p.Parent = model
+				list[#list + 1] = { p = p, rel = rel }
+			end
+			for _, d in ipairs(spec) do
+				local p = Instance.new("Part")
+				p.Name = d[1]
+				p.Size = d[2]
+				p.Color = d[4]
+				p.Material = d[5]
+				local rel = CFrame.new(d[3] + Vector3.new(0, H, 0)) * (d[6] and CFrame.Angles(0, math.pi, 0) or CFrame.new())
+				finish(p, rel)
+				if d[1] == "Shrine" then
+					for _, face in ipairs({ Enum.NormalId.Front, Enum.NormalId.Right, Enum.NormalId.Back, Enum.NormalId.Left }) do
+						local dc = Instance.new("Decal")
+						dc.Texture = "rbxassetid://12675596563"
+						dc.Face = face
+						dc.Parent = p
+					end
+				end
+			end
+			-- stepped stone base
+			for i, bs in ipairs({ 32, 29, 26 }) do
+				local tier = Instance.new("Part")
+				tier.Name = "Base" .. i
+				tier.Size = Vector3.new(bs, 1, bs)
+				tier.Color = Color3.fromRGB(95, 97, 104)
+				tier.Material = Enum.Material.Slate
+				finish(tier, CFrame.new(0, i - 0.5, 0))
+			end
+			-- curved roof (mesh); falls back to a flat slab if the mesh can't be created
+			local roof
+			local okI, mesh = pcall(function()
+				return game:GetService("InsertService"):CreateMeshPartAsync("rbxassetid://15440301553", Enum.CollisionFidelity.Default, Enum.RenderFidelity.Precise)
+			end)
+			if okI and mesh then
+				roof = mesh
+			else
+				local ok2, mp = pcall(Instance.new, "MeshPart")
+				if ok2 and mp then
+					pcall(function() mp.MeshId = "rbxassetid://15440301553" end)
+					if mp.MeshId ~= "" then roof = mp else mp:Destroy() end
+				end
+			end
+			if roof then
+				roof.Name = "Roof"
+				roof.Size = Vector3.new(22.2857, 12, 22.2857)
+				roof.Color = green
+				roof.Material = BRICK
+				pcall(function() roof.RenderFidelity = Enum.RenderFidelity.Precise end)
+				finish(roof, CFrame.new(0, 23 + H, 0))
+			else
+				local slab = Instance.new("Part")
+				slab.Name = "Roof"
+				slab.Size = Vector3.new(22.3, 2, 22.3)
+				slab.Color = green
+				slab.Material = BRICK
+				finish(slab, CFrame.new(0, 18 + H, 0))
+			end
+			model.Parent = parent
+			return {
+				model = model,
+				setBase = function(cf)
+					for _, e in ipairs(list) do e.p.CFrame = cf * e.rel end
+				end,
+				fade = function(t)
+					for _, e in ipairs(list) do
+						pcall(function() TweenService:Create(e.p, TweenInfo.new(t), { Transparency = 1 }):Play() end)
+						for _, c in ipairs(e.p:GetChildren()) do
+							if c:IsA("Decal") then
+								pcall(function() TweenService:Create(c, TweenInfo.new(t), { Transparency = 1 }):Play() end)
+							end
+						end
+					end
+				end,
+			}
+		end
+		local function tile(dur)
+			local g = Instance.new("ScreenGui")
+			g.Name = "YujiDomainTile"
+			g.ResetOnSpawn = false
+			g.DisplayOrder = 40
+			g.Parent = guiParent()
+			local cyan = Color3.new(0.333333, 1, 1)
+			local f = new("Frame", { AnchorPoint = Vector2.new(0.5, 1), Position = UDim2.new(0.5, 0, 1, -160), Size = UDim2.fromOffset(60, 60), BackgroundColor3 = Color3.new(0.121569, 0.121569, 0.121569), BackgroundTransparency = 0.5, BorderSizePixel = 0 }, g)
+			new("UIStroke", { Color = cyan, Thickness = 2, LineJoinMode = Enum.LineJoinMode.Miter }, f)
+			local cd = new("Frame", { AnchorPoint = Vector2.new(0.5, 1), Position = UDim2.new(0.5, 0, 1, 0), Size = UDim2.new(1, 0, 1, 0), BackgroundColor3 = cyan, BorderSizePixel = 0 }, f)
+			new("TextLabel", { Size = UDim2.new(1, 0, 1, 0), BackgroundTransparency = 1, Text = "Malevolent Shrine", TextColor3 = WHITE3, TextSize = 14, Font = Enum.Font.SourceSans, TextWrapped = true, ZIndex = 2 }, f)
+			local key = new("TextLabel", { AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.new(0.5, 0, 0, 0), Size = UDim2.new(0.5, 0, 0.5, 0), BackgroundTransparency = 1, Text = "4", TextColor3 = WHITE3, TextScaled = true, Font = Enum.Font.GothamBold, ZIndex = 3 }, f)
+			new("UIStroke", { Color = BLACK3, Thickness = 1 }, key)
+			TweenService:Create(cd, TweenInfo.new(dur, Enum.EasingStyle.Linear), { Size = UDim2.new(1, 0, 0, 0) }):Play()
+			return g
+		end
+		local function banner(srcChar)
+			local g = Instance.new("ScreenGui")
+			g.Name = "YujiDomainWarn"
+			g.ResetOnSpawn = false
+			g.IgnoreGuiInset = true
+			g.DisplayOrder = 50
+			g.Parent = guiParent()
+			local band = new("Frame", { AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.new(0.5, 0, 0.43, 0), Size = UDim2.new(1.5, 0, 0, 0), Rotation = -7, BackgroundTransparency = 1, BorderSizePixel = 0 }, g)
+			new("ImageLabel", { AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.new(0.5, 0, 0.5, 0), Size = UDim2.new(0.8, 0, 0.8, 0), Rotation = 7, BackgroundTransparency = 1, Image = "rbxassetid://14812133399", ZIndex = 1 }, band)
+			local vp = new("ViewportFrame", { AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.new(0.5, 0, 0.5, 0), Size = UDim2.new(0.36, 0, 1.5, 0), Rotation = 7, BackgroundTransparency = 1, Ambient = Color3.fromRGB(170, 170, 170), LightColor = Color3.new(1, 0.607843, 0.607843), ZIndex = 2 }, band)
+			local function tx(txt, pos)
+				local l = new("TextLabel", { AnchorPoint = Vector2.new(0.5, 0.5), Position = pos, Size = UDim2.new(0.3, 0, 0.3, 0), Rotation = 7, BackgroundTransparency = 1, Text = txt, TextColor3 = BLACK3, Font = Enum.Font.Highway, TextScaled = true, ZIndex = 3 }, band)
+				new("UIStroke", { Color = WHITE3, Thickness = 5 }, l)
+				return l
+			end
+			local t1, t2 = tx("DOMAIN", UDim2.new(0.4, 0, 0, 0)), tx("EXPANSION", UDim2.new(0.6, 0, 1, 0))
+			local qo = Enum.EasingStyle.Quad
+			TweenService:Create(band, TweenInfo.new(0.5, qo, Enum.EasingDirection.Out), { Size = UDim2.new(1.5, 0, 0.4, 0) }):Play()
+			TweenService:Create(band, TweenInfo.new(1.2, qo, Enum.EasingDirection.Out), { Position = UDim2.new(0.5, 0, 0.3, 0) }):Play()
+			task.delay(0.64, function()
+				local ti = TweenInfo.new(0.64, Enum.EasingStyle.Linear)
+				for _, l in ipairs({ t1, t2 }) do
+					TweenService:Create(l, ti, { TextTransparency = 1 }):Play()
+					TweenService:Create(l:FindFirstChildOfClass("UIStroke"), ti, { Transparency = 1 }):Play()
+				end
+			end)
+			task.delay(1.15, function() TweenService:Create(band, TweenInfo.new(0.15), { Size = UDim2.new(1.5, 0, 0, 0) }):Play() end)
+			task.delay(1.4, function() g:Destroy() end)
+			task.spawn(function()
+				if not srcChar then return end
+				local was = srcChar.Archivable
+				srcChar.Archivable = true
+				local ok, c = pcall(function() return srcChar:Clone() end)
+				srcChar.Archivable = was
+				if not ok or not c then return end
+				for _, d in ipairs(c:GetDescendants()) do
+					if d:IsA("LuaSourceContainer") or d:IsA("Sound") or d:IsA("ParticleEmitter") or d:IsA("Tool") then pcall(function() d:Destroy() end) end
+				end
+				pcall(function()
+					local ch = c:FindFirstChildOfClass("Humanoid")
+					if ch then
+						ch.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.None
+						ch.HealthDisplayType = Enum.HumanoidHealthDisplayType.AlwaysOff
+						ch.BreakJointsOnDeath = false
+						ch.RequiresNeck = false
+						ch.EvaluateStateMachine = false
+					end
+				end)
+				local root = bodyOf(c)
+				if not root then c:Destroy() return end
+				c.PrimaryPart = root
+				for _, d in ipairs(c:GetDescendants()) do
+					if d:IsA("BasePart") then
+						d.Anchored = false
+						d.Massless = true
+					end
+				end
+				root.Anchored = true
+				c:PivotTo(CFrame.new(0, 0, 0))
+				local wm = Instance.new("WorldModel")
+				wm.Parent = vp
+				c.Parent = wm
+				local cam = Instance.new("Camera")
+				cam.FieldOfView = 45
+				cam.CFrame = CFrame.lookAt(Vector3.new(0, 0.9, -4.6), Vector3.new(0, 0.9, 0))
+				cam.Parent = vp
+				vp.CurrentCamera = cam
+				local motors = state.collectMotors(c, ANIMS.Domain.joints)
+				local tA = os.clock()
+				local conn
+				conn = RunService.RenderStepped:Connect(function(dt)
+					if not g.Parent then conn:Disconnect() return end
+					sampleAnim(ANIMS.Domain, os.clock() - tA, motors)
+					pcall(function() wm:StepPhysics(dt, { c }) end)
+				end)
+			end)
+		end
+		state.domainRun = function(cf0, srcChar, dur, owner)
+			if stopCur then stopCur() end
+			local RAD = CONFIG.DomainRadius
+			local shatter = math.min(CONFIG.DomainShatterAt, dur)
+			local center = cf0.Position
+			local viewer = owner == true
+			if not viewer then
+				local vc = lp.Character
+				local vr = vc and bodyOf(vc)
+				viewer = vr ~= nil and Vector3.new(vr.Position.X - center.X, 0, vr.Position.Z - center.Z).Magnitude <= (CONFIG.DomainPullRange or 70)
+			end
+			local folder = Instance.new("Folder")
+			folder.Name = "YujiDomain"
+			folder.Parent = workspace
+			local anchor = Instance.new("Part")
+			anchor.Anchored = true
+			anchor.CanCollide = false
+			anchor.CanQuery = false
+			anchor.CanTouch = false
+			anchor.Transparency = 1
+			anchor.Size = Vector3.new(0.2, 0.2, 0.2)
+			anchor.CFrame = cf0
+			anchor.Parent = folder
+			local live, t0 = true, os.clock()
+			local music = {}
+			local saved, slashes, inside0 = {}, {}, {}
+			local dome, shrine
+			local barrierOn, slashOn, selfInside0 = false, false, false
+			local exclude = { folder }
+			if lp.Character then exclude[#exclude + 1] = lp.Character end
+			if srcChar then exclude[#exclude + 1] = srcChar end
+			local rp = RaycastParams.new()
+			rp.FilterType = Enum.RaycastFilterType.Exclude
+			rp.FilterDescendantsInstances = exclude
+			local function gy(pos)
+				local r = workspace:Raycast(pos + Vector3.new(0, 10, 0), Vector3.new(0, -80, 0), rp)
+				return r and r.Position.Y or pos.Y - 3
+			end
+			local gyC = gy(center)
+			local shPos = (cf0 * CFrame.new(0, 0, 22)).Position
+			local shY = gy(shPos)
+			local shBase = CFrame.lookAt(Vector3.new(shPos.X, shY, shPos.Z), Vector3.new(center.X, shY, center.Z))
+			local function at(t, fn, always)
+				if not viewer and not always then return end
+				task.delay(t, function()
+					if not live then return end
+					local ok, e = pcall(fn)
+					if not ok then warn("[Domain] " .. tostring(e)) end
+				end)
+			end
+			local function em(cf, props, count, on, life)
+				local h = Instance.new("Part")
+				h.Anchored = true
+				h.CanCollide = false
+				h.CanQuery = false
+				h.CanTouch = false
+				h.Transparency = 1
+				h.Size = Vector3.new(0.2, 0.2, 0.2)
+				h.CFrame = cf
+				h.Parent = folder
+				local a = Instance.new("Attachment")
+				a.Parent = h
+				Debris:AddItem(h, (life or 3) + 2)
+				return emitter(a, props, count, on)
+			end
+			local function blackFloor()
+				local rpf = RaycastParams.new()
+				rpf.FilterType = Enum.RaycastFilterType.Exclude
+				rpf.FilterDescendantsInstances = exclude
+				rpf.RespectCanCollide = true
+				for i = 0, 12 do
+					local ang = i * math.pi / 6
+					local rr = (i == 0) and 0 or RAD * ((i % 2 == 0) and 0.85 or 0.45)
+					local pos = center + Vector3.new(math.cos(ang) * rr, 0, math.sin(ang) * rr)
+					local r = workspace:Raycast(pos + Vector3.new(0, 8, 0), Vector3.new(0, -150, 0), rpf)
+					local p = r and r.Instance
+					if p and p:IsA("BasePart") and not p:IsA("Terrain") and not saved[p] and not p:GetAttribute("_Replay") and not isChar(p) then
+						pcall(function()
+							saved[p] = { p.Color, p:IsA("MeshPart") and p.TextureID or false }
+							p.Color = Color3.new(0, 0, 0)
+							if p:IsA("MeshPart") then p.TextureID = "" end
+							for _, c in ipairs(p:GetChildren()) do
+								if (c:IsA("Decal") or c:IsA("Texture")) and not saved[c] then
+									saved[c] = c.Transparency
+									c.Transparency = 1
+								end
+							end
+						end)
+					end
+				end
+			end
+			local terrainSaved
+			local function blackTerrain()
+				pcall(function()
+					local T = workspace.Terrain
+					terrainSaved = {}
+					for _, m in ipairs(Enum.Material:GetEnumItems()) do
+						if m ~= Enum.Material.Air then
+							local okc, col = pcall(function() return T:GetMaterialColor(m) end)
+							if okc then
+								terrainSaved[m] = col
+								pcall(function() T:SetMaterialColor(m, Color3.new(0, 0, 0)) end)
+							end
+						end
+					end
+				end)
+			end
+			local function restore()
+				if terrainSaved then
+					for m, col in pairs(terrainSaved) do
+						pcall(function() workspace.Terrain:SetMaterialColor(m, col) end)
+					end
+					terrainSaved = nil
+				end
+				for o, v in pairs(saved) do
+					pcall(function()
+						if typeof(v) == "table" then
+							o.Color = v[1]
+							if v[2] then o.TextureID = v[2] end
+						else
+							o.Transparency = v
+						end
+					end)
+				end
+				saved = {}
+			end
+			local function clearSlashes(keep)
+				for m, a in pairs(slashes) do
+					if not (keep and keep[m]) then
+						pcall(function() a:Destroy() end)
+						slashes[m] = nil
+					end
+				end
+			end
+			local function push(part)
+				local dir = Vector3.new(part.Position.X - center.X, 0, part.Position.Z - center.Z)
+				dir = dir.Magnitude > 0.1 and dir.Unit or Vector3.new(1, 0, 0)
+				local np = Vector3.new(center.X + dir.X * (RAD + 2.5), part.Position.Y, center.Z + dir.Z * (RAD + 2.5))
+				pcall(function()
+					part.CFrame = CFrame.new(np) * (part.CFrame - part.CFrame.Position)
+					part.AssemblyLinearVelocity = dir * 25
+				end)
+			end
+			local zoomSaved
+			local function restoreZoom()
+				if zoomSaved then
+					pcall(function() lp.CameraMaxZoomDistance = zoomSaved[1] end)
+					zoomSaved = nil
+				end
+			end
+			local function stop()
+				if not live then return end
+				live = false
+				restoreZoom()
+				for _, m in ipairs(music) do pcall(function() m:Destroy() end) end
+				restore()
+				clearSlashes()
+				pcall(function() folder:Destroy() end)
+				if stopCur == stop then stopCur = nil end
+				if _G.YujiDomainStop == stop then _G.YujiDomainStop = nil end
+			end
+			stopCur = stop
+			_G.YujiDomainStop = stop
+			if owner then boostFor(dur + 2) end
+			at(0.147, function() banner(srcChar) end)
+			at(0.075, function() local m = snd(anchor, 7817341182, 4, 1, 20) if m then music[#music + 1] = m end end)
+			at(0.103, function() snd(anchor, 3059775781, 0.6, 1, 2.2, 0.1) end)
+			for _, k in ipairs({ { 0.024, 1 }, { 0.067, 15 }, { 0.095, 1 }, { 0.186, 15 } }) do
+				at(k[1], function() em(cf0, pSpark(), k[2], false, 1) end)
+			end
+			at(0.176, function()
+				local b = Instance.new("Part")
+				b.Shape = Enum.PartType.Ball
+				b.Material = Enum.Material.ForceField
+				b.Color = Color3.fromRGB(248, 248, 248)
+				b.Anchored = true
+				b.CanCollide = false
+				b.CanQuery = false
+				b.CastShadow = false
+				b.Size = Vector3.new(1, 1, 1)
+				b.CFrame = cf0
+				b.Parent = folder
+				TweenService:Create(b, TweenInfo.new(0.35, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Size = Vector3.new(30, 30, 30), Transparency = 1 }):Play()
+				Debris:AddItem(b, 0.5)
+			end)
+			for _, t in ipairs({ 1.224, 1.249, 1.305 }) do
+				at(t, function() em(cf0, pShatter(Color3.new(1, 1, 1)), 15, false, 2.5) end)
+			end
+			for _, k in ipairs({ { 1.286, 0.6, 28 }, { 1.55, 0.7, 36 } }) do
+				at(k[1], function()
+					local b = Instance.new("Part")
+					b.Shape = Enum.PartType.Ball
+					b.Anchored = true
+					b.CanCollide = false
+					b.CanQuery = false
+					b.CanTouch = false
+					b.CastShadow = false
+					b.Material = Enum.Material.Neon
+					b.Color = Color3.new(0, 0, 0)
+					b.Size = Vector3.new(2, 2, 2)
+					b.CFrame = cf0
+					b.Parent = folder
+					TweenService:Create(b, TweenInfo.new(k[2], Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Size = Vector3.new(k[3], k[3], k[3]), Transparency = 1 }):Play()
+					Debris:AddItem(b, k[2] + 0.3)
+				end)
+			end
+			-- sound played right on the local player (distance 0 = always full volume), same as the logger does for positional sounds
+			local function s2d(id, vol, life, tp, mode, maxd)
+				if not CONFIG.Sounds then return end
+				local so = Instance.new("Sound")
+				so.SoundId = "rbxassetid://" .. id
+				so.Volume = vol
+				so.PlaybackSpeed = 1
+				so.Looped = false
+				so.RollOffMode = mode
+				so.RollOffMinDistance = 10
+				so.RollOffMaxDistance = maxd
+				local lc = lp.Character
+				local lroot = lc and bodyOf(lc)
+				so.Parent = (lroot and lroot.Parent) and lroot or anchor
+				so.TimePosition = tp
+				so:Play()
+				Debris:AddItem(so, life)
+				music[#music + 1] = so
+				task.delay(2, function()
+					if so.Parent and (not so.IsLoaded or so.TimeLength == 0) then
+						warn("[Domain] sound blocked or failed to load: " .. tostring(id))
+					end
+				end)
+				return so
+			end
+			at(1.41, function()
+				s2d(131653104888853, 3, 30, 0, Enum.RollOffMode.InverseTapered, 10000) -- Ring
+				s2d(15583493700, 1, 20, 2, Enum.RollOffMode.Linear, 300) -- Music
+			end)
+			at(0, function()
+				s2d(15583493700, 1, 30.9004, 0, Enum.RollOffMode.Linear, 300) -- Music2 (TimePosition 0)
+			end)
+			at(1.4346, function() snd(anchor, 8181034930, 3, 1, 8.8) end)
+			at(2.968, function()
+				local e = em(CFrame.new(center.X, gyC + 0.1, center.Z), pRipple(), 15, true, 16)
+				task.delay(14, function() pcall(function() e.Enabled = false end) end)
+			end)
+			at(2.981, function() snd(anchor, 9120548819, 3, 1, 10, 0.15) end)
+			at(3.2, function()
+				local d
+				local ok, mp = pcall(Instance.new, "MeshPart")
+				if ok and mp then
+					pcall(function() mp.MeshId = "rbxassetid://4729380505" end)
+					if mp.MeshId ~= "" then d = mp else mp:Destroy() end
+				end
+				if not d then
+					d = Instance.new("Part")
+					d.Shape = Enum.PartType.Ball
+				end
+				d.Name = "Domain"
+				d.Anchored = true
+				d.CanCollide = false
+				d.CanQuery = false
+				d.CanTouch = false
+				d.CastShadow = false
+				d.Material = Enum.Material.Neon
+				d.Color = Color3.new(0, 0, 0)
+				d.Size = Vector3.new(RAD * 2, RAD * 2, RAD * 2)
+				d.CFrame = cf0
+				d.Parent = folder
+				dome = d
+				local full = d.Size
+				d.Size = full * 0.05
+				TweenService:Create(d, TweenInfo.new(0.6, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Size = full }):Play()
+				if not viewer then return end
+				if CONFIG.DomainBlack then saved = blackout(center, RAD, exclude) blackFloor() blackTerrain() end
+				state.shake(2, 0.6)
+				kickCamera(1.5)
+				for _, v in ipairs(victims(center, RAD, srcChar)) do inside0[v.model] = true end
+				local lc = lp.Character
+				local lr = lc and bodyOf(lc)
+				selfInside0 = lr ~= nil and (lr.Position - center).Magnitude <= RAD
+				barrierOn = true
+				task.spawn(function()
+					local lc0 = lp.Character
+					local r0 = lc0 and bodyOf(lc0)
+					if not r0 then return end
+					local off0 = Vector3.new(r0.Position.X - center.X, 0, r0.Position.Z - center.Z)
+					if off0.Magnitude > (CONFIG.DomainPullRange or 120) then return end
+					zoomSaved = { lp.CameraMaxZoomDistance }
+					local lim = math.max(RAD - 6, 4)
+					if off0.Magnitude > lim then
+						local dir = off0.Magnitude > 0.1 and off0.Unit or Vector3.new(1, 0, 0)
+						local tp = Vector3.new(center.X + dir.X * RAD * 0.5, 0, center.Z + dir.Z * RAD * 0.5)
+						tp = Vector3.new(tp.X, gy(tp) + 3, tp.Z)
+						local from = r0.Position
+						local ts = os.clock()
+						while live and os.clock() - ts < 0.5 do
+							local a = math.clamp((os.clock() - ts) / 0.5, 0, 1)
+							a = 1 - (1 - a) ^ 2
+							local lr = lp.Character and bodyOf(lp.Character)
+							if not lr then restoreZoom() return end
+							pcall(function()
+								lr.CFrame = CFrame.new(from:Lerp(tp, a)) * (lr.CFrame - lr.CFrame.Position)
+								lr.AssemblyLinearVelocity = Vector3.zero
+							end)
+							RunService.Heartbeat:Wait()
+						end
+					end
+					while live and os.clock() - t0 < shatter do
+						local lr = lp.Character and bodyOf(lp.Character)
+						if lr then
+							local off = Vector3.new(lr.Position.X - center.X, 0, lr.Position.Z - center.Z)
+							if off.Magnitude > lim then
+								local dir = off.Unit
+								pcall(function()
+									lr.CFrame = CFrame.new(center.X + dir.X * lim, lr.Position.Y, center.Z + dir.Z * lim) * (lr.CFrame - lr.CFrame.Position)
+									local v = lr.AssemblyLinearVelocity
+									local outv = v.X * dir.X + v.Z * dir.Z
+									if outv > 0 then lr.AssemblyLinearVelocity = v - Vector3.new(dir.X, 0, dir.Z) * outv end
+								end)
+							end
+							pcall(function()
+								lp.CameraMaxZoomDistance = math.clamp(RAD - math.min(off.Magnitude, lim) - 0.5, 3, zoomSaved[1])
+							end)
+						end
+						RunService.Heartbeat:Wait()
+					end
+					restoreZoom()
+				end)
+				task.spawn(function()
+					while live and os.clock() - t0 < shatter do
+						local vs = victims(center, RAD + 6, srcChar)
+						local mine = (not owner) and lp.Character and bodyOf(lp.Character)
+						if mine then vs[#vs + 1] = { model = lp.Character, part = mine, me = true } end
+						local keep = {}
+						for _, v in ipairs(vs) do
+							local dd = (v.part.Position - center).Magnitude
+							if dd <= RAD then
+								keep[v.model] = true
+								if slashOn and not slashes[v.model] then slashes[v.model] = attachSlash(v.part) end
+							end
+							local was = v.me and selfInside0 or inside0[v.model]
+							if barrierOn and dd <= RAD and not was and (owner and v.npc) then push(v.part) end
+						end
+						clearSlashes(keep)
+						task.wait(0.1)
+					end
+				end)
+			end, true)
+			at(4.52, function()
+				slashOn = true
+				do
+					local hp = Instance.new("Part")
+					hp.Anchored = true
+					hp.CanCollide = false
+					hp.CanQuery = false
+					hp.CanTouch = false
+					hp.Transparency = 1
+					hp.Size = Vector3.new(RAD * 1.6, RAD * 1.6, RAD * 1.6)
+					hp.CFrame = cf0
+					hp.Parent = folder
+					local ha = Instance.new("Attachment")
+					ha.Parent = hp
+					local redE = emitter(ha, { Texture = "rbxassetid://16144047329", Rate = 120, Lifetime = NumberRange.new(0.4, 0.8), Speed = NumberRange.new(-200, 200), Size = NS(0, 50 * 0.6, 1, 50 * 0.6), Color = CSq(0, Color3.new(0.333333, 0, 0), 0.5, Color3.new(0.663206, 0.240613, 0.240613), 1, Color3.new(1, 0.486275, 0.486275)), Transparency = NS(0, 1, 0.2, 0, 0.5, 0, 1, 1), SpreadAngle = Vector2.new(360, 360), Acceleration = Vector3.new(0, -15, 0), Drag = 5, Orientation = VL, ZOffset = 30, Shape = SPH, ShapeInOut = Enum.ParticleEmitterShapeInOut.Inward, ShapeStyle = SURF, ShapePartial = 0.45, FlipbookLayout = GR, FlipbookMode = FM.Loop, FlipbookFramerate = NumberRange.new(1, 80), FlipbookStartRandom = true }, 0, true)
+					task.delay(math.max(shatter - 4.52, 0), function() pcall(function() redE.Enabled = false end) end)
+				end
+				task.spawn(function()
+					local n = 0
+					local lastBlk = 0
+					local iv = 1 / math.max(CONFIG.DomainHitsPerSec, 1)
+					while live and os.clock() - t0 < shatter do
+						n += 1
+						if owner then
+							boostFor(3)
+							for i, v in ipairs(victims(center, RAD, srcChar)) do
+								if v.npc then
+									playNpcAnim(v.model, "NpcHit" .. ((n + i) % 3 + 1))
+									playSoundAt(v.part, DSFX)
+									state.hurtNpc(v.model, v.hum, v.part, CONFIG.DomainDamage)
+								elseif v.plr then
+									playNpcAnim(v.model, "NpcHit" .. ((n + i) % 3 + 1))
+									playSoundAt(v.part, DSFX)
+								end
+							end
+						else
+							for i, v in ipairs(victims(center, RAD, srcChar)) do
+								if v.plr then
+									playNpcAnim(v.model, "NpcHit" .. ((n + i) % 3 + 1))
+								end
+							end
+							local lc = lp.Character
+							local lr = lc and bodyOf(lc)
+							local hm = lc and lc:FindFirstChildOfClass("Humanoid")
+							if lr and hm and hm.Health > 0 and (lr.Position - center).Magnitude <= RAD then
+								if overlay.blocking then
+									playSoundAt(lr, DSFX)
+									if os.clock() - lastBlk >= 0.4 then
+										lastBlk = os.clock()
+										triggerBlockHit(lr)
+									end
+								else
+									cancelAll()
+									playSoundAt(lr, DSFX)
+									kickCamera(0.4)
+									local nm = "NpcHit" .. (n % 3 + 1)
+									if not play(nm, function() refreshAir() end, "action") then playNpcAnim(lc, nm) end
+								end
+							end
+						end
+						task.wait(iv)
+					end
+				end)
+			end)
+			at(CONFIG.DomainShrineAt, function()
+				local sh = buildShrine(folder)
+				if not sh then return end
+				shrine = sh
+				local rise = CONFIG.DomainShrineRise or 7
+				local depth = 36
+				sh.setBase(shBase * CFrame.new(0, -depth, 0))
+				task.spawn(function()
+					local ts = os.clock()
+					local lastDust = -10
+					while live do
+						local el = os.clock() - ts
+						local a = math.clamp(el / rise, 0, 1)
+						local e = a * a * (3 - 2 * a)
+						sh.setBase(shBase * CFrame.new(0, -depth * (1 - e), 0))
+						if a < 1 and el - lastDust >= 0.9 then
+							lastDust = el
+							pcall(state.gfx.dust, shBase, Color3.fromRGB(120, 110, 100), 1.4)
+						end
+						if a >= 1 then break end
+						RunService.Heartbeat:Wait()
+					end
+				end)
+			end)
+			at(math.min(18, math.max(dur - 0.5, 0)), function()
+				for _, m in ipairs(music) do
+					pcall(function()
+						TweenService:Create(m, TweenInfo.new(0.3), { Volume = 0 }):Play()
+						Debris:AddItem(m, 0.4)
+					end)
+				end
+			end)
+			at(shatter, function()
+				barrierOn, slashOn = false, false
+				restore()
+				clearSlashes()
+				if dome then
+					TweenService:Create(dome, TweenInfo.new(0.25), { Transparency = 1 }):Play()
+					emitter(dome, pShatter(Color3.new(0, 0, 0)), 100, false)
+					task.delay(0.03, function() if live then emitter(dome, pShatter(Color3.new(0, 0, 0)), 15, false) end end)
+				end
+				if shrine then shrine.fade(0.25) end
+				if viewer then
+					snd(anchor, 6737581507, 2, 1, 2.8)
+					state.shake(2.5, 0.6)
+				end
+			end, true)
+			at(dur, stop, true)
+		end
+		local function cast(ult)
+			local now = os.clock()
+			if not ult.active or now < (ult.shrineLockedUntil or 0) or stopCur then return end
+			if actionBusy() then return end
+			local char, hum, root = getRig()
+			if not hum or not root then return end
+			ult.shrineLockedUntil = now + CONFIG.DomainCooldown
+			overlay.blocking = false
+			boostFor(CONFIG.DomainDuration + 4)
+			stopVault()
+			stopDash()
+			state.combo = 1
+			if not play("Domain", function() refreshAir() end, "action") then
+				ult.shrineLockedUntil = 0
+				return
+			end
+			speedState.frozenUntil = now + (ANIMS.Domain.total or 5)
+			local cf0 = root.CFrame
+			state.domainRun(cf0, char, CONFIG.DomainDuration, true)
+			if PVP.domain then pcall(PVP.domain, cf0, CONFIG.DomainDuration) end
+		end
+		state.giveShrine = function(ult)
+			local tool = Instance.new("Tool")
+			tool.Name = "Malevolent Shrine"
+			tool.RequiresHandle = false
+			tool.CanBeDropped = false
+			tool.ToolTip = "Malevolent Shrine"
+			tool.Activated:Connect(function() cast(ult) end)
+			ult.shrineTool = tool
+			task.spawn(function()
+				local bp = lp:WaitForChild("Backpack", 10)
+				if bp and ult.shrineTool == tool then tool.Parent = bp end
+			end)
+		end
+	end
+	state.buildDomain()
+
 	local function giveRush()
 		local tool = Instance.new("Tool")
 		tool.Name = "Rush"
@@ -16440,6 +17274,10 @@ do
 			pcall(function() ult.rushTool:Destroy() end)
 			ult.rushTool = nil
 		end
+		if ult.shrineTool then
+			pcall(function() ult.shrineTool:Destroy() end)
+			ult.shrineTool = nil
+		end
 		-- as tools normais voltam pra mochila (se morreu, o script recria tudo no respawn)
 		local hum2 = char and char:FindFirstChildOfClass("Humanoid")
 		local bp = lp:FindFirstChildOfClass("Backpack")
@@ -16493,6 +17331,7 @@ do
 		end
 		giveFuga()
 		giveRush()
+		state.giveShrine(ult)
 		ult.diedConn = hum.Died:Connect(endUlt)
 		ult.charConn = lp.CharacterRemoving:Connect(endUlt)
 		notify("ULT: King of Curses", 3)
@@ -17302,6 +18141,17 @@ do
 	end
 	PVP.impact = function(name) -- impacto de uma variante no ar: os outros veem as particulas/sons do impacto
 		if peerNear() then post({ t = "impact", name = name }) end
+	end
+	PVP.domain = function(cf0, dur)
+		if not peerNear() then return end
+		local p, l = cf0.Position, cf0.LookVector
+		post({ t = "domain", p = { p.X, p.Y, p.Z }, l = { l.X, l.Z }, dur = dur })
+	end
+	PVP.onDomain = function(ev)
+		local _, c = plrChar(ev.from)
+		if not c or not ev.p or not ev.l or not state.domainRun then return end
+		local pos = Vector3.new(ev.p[1], ev.p[2], ev.p[3])
+		state.domainRun(CFrame.lookAt(pos, pos + Vector3.new(ev.l[1], 0, ev.l[2])), c, ev.dur or CONFIG.DomainDuration, false)
 	end
 	PVP.animStop = function() -- nothing playing anymore: others go back to the normal pose
 		state.lastLoopName = nil
@@ -18132,6 +18982,7 @@ do
 		elseif ev.t == "crush" then onCrush(ev)
 		elseif ev.t == "cursed" then onCursed(ev)
 		elseif ev.t == "impact" then onImpact(ev)
+		elseif ev.t == "domain" and PVP.onDomain then PVP.onDomain(ev)
 		elseif ev.t == "fuga" then onFuga(ev)
 		elseif ev.t == "rush" then onRush(ev)
 		elseif ev.t == "animstop" then state.net.animstop(ev)
@@ -18285,6 +19136,7 @@ do
 		alive = false
 		PVP.send, PVP.anim, PVP.crush, PVP.crushPlayer, PVP.cursed, PVP.cursedPlayer = nil, nil, nil, nil, nil, nil
 		PVP.fuga, PVP.rush, PVP.isPeer, PVP.aura, PVP.boom, PVP.fugaFx, PVP.impact = nil, nil, nil, nil, nil, nil, nil
+		PVP.domain, PVP.onDomain = nil, nil
 		state.npcOut, state.npcAnimOut, state.npcRagOut = nil, nil, nil
 		genv.YujiPvpStop = nil
 	end
