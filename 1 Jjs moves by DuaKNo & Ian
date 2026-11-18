@@ -18004,7 +18004,7 @@ end
 -- Sem vida/dano: so os efeitos (hit, block, knockback, ragdoll, Manji Kick, Crushing Blow).
 -- Quem apanha aplica o efeito no PROPRIO personagem (e o dono da fisica dele).
 ---------------------------------------------------------------------
-do
+;(function() -- bloco em funcao propria: evita "Out of local registers" (limite 200 locals)
 	local HttpService = game:GetService("HttpService")
 	local httpReq = (syn and syn.request) or (http and http.request) or http_request or request
 	local base = tostring(CONFIG.PvpUrl or "")
@@ -19142,7 +19142,7 @@ do
 	end
 
 	startPvp()
-end
+end)()
 
 -- creditos: 3 mensagens do proprio Roblox (a 1a com a foto do DuaKNo), todas juntas e somem em 2s
 task.spawn(function()
